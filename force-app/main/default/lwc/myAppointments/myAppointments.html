@@ -8,16 +8,34 @@
                 </div>
             </template>
 
-            <!-- Unauthenticated / No Portal Identity Alert -->
+            <!-- Unauthenticated / Staff Informational State -->
             <template lwc:if={isUnauthenticated}>
-                <div class="slds-notify slds-notify_alert slds-theme_info slds-m-bottom_medium" role="alert">
-                    <lightning-icon icon-name="utility:lock" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
-                    <div>
-                        <h2 class="font-bold">Patient Portal Access Required</h2>
-                        <p class="slds-text-body_small slds-m-top_xx-small">
-                            Your current user account does not have an associated patient contact profile (<code>ContactId</code>).
-                            To protect patient confidentiality, personal appointment records are restricted to authenticated patient portal users.
-                        </p>
+                <div class="slds-illustration slds-illustration_small slds-p-around_large slds-text-align_center">
+                    <lightning-icon icon-name="standard:service_appointment" size="large" class="slds-m-bottom_small"></lightning-icon>
+                    <h3 class="slds-text-heading_medium font-bold">Patient Portal Dashboard</h3>
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-top_x-small slds-m-horizontal_auto" style="max-width: 480px;">
+                        The <strong>My Appointments</strong> view is reserved for authenticated patient portal users to manage their personal healthcare consultations.
+                    </p>
+                    <div class="slds-box slds-theme_shade slds-m-top_medium slds-m-horizontal_auto slds-text-align_left" style="max-width: 480px;">
+                        <div class="slds-media slds-media_center">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:info_alt" size="small" variant="brand"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h4 class="slds-text-title_bold">Internal Staff & Administrator Guidance</h4>
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                    As an internal user, you can view, filter, and manage all clinic appointments via the <strong>Appointments</strong> tab, or use the <strong>Appointment Booking Wizard</strong> to schedule consultations for patients.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="slds-m-top_small slds-text-align_right">
+                            <lightning-button
+                                label="View All Appointments (Staff)"
+                                variant="brand"
+                                icon-name="utility:table"
+                                onclick={handleNavigateToAppointments}>
+                            </lightning-button>
+                        </div>
                     </div>
                 </div>
             </template>

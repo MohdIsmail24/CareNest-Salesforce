@@ -323,4 +323,64 @@ private class DoctorSearchControllerTest {
 
         System.assert(caught, 'Portal user should not be able to view billing details of other patient');
     }
+
+    @isTest
+    static void testPatientPortalDataIsolationAcrossUsers() {
+        Contact pat1 = createPatient('IsolationPat1', 'CN-PAT-ISO1');
+        Contact pat2 = createPatient('IsolationPat2', 'CN-PAT-ISO2');
+        Doctor__c doc = createDoctor('Dr. Iso Doc', 'General Medicine', 650);
+        Appointment_Slot__c slot1 = createSlot(doc.Id, System.now().addDays(3), 5, 'OPD');
+        Appointment_Slot__c slot2 = createSlot(doc.Id, System.now().addDays(4), 5, 'OPD');
+
+        // Book appointment for Patient 1
+        DoctorSearchController.mockContactId = pat1.Id;
+        Appointment__c appt1 = DoctorSearchController.bookAppointment(slot1.Id, null);
+
+        // Book appointment for Patient 2
+        DoctorSearchController.mockContactId = pat2.Id;
+        Appointment__c appt2 = DoctorSearchController.bookAppointment(slot2.Id, null);
+
+        Test.startTest();
+        // Verify Patient 1 only sees their own appointment
+        DoctorSearchController.mockContactId = pat1.Id;
+        List<Appointment__c> apptsPat1 = DoctorSearchController.getMyAppointments();
+        System.assertEquals(1, apptsPat1.size(), 'Patient 1 must only see 1 appointment');
+        System.assertEquals(appt1.Id, apptsPat1[0].Id, 'Patient 1 must see their own appointment ID');
+
+        // Verify Patient 2 only sees their own appointment
+        DoctorSearchController.mockContactId = pat2.Id;
+        List<Appointment__c> apptsPat2 = DoctorSearchController.getMyAppointments();
+        System.assertEquals(1, apptsPat2.size(), 'Patient 2 must only see 1 appointment');
+        System.assertEquals(appt2.Id, apptsPat2[0].Id, 'Patient 2 must see their own appointment ID');
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testInternalAdminContextAndEmptyPatientResults() {
+        // 1. Verify empty appointment results for a portal patient with no appointments
+        Contact emptyPat = createPatient('EmptyPat', 'CN-PAT-EMPTY');
+        DoctorSearchController.mockContactId = emptyPat.Id;
+        List<Appointment__c> emptyAppts = DoctorSearchController.getMyAppointments();
+        System.assertEquals(0, emptyAppts.size(), 'Portal patient with no appointments should receive empty list gracefully');
+
+        // 2. Verify internal System Administrator context (no associated contact profile)
+        DoctorSearchController.mockContactId = null;
+
+        Test.startTest();
+        DoctorSearchController.UserContextDto adminCtx = DoctorSearchController.getUserContext();
+        System.assertEquals(false, adminCtx.isPatient, 'Admin should not be identified as patient portal user');
+        System.assertEquals(null, adminCtx.contactId, 'Admin contact ID must be null');
+
+        Boolean caught = false;
+        String caughtMessage = '';
+        try {
+            DoctorSearchController.getMyAppointments();
+        } catch (AuraHandledException e) {
+            caught = true;
+            caughtMessage = e.getMessage();
+        }
+        Test.stopTest();
+
+        System.assert(caught, 'Admin user without contact identity must fail closed with AuraHandledException');
+    }
 }

@@ -1,10 +1,11 @@
 import { LightningElement, wire, track } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getMyAppointments from '@salesforce/apex/DoctorSearchController.getMyAppointments';
 import cancelAppointment from '@salesforce/apex/DoctorSearchController.cancelAppointment';
 
-export default class MyAppointments extends LightningElement {
+export default class MyAppointments extends NavigationMixin(LightningElement) {
     @track appointments = [];
     isLoading = true;
     isUnauthenticated = false;
@@ -108,6 +109,16 @@ export default class MyAppointments extends LightningElement {
 
     get showEmptyState() {
         return !this.isLoading && !this.isUnauthenticated && !this.showGeneralError && (!this.appointments || this.appointments.length === 0);
+    }
+
+    handleNavigateToAppointments() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: 'Appointment__c',
+                actionName: 'home'
+            }
+        });
     }
 
     handleOpenBillingModal(event) {
