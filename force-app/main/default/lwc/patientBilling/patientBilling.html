@@ -1,0 +1,533 @@
+<template>
+    <lightning-card title="CareNest Billing & Payment (Demonstration)" icon-name="standard:currency">
+        <!-- Prominent Universal Demo Notice -->
+        <div class="slds-p-horizontal_medium slds-p-top_small">
+            <div class="demo-banner-fixed slds-grid slds-grid_vertical-align-center slds-m-bottom_medium" role="alert">
+                <lightning-icon icon-name="utility:info" variant="warning" size="small" class="slds-m-right_small"></lightning-icon>
+                <div class="slds-col">
+                    <p class="slds-text-body_regular font-bold">DEMONSTRATION FLOW ONLY — NO REAL MONEY CHARGED</p>
+                    <p class="slds-text-body_small">This interface simulates patient billing options (UPI, Card, Cash). No live payment provider is connected.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <!-- Progress Indicator -->
+            <lightning-progress-indicator current-step={currentStep} type="path" variant="base" class="slds-m-bottom_large">
+                <lightning-progress-step label="1. Bill Summary" value="1"></lightning-progress-step>
+                <lightning-progress-step label="2. Payment Method" value="2"></lightning-progress-step>
+                <lightning-progress-step label="3. Review & Simulated Entry" value="3"></lightning-progress-step>
+                <lightning-progress-step label="4. Demo Confirmation" value="4"></lightning-progress-step>
+            </lightning-progress-indicator>
+
+            <!-- Loading Spinner -->
+            <template lwc:if={isLoading}>
+                <div class="slds-is-relative slds-p-around_large slds-text-align_center">
+                    <lightning-spinner alternative-text="Loading billing details..." size="medium"></lightning-spinner>
+                    <p class="slds-m-top_large slds-text-color_weak">Loading appointment billing records...</p>
+                </div>
+            </template>
+
+            <!-- Error Banner -->
+            <template lwc:if={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
+                    <lightning-icon icon-name="utility:error" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>{error}</h2>
+                </div>
+            </template>
+
+            <!-- ========================================== -->
+            <!-- STEP 1: BILL SUMMARY                      -->
+            <!-- ========================================== -->
+            <template lwc:if={isStep1}>
+                <div class="step-container">
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                        <!-- Appointment Metadata -->
+                        <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                            <div class="slds-box slds-box_small slds-theme_shade">
+                                <h3 class="slds-text-title_caps font-bold slds-m-bottom_small slds-text-color_weak">Appointment Information</h3>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span class="slds-text-color_weak">Appointment Code:</span>
+                                    <span class="font-bold">{appointmentCode}</span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span class="slds-text-color_weak">Doctor:</span>
+                                    <span class="font-bold">{doctorName}</span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span class="slds-text-color_weak">Department:</span>
+                                    <span>{doctorDepartment}</span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span class="slds-text-color_weak">Consultation Mode:</span>
+                                    <span>{slotMode}</span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span class="slds-text-color_weak">Scheduled Slot:</span>
+                                    <span>{formattedSlotTime}</span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread">
+                                    <span class="slds-text-color_weak">Patient Name:</span>
+                                    <span class="font-bold">{patientName}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Breakdown -->
+                        <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                            <div class="slds-box slds-box_small">
+                                <h3 class="slds-text-title_caps font-bold slds-m-bottom_small slds-text-color_weak">Fee Breakdown</h3>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span>Consultation Fee:</span>
+                                    <span>
+                                        <lightning-formatted-number value={feeAmount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span>Discount Applied ({discountPercent}%):</span>
+                                    <span class="slds-text-color_success">
+                                        - <lightning-formatted-number value={discountAmount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small slds-border_top slds-p-top_xx-small">
+                                    <span class="font-bold">Total Bill:</span>
+                                    <span class="font-bold">
+                                        <lightning-formatted-number value={totalAmount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                    <span>Amount Paid (Previously Settled):</span>
+                                    <span>
+                                        <lightning-formatted-number value={amountPaid} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="slds-grid slds-grid_align-spread slds-border_top slds-p-top_x-small slds-m-top_x-small">
+                                    <span class="font-bold fee-due">Balance Payable:</span>
+                                    <span class="font-bold fee-due">
+                                        <lightning-formatted-number value={payableAmount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1 Navigation Buttons -->
+                    <div class="slds-grid slds-grid_align-spread slds-border_top slds-p-top_medium">
+                        <div>
+                            <template lwc:if={showCloseButton}>
+                                <lightning-button label="Close" onclick={handleClose}></lightning-button>
+                            </template>
+                        </div>
+                        <div>
+                            <lightning-button
+                                label="Proceed to Payment Method"
+                                variant="brand"
+                                icon-name="utility:forward"
+                                onclick={handleNextStep}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ========================================== -->
+            <!-- STEP 2: SELECT PAYMENT METHOD             -->
+            <!-- ========================================== -->
+            <template lwc:if={isStep2}>
+                <div class="step-container">
+                    <h3 class="slds-text-heading_small font-bold slds-m-bottom_small">Select Demonstration Payment Method</h3>
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-bottom_medium">
+                        Choose how you would like to settle the balance of <strong>₹{payableAmount}</strong>. You can test UPI, Card, or Cash flows.
+                    </p>
+
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_large">
+                        <!-- UPI Option -->
+                        <div class="slds-col slds-size_1-1 slds-medium-size_4-12 slds-m-bottom_small">
+                            <div class={upiCardClass} onclick={handleSelectUpi} role="button" tabindex="0">
+                                <div>
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                        <lightning-icon icon-name="standard:currency_input" size="medium"></lightning-icon>
+                                        <template lwc:if={isUpiSelected}>
+                                            <lightning-badge label="Selected" class="slds-theme_success"></lightning-badge>
+                                        </template>
+                                    </div>
+                                    <h4 class="slds-text-heading_small font-bold slds-m-bottom_xx-small">UPI Payment</h4>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                                        Instant transfer via QR Code or Virtual Payment Address (GPay, PhonePe, Paytm, BHIM).
+                                    </p>
+                                </div>
+                                <div class="slds-border_top slds-p-top_x-small slds-text-color_weak slds-text-body_small">
+                                    Simulated UPI flow
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Option -->
+                        <div class="slds-col slds-size_1-1 slds-medium-size_4-12 slds-m-bottom_small">
+                            <div class={cardCardClass} onclick={handleSelectCard} role="button" tabindex="0">
+                                <div>
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                        <lightning-icon icon-name="standard:price_books" size="medium"></lightning-icon>
+                                        <template lwc:if={isCardSelected}>
+                                            <lightning-badge label="Selected" class="slds-theme_success"></lightning-badge>
+                                        </template>
+                                    </div>
+                                    <h4 class="slds-text-heading_small font-bold slds-m-bottom_xx-small">Credit / Debit Card</h4>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                                        Simulate card payments using mock test card credentials with 3D Secure simulation.
+                                    </p>
+                                </div>
+                                <div class="slds-border_top slds-p-top_x-small slds-text-color_weak slds-text-body_small">
+                                    Simulated Card flow
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cash Option -->
+                        <div class="slds-col slds-size_1-1 slds-medium-size_4-12 slds-m-bottom_small">
+                            <div class={cashCardClass} onclick={handleSelectCash} role="button" tabindex="0">
+                                <div>
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                        <lightning-icon icon-name="standard:service_resource" size="medium"></lightning-icon>
+                                        <template lwc:if={isCashSelected}>
+                                            <lightning-badge label="Selected" class="slds-theme_success"></lightning-badge>
+                                        </template>
+                                    </div>
+                                    <h4 class="slds-text-heading_small font-bold slds-m-bottom_xx-small">Cash at Clinic Desk</h4>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                                        Settle in person at the CareNest reception desk upon hospital arrival prior to consultation.
+                                    </p>
+                                </div>
+                                <div class="slds-border_top slds-p-top_x-small slds-text-color_weak slds-text-body_small">
+                                    In-person counter flow
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 Navigation Buttons -->
+                    <div class="slds-grid slds-grid_align-spread slds-border_top slds-p-top_medium">
+                        <div>
+                            <lightning-button label="Back to Summary" onclick={handlePreviousStep}></lightning-button>
+                        </div>
+                        <div>
+                            <lightning-button
+                                label="Continue to Review & Entry"
+                                variant="brand"
+                                icon-name="utility:forward"
+                                disabled={isMethodNotSelected}
+                                onclick={handleNextStep}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ========================================== -->
+            <!-- STEP 3: REVIEW & SIMULATED PAYMENT ENTRY  -->
+            <!-- ========================================== -->
+            <template lwc:if={isStep3}>
+                <div class="step-container">
+                    <!-- Order Review Banner -->
+                    <div class="slds-box slds-theme_shade slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <div>
+                            <span class="slds-text-body_small slds-text-color_weak">Reviewing Payment For:</span>
+                            <h3 class="slds-text-heading_small font-bold">{appointmentCode} — {doctorName}</h3>
+                            <p class="slds-text-body_small">Method: <strong>{selectedMethodLabel}</strong> | Scheduled: {formattedSlotTime}</p>
+                        </div>
+                        <div class="slds-text-align_right">
+                            <span class="slds-text-body_small slds-text-color_weak">Simulated Amount:</span>
+                            <div class="slds-text-heading_medium font-bold fee-highlight">
+                                <lightning-formatted-number value={payableAmount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-FLOW: UPI SIMULATION -->
+                    <template lwc:if={isUpiSelected}>
+                        <div class="slds-box slds-m-bottom_medium">
+                            <div class="demo-banner-warning slds-m-bottom_medium" role="alert">
+                                <strong>⚠️ SIMULATED UPI PAYMENT — DEMO ONLY</strong>
+                                <p class="slds-text-body_small slds-m-top_xx-small">Do not enter any real UPI PIN or real banking credentials.</p>
+                            </div>
+
+                            <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                                <div class="slds-col slds-size_1-1 slds-medium-size_5-12 slds-text-align_center slds-m-bottom_small">
+                                    <div class="mock-qr-box">
+                                        <div class="mock-qr-graphic">
+                                            <lightning-icon icon-name="utility:preview" size="large"></lightning-icon>
+                                        </div>
+                                        <p class="slds-text-body_small font-bold">Simulated Clinic QR Code</p>
+                                        <p class="slds-text-body_small slds-text-color_weak">UPI ID: carenest.clinic@icici-demo</p>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-medium-size_7-12 slds-m-bottom_small">
+                                    <lightning-input
+                                        type="text"
+                                        label="Patient UPI ID / VPA (Demo)"
+                                        value={demoUpiId}
+                                        placeholder="e.g. patient@okhdfcbank"
+                                        onchange={handleUpiIdChange}
+                                        class="slds-m-bottom_small">
+                                    </lightning-input>
+                                    <lightning-button
+                                        label="Use Sample UPI ID (demo@upi)"
+                                        variant="neutral"
+                                        icon-name="utility:automate"
+                                        onclick={handleFillDemoUpi}
+                                        class="slds-m-bottom_medium">
+                                    </lightning-button>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                        Simulates sending a payment collect request to the patient's UPI application.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- SUB-FLOW: CARD SIMULATION -->
+                    <template lwc:if={isCardSelected}>
+                        <div class="slds-box slds-m-bottom_medium">
+                            <div class="demo-banner-warning slds-m-bottom_medium" role="alert">
+                                <strong>⚠️ SIMULATED CARD PAYMENT — DEMO TEST MODE ONLY</strong>
+                                <p class="slds-text-body_small slds-m-top_xx-small">Do not enter real credit or debit card numbers. Use test simulation values.</p>
+                            </div>
+
+                            <!-- Mock Card Visual Preview -->
+                            <div class="mock-credit-card">
+                                <div class="mock-card-chip"></div>
+                                <div class="mock-card-number">{demoCardNumberDisplay}</div>
+                                <div class="mock-card-footer">
+                                    <div>
+                                        <span class="slds-text-color_inverse-weak slds-text-body_x-small">Cardholder</span>
+                                        <div class="font-bold">{demoCardHolder}</div>
+                                    </div>
+                                    <div>
+                                        <span class="slds-text-color_inverse-weak slds-text-body_x-small">Expires</span>
+                                        <div class="font-bold">{demoCardExpiry}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Entry Inputs -->
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                    <lightning-input
+                                        type="text"
+                                        label="Cardholder Name"
+                                        value={demoCardHolder}
+                                        onchange={handleCardHolderChange}>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                    <lightning-input
+                                        type="text"
+                                        label="Test Card Number"
+                                        value={demoCardNumber}
+                                        onchange={handleCardNumberChange}
+                                        max-length="19">
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                    <lightning-input
+                                        type="text"
+                                        label="Expiry (MM/YY)"
+                                        value={demoCardExpiry}
+                                        placeholder="12/28"
+                                        onchange={handleCardExpiryChange}>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                    <lightning-input
+                                        type="password"
+                                        label="CVV (Demo)"
+                                        value={demoCardCvv}
+                                        max-length="3"
+                                        placeholder="•••"
+                                        onchange={handleCardCvvChange}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+
+                            <div class="slds-m-top_x-small">
+                                <lightning-button
+                                    label="Fill Demo Test Card (4111-XXXX-XXXX-1111)"
+                                    variant="neutral"
+                                    icon-name="utility:automate"
+                                    onclick={handleFillDemoCard}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- SUB-FLOW: CASH SIMULATION -->
+                    <template lwc:if={isCashSelected}>
+                        <div class="slds-box slds-m-bottom_medium">
+                            <div class="demo-banner-warning slds-m-bottom_medium" role="alert">
+                                <strong>⚠️ SIMULATED CASH PAYMENT INSTRUCTIONS — DEMO ONLY</strong>
+                            </div>
+
+                            <div class="slds-media slds-media_center slds-m-bottom_medium">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="standard:address" size="medium"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h4 class="slds-text-heading_small font-bold">Pay at CareNest Clinic Counter</h4>
+                                    <p class="slds-text-body_regular slds-text-color_weak slds-m-top_xx-small">
+                                        Please present appointment code <strong>{appointmentCode}</strong> at the clinic reception desk.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                                <ul class="slds-list_dotted slds-text-body_small">
+                                    <li>Payable amount: <strong>₹{payableAmount}</strong></li>
+                                    <li>Counter accepts exact currency or POS card swipe</li>
+                                    <li>Please arrive at least 15 minutes before slot time ({formattedSlotTime})</li>
+                                    <li>Reception will print an official physical payment voucher</li>
+                                </ul>
+                            </div>
+
+                            <lightning-input
+                                type="checkbox"
+                                label="I acknowledge that I will settle this fee at the hospital reception desk."
+                                checked={isCashAcknowledged}
+                                onchange={handleCashAcknowledgeChange}>
+                            </lightning-input>
+                        </div>
+                    </template>
+
+                    <!-- Step 3 Navigation Buttons -->
+                    <div class="slds-grid slds-grid_align-spread slds-border_top slds-p-top_medium">
+                        <div>
+                            <lightning-button label="Back to Methods" onclick={handlePreviousStep}></lightning-button>
+                        </div>
+                        <div>
+                            <lightning-button
+                                label={simulateButtonLabel}
+                                variant="brand"
+                                icon-name="utility:check"
+                                disabled={isSimulateDisabled}
+                                onclick={handleExecuteSimulation}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ========================================== -->
+            <!-- STEP 4: SIMULATED CONFIRMATION & RECEIPT  -->
+            <!-- ========================================== -->
+            <template lwc:if={isStep4}>
+                <div class="step-container slds-text-align_center slds-p-around_small">
+                    <!-- Prominent Success / Counter Recorded Header -->
+                    <lightning-icon icon-name={step4IconName} size="large" class="slds-m-bottom_small"></lightning-icon>
+                    <h2 class="slds-text-heading_large font-bold slds-m-bottom_xx-small">{step4Headline}</h2>
+                    
+                    <div class="demo-banner-success slds-m-bottom_medium slds-m-horizontal_auto" style="max-width: 520px;" role="status">
+                        DEMO PAYMENT — NO MONEY CHARGED
+                    </div>
+
+                    <!-- Prominent Cash Disclaimer Warning when Cash is selected -->
+                    <template lwc:if={isCashMethod}>
+                        <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_medium slds-m-horizontal_auto" style="max-width: 520px; text-align: left;" role="alert">
+                            <lightning-icon icon-name="utility:warning" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            <div>
+                                <h3 class="font-bold">NOTICE: Cash has NOT been collected.</h3>
+                                <p class="slds-text-body_small slds-m-top_xx-small">
+                                    Payment of <strong>₹{payableAmount}</strong> must be settled at the clinic reception counter upon arrival.
+                                </p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-bottom_medium">
+                        {step4Subtitle}
+                    </p>
+
+                    <!-- Simulated Receipt Card -->
+                    <div class="receipt-card slds-p-around_medium slds-text-align_left slds-m-bottom_large">
+                        <div class="slds-grid slds-grid_align-spread slds-border_bottom slds-p-bottom_x-small slds-m-bottom_x-small">
+                            <span class="font-bold slds-text-title_caps">CareNest Medical Center</span>
+                            <span class="slds-badge slds-theme_success">Simulated Receipt</span>
+                        </div>
+
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Demo Transaction Ref:</span>
+                            <span class="font-bold">{demoTxnId}</span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Appointment Reference:</span>
+                            <span class="font-bold">{appointmentCode}</span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Patient:</span>
+                            <span>{patientName}</span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Consultant Doctor:</span>
+                            <span>{doctorName} ({doctorDepartment})</span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Consultation Slot:</span>
+                            <span>{formattedSlotTime} ({slotMode})</span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Payment Method:</span>
+                            <span class="font-bold">{selectedMethodLabel}</span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Amount Simulated:</span>
+                            <span class="font-bold fee-highlight">
+                                <lightning-formatted-number value={payableAmount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                            </span>
+                        </div>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Status:</span>
+                            <span class={receiptStatusBadgeClass}>{receiptStatusLabel}</span>
+                        </div>
+                        <template lwc:if={isCashMethod}>
+                            <div class="receipt-row slds-text-color_error font-bold slds-text-align_center slds-p-vertical_x-small">
+                                NOTICE: Cash has NOT been collected. Payment of ₹{payableAmount} must be settled at the clinic reception counter upon arrival.
+                            </div>
+                        </template>
+                        <div class="receipt-row slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Date & Time:</span>
+                            <span>{demoTimestamp}</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="slds-grid slds-grid_align-center slds-gutters">
+                        <div class="slds-col">
+                            <lightning-button
+                                label="Print Demo Receipt"
+                                variant="neutral"
+                                icon-name="utility:print"
+                                onclick={handlePrintReceipt}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-button
+                                label="Restart Demo"
+                                variant="neutral"
+                                icon-name="utility:refresh"
+                                onclick={handleRestartDemo}>
+                            </lightning-button>
+                        </div>
+                        <template lwc:if={showCloseButton}>
+                            <div class="slds-col">
+                                <lightning-button
+                                    label="Done"
+                                    variant="brand"
+                                    icon-name="utility:check"
+                                    onclick={handleClose}>
+                                </lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Department__c</fullName>
+    <label>Department</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet><restricted>true</restricted><valueSetDefinition><sorted>false</sorted><value><fullName>General Medicine</fullName><default>false</default><label>General Medicine</label></value><value><fullName>Paediatrics</fullName><default>false</default><label>Paediatrics</label></value><value><fullName>Orthopaedics</fullName><default>false</default><label>Orthopaedics</label></value><value><fullName>Dermatology</fullName><default>false</default><label>Dermatology</label></value><value><fullName>ENT</fullName><default>false</default><label>ENT</label></value></valueSetDefinition></valueSet>
+</CustomField>

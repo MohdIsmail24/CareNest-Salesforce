@@ -1,0 +1,49 @@
+.slot-picker-container {
+    width: 100%;
+}
+
+.date-input-wrapper {
+    max-width: 200px;
+}
+
+.slot-tile {
+    padding: 12px;
+    border: 1px solid #d8dde6;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: all 0.2s ease-in-out;
+}
+
+.slot-tile:hover {
+    border-color: #0176d3;
+    background-color: #f9fbfd;
+    box-shadow: 0 2px 8px rgba(1, 118, 211, 0.12);
+}
+
+.slot-tile_selected {
+    border: 2px solid #0176d3;
+    background-color: #edf5fc;
+}
+
+.slot-time {
+    font-size: 0.95rem;
+    color: #080707;
+}
+
+.seats-info {
+    color: #444444;
+}
+
+.fee-info {
+    font-weight: 700;
+    color: #0b5cab;
+}
+
+.font-bold {
+    font-weight: 600;
+}
+
+.spinner-box {
+    min-height: 80px;
+}

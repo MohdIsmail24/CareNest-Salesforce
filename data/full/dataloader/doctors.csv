@@ -1,0 +1,13 @@
+Name,Registration_No__c,Department__c,Specialty__c,Consultation_Fee__c,Is_Active__c
+Dr. Kavita Rao,CN-DOC-001,General Medicine,Internal Medicine,500,true
+Dr. Imran Qureshi,CN-DOC-002,General Medicine,Diabetes and Lifestyle,500,true
+Dr. Anil Mehta,CN-DOC-003,Paediatrics,Child Health,600,true
+Dr. Sunita Joshi,CN-DOC-004,Paediatrics,Neonatal Care,600,true
+Dr. Rajesh Pandey,CN-DOC-005,Orthopaedics,Joint Replacement,900,true
+Dr. Faizan Ansari,CN-DOC-006,Orthopaedics,Sports Injury,900,true
+Dr. Neha Kapoor,CN-DOC-007,Dermatology,Skin Allergy,700,true
+Dr. Rohan Das,CN-DOC-008,Dermatology,Cosmetic Dermatology,700,true
+Dr. Meena Iyer,CN-DOC-009,ENT,Ear and Hearing,650,true
+Dr. Vikram Nair,CN-DOC-010,ENT,Sinus and Throat,650,true
+Dr. Ayesha Khan,CN-DOC-011,General Medicine,Family Medicine,500,true
+Dr. Sanjay Reddy,CN-DOC-012,Orthopaedics,Spine Care,900,true

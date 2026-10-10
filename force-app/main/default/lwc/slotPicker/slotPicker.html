@@ -1,0 +1,87 @@
+<template>
+    <div class="slot-picker-container">
+        <!-- Date Filter Control -->
+        <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium slds-grid_vertical-align-center">
+            <h3 class="slds-text-heading_small slds-truncate font-bold">
+                Available Appointment Slots
+            </h3>
+            <div class="date-input-wrapper">
+                <lightning-input
+                    type="date"
+                    label="Filter by Date"
+                    variant="label-hidden"
+                    placeholder="All dates"
+                    value={selectedDate}
+                    onchange={handleDateChange}>
+                </lightning-input>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="slds-is-relative slds-p-around_large spinner-box">
+                <lightning-spinner alternative-text="Loading slots..." size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error State -->
+        <template lwc:if={error}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
+                <span class="slds-assistive-text">Error</span>
+                <lightning-icon icon-name="utility:error" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                <h2>{error}</h2>
+            </div>
+        </template>
+
+        <!-- No Doctor Selected State -->
+        <template lwc:if={showNoDoctorSelected}>
+            <div class="slds-illustration slds-illustration_small slds-p-around_medium slds-text-align_center">
+                <lightning-icon icon-name="utility:user" size="medium" class="slds-text-color_weak"></lightning-icon>
+                <p class="slds-text-body_regular slds-text-color_weak slds-m-top_small">
+                    Please select a doctor above to view available appointment slots.
+                </p>
+            </div>
+        </template>
+
+        <!-- Slots List -->
+        <template lwc:if={hasSlots}>
+            <div class="slds-grid slds-wrap slds-gutters">
+                <template for:each={slots} for:item="slot">
+                    <div key={slot.id} class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                        <div
+                            class={slot.tileClass}
+                            data-id={slot.id}
+                            data-label={slot.label}
+                            data-fee={slot.fee}
+                            data-mode={slot.mode}
+                            data-seats={slot.seatsLeft}
+                            data-start={slot.slotStart}
+                            onclick={handleSelectSlot}>
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                <span class="slot-time font-bold">{slot.formattedTime}</span>
+                                <span class={slot.modeBadgeClass}>{slot.mode}</span>
+                            </div>
+                            <div class="slds-grid slds-grid_align-spread slds-text-body_small">
+                                <span class="seats-info">{slot.seatsLeft} seat(s) remaining</span>
+                                <span class="fee-info">
+                                    <lightning-formatted-number value={slot.fee} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Empty Slots State -->
+        <template lwc:if={showEmptyState}>
+            <div class="slds-illustration slds-illustration_small slds-p-around_medium slds-text-align_center">
+                <lightning-icon icon-name="utility:event" size="medium" class="slds-text-color_weak"></lightning-icon>
+                <h4 class="slds-text-heading_small slds-m-top_small">No Open Slots</h4>
+                <p class="slds-text-body_small slds-text-color_weak">
+                    No available open slots were found for this doctor on the selected date.
+                </p>
+            </div>
+        </template>
+    </div>
+</template>

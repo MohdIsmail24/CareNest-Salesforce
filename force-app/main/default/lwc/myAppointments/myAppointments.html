@@ -1,0 +1,188 @@
+<template>
+    <lightning-card title="My Appointments" icon-name="standard:service_appointment">
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <template lwc:if={isLoading}>
+                <div class="slds-is-relative slds-p-around_large spinner-box">
+                    <lightning-spinner alternative-text="Loading appointments..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Unauthenticated / No Portal Identity Alert -->
+            <template lwc:if={isUnauthenticated}>
+                <div class="slds-notify slds-notify_alert slds-theme_info slds-m-bottom_medium" role="alert">
+                    <lightning-icon icon-name="utility:lock" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <div>
+                        <h2 class="font-bold">Patient Portal Access Required</h2>
+                        <p class="slds-text-body_small slds-m-top_xx-small">
+                            Your current user account does not have an associated patient contact profile (<code>ContactId</code>).
+                            To protect patient confidentiality, personal appointment records are restricted to authenticated patient portal users.
+                        </p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Generic Error State -->
+            <template lwc:if={showGeneralError}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
+                    <lightning-icon icon-name="utility:error" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>{error}</h2>
+                </div>
+            </template>
+
+            <!-- Appointments List -->
+            <template lwc:if={hasAppointments}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <template for:each={appointments} for:item="appt">
+                        <div key={appt.Id} class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-large-size_4-12 slds-m-bottom_medium">
+                            <article class="slds-card appointment-card">
+                                <div class="slds-card__header slds-grid">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name="standard:event" size="small"></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <h3 class="slds-card__header-title slds-truncate font-bold">
+                                                {appt.Name}
+                                            </h3>
+                                            <p class="slds-text-body_small slds-text-color_weak slds-truncate">
+                                                {appt.DoctorName} ({appt.Department})
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span class={appt.statusBadgeClass}>{appt.Status__c}</span>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-m-bottom_x-small">
+                                        <span class="slds-text-body_small slds-text-color_weak">Scheduled Time:</span>
+                                        <p class="font-bold">{appt.formattedTime}</p>
+                                    </div>
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                        <div>
+                                            <span class="slds-text-body_small slds-text-color_weak">Mode:</span>
+                                            <p>{appt.Mode}</p>
+                                        </div>
+                                        <div class="slds-text-align_right">
+                                            <span class="slds-text-body_small slds-text-color_weak">Total Fee:</span>
+                                            <p class="font-bold fee-highlight">
+                                                <lightning-formatted-number value={appt.Total_Amount__c} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-grid_align-spread slds-text-body_small slds-border_top slds-p-top_x-small">
+                                        <span>Paid: <lightning-formatted-number value={appt.Amount_Paid__c} format-style="currency" currency-code="INR"></lightning-formatted-number></span>
+                                        <span class="font-bold">Due: <lightning-formatted-number value={appt.Balance_Due__c} format-style="currency" currency-code="INR"></lightning-formatted-number></span>
+                                    </div>
+                                </div>
+                                <footer class="slds-card__footer slds-grid slds-gutters">
+                                    <template lwc:if={appt.showPayBill}>
+                                        <div class="slds-col">
+                                            <lightning-button
+                                                label="Pay Bill (Demo)"
+                                                variant="brand-outline"
+                                                icon-name="utility:moneybag"
+                                                data-id={appt.Id}
+                                                onclick={handleOpenBillingModal}
+                                                class="slds-size_1-1">
+                                            </lightning-button>
+                                        </div>
+                                    </template>
+                                    <template lwc:if={appt.canCancel}>
+                                        <div class="slds-col">
+                                            <lightning-button
+                                                label="Cancel"
+                                                variant="destructive-text"
+                                                icon-name="utility:close"
+                                                data-id={appt.Id}
+                                                onclick={handleOpenCancelModal}
+                                                class="slds-size_1-1">
+                                            </lightning-button>
+                                        </div>
+                                    </template>
+                                </footer>
+                            </article>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Empty Appointments State -->
+            <template lwc:if={showEmptyState}>
+                <div class="slds-illustration slds-illustration_small slds-p-around_large slds-text-align_center">
+                    <lightning-icon icon-name="utility:event" size="large" class="slds-m-bottom_medium slds-text-color_weak"></lightning-icon>
+                    <h3 class="slds-text-heading_medium">No Appointments Found</h3>
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-top_x-small">
+                        You do not have any scheduled appointments yet. Use the Find a Doctor tool to book your first consultation.
+                    </p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Cancellation Modal -->
+        <template lwc:if={isCancelModalOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseCancelModal}>
+                            <lightning-icon icon-name="utility:close" variant="inverse" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate font-bold">Confirm Cancellation</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p class="slds-m-bottom_medium">
+                            Please provide a reason for cancelling this appointment. Cancellation fees and eligible refund amounts will be calculated in accordance with CareNest clinic policies.
+                        </p>
+                        <lightning-textarea
+                            label="Reason for Cancellation"
+                            placeholder="e.g. Rescheduling due to personal emergency"
+                            value={cancelReason}
+                            onchange={handleReasonChange}
+                            required>
+                        </lightning-textarea>
+                        <template lwc:if={cancelError}>
+                            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-top_medium" role="alert">
+                                <h2>{cancelError}</h2>
+                            </div>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Keep Appointment" onclick={handleCloseCancelModal} class="slds-m-right_x-small"></lightning-button>
+                        <lightning-button
+                            label="Confirm Cancellation"
+                            variant="destructive"
+                            disabled={isCancelling}
+                            onclick={handleConfirmCancellation}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Demo Billing Modal -->
+        <template lwc:if={isBillingModalOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_medium">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseBillingModal}>
+                            <lightning-icon icon-name="utility:close" variant="inverse" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate font-bold">Patient Billing Demonstration</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_none">
+                        <c-patient-billing
+                            appointment-id={selectedBillingApptId}
+                            show-close-button="true"
+                            onclose={handleCloseBillingModal}>
+                        </c-patient-billing>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>

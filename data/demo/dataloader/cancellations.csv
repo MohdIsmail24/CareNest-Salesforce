@@ -1,0 +1,10 @@
+Appointment__r.Appointment_Code__c,Hours_Before_Appointment__c,Cancellation_Fee__c,Refund_Amount__c,Reason__c
+CN-APT-00005,30,0.0,650.0,Patient unwell
+CN-APT-00006,3,665.0,0.0,Doctor unavailable
+CN-APT-00034,20,162.5,487.5,Patient unwell
+CN-APT-00046,48,0.0,700.0,Booked by mistake
+CN-APT-00052,30,0.0,900.0,Schedule clash
+CN-APT-00060,72,0.0,650.0,Patient unwell
+CN-APT-00061,48,0.0,500.0,Schedule clash
+CN-APT-00062,72,0.0,700.0,Patient unwell
+CN-APT-00078,2,650.0,0.0,Booked by mistake

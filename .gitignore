@@ -1,0 +1,52 @@
+# Salesforce CLI & Local Org Configuration
+.sf/
+.sfdx/
+.localdevserver/
+
+# Environment Variables & Secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.crt
+
+# Node & Package Managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test & Coverage Outputs
+coverage/
+.nyc_output/
+junit.xml
+test-results/
+
+# Log Files & Data Loader Exports
+*.log
+*success.csv
+*error.csv
+
+# IDE & Editor Files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Temporary & Build Directories
+tmp/
+temp/
+dist/

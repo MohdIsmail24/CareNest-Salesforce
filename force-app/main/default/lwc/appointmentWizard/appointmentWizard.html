@@ -1,0 +1,231 @@
+<template>
+    <lightning-card title="Book an Appointment" icon-name="standard:event">
+        <div class="slds-p-around_medium">
+            <!-- Progress Indicator -->
+            <lightning-progress-indicator current-step={currentStep} type="path" variant="base" class="slds-m-bottom_large">
+                <lightning-progress-step label="Select Doctor & Slot" value="1"></lightning-progress-step>
+                <lightning-progress-step label="Patient Details" value="2"></lightning-progress-step>
+                <lightning-progress-step label="Review & Pricing" value="3"></lightning-progress-step>
+                <lightning-progress-step label="Confirmation" value="4"></lightning-progress-step>
+            </lightning-progress-indicator>
+
+            <!-- Error Banner -->
+            <template lwc:if={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <lightning-icon icon-name="utility:error" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>{error}</h2>
+                </div>
+            </template>
+
+            <!-- STEP 1: DOCTOR & SLOT SELECTION -->
+            <template lwc:if={isStep1}>
+                <div class="step-container">
+                    <template lwc:if={doctorName}>
+                        <div class="slds-box slds-theme_shade slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                            <div>
+                                <span class="slds-text-body_small slds-text-color_weak">Selected Doctor:</span>
+                                <h3 class="slds-text-heading_medium font-bold">{doctorName}</h3>
+                            </div>
+                            <lightning-badge label="Active"></lightning-badge>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="slds-notify slds-notify_alert slds-theme_info slds-m-bottom_medium" role="alert">
+                            <h2>Select a doctor from the Doctor Search directory, or use this wizard directly on a Doctor record page.</h2>
+                        </div>
+                    </template>
+
+                    <!-- Slot Picker Child Component -->
+                    <c-slot-picker
+                        doctor-id={effectiveDoctorId}
+                        selected-slot-id={selectedSlotId}
+                        onslotselected={handleSlotSelected}>
+                    </c-slot-picker>
+                </div>
+            </template>
+
+            <!-- STEP 2: PATIENT SELECTION -->
+            <template lwc:if={isStep2}>
+                <div class="step-container">
+                    <template lwc:if={isPortalPatient}>
+                        <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                            <span class="slds-text-body_small slds-text-color_weak">Authenticated Patient:</span>
+                            <h3 class="slds-text-heading_medium font-bold">{patientName}</h3>
+                            <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                Booking is automatically associated with your verified patient profile.
+                            </p>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <h3 class="slds-text-heading_small slds-m-bottom_small font-bold">Search Patient</h3>
+                        <lightning-input
+                            type="search"
+                            label="Find Patient (by Code, Name, or Phone)"
+                            placeholder="e.g. CN-PAT-00001 or Sharma"
+                            value={patientSearchKey}
+                            onchange={handlePatientSearchChange}
+                            class="slds-m-bottom_medium">
+                        </lightning-input>
+
+                        <template lwc:if={patientSearchResults.length}>
+                            <div class="slds-box slds-p-around_none slds-m-bottom_medium">
+                                <ul class="slds-has-dividers_bottom-space">
+                                    <template for:each={patientSearchResults} for:item="pat">
+                                        <li key={pat.Id} class="slds-item slds-p-around_small patient-item" onclick={handleSelectPatient} data-id={pat.Id} data-name={pat.Name} data-code={pat.Patient_Code__c}>
+                                            <div class="slds-grid slds-grid_align-spread">
+                                                <span class="font-bold">{pat.Name}</span>
+                                                <span class="slds-badge">{pat.Patient_Code__c}</span>
+                                            </div>
+                                            <div class="slds-text-body_small slds-text-color_weak">
+                                                Phone: {pat.Phone} | Email: {pat.Email}
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+
+                        <template lwc:if={selectedPatientId}>
+                            <div class="slds-box slds-theme_success slds-m-bottom_medium">
+                                <span class="slds-text-body_small">Selected Patient:</span>
+                                <h4 class="slds-text-heading_small font-bold">{patientName} ({patientCode})</h4>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+            </template>
+
+            <!-- STEP 3: REVIEW & PRICING -->
+            <template lwc:if={isStep3}>
+                <div class="step-container">
+                    <h3 class="slds-text-heading_small slds-m-bottom_medium font-bold">Review Booking Summary</h3>
+                    <div class="slds-box slds-p-around_medium summary-box slds-m-bottom_medium">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                <span class="slds-text-body_small slds-text-color_weak">Doctor</span>
+                                <p class="slds-text-body_regular font-bold">{doctorName}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                <span class="slds-text-body_small slds-text-color_weak">Patient</span>
+                                <p class="slds-text-body_regular font-bold">{patientName}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                <span class="slds-text-body_small slds-text-color_weak">Slot Date & Time</span>
+                                <p class="slds-text-body_regular font-bold">{formattedSlotTime}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                <span class="slds-text-body_small slds-text-color_weak">Consultation Mode</span>
+                                <p class="slds-text-body_regular font-bold">{selectedSlotMode}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                <span class="slds-text-body_small slds-text-color_weak">Consultation Fee</span>
+                                <p class="slds-text-heading_small fee-highlight">
+                                    <lightning-formatted-number value={selectedSlotFee} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                </p>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-m-bottom_small">
+                                <span class="slds-text-body_small slds-text-color_weak">Total Payable</span>
+                                <p class="slds-text-heading_small font-bold fee-highlight">
+                                    <lightning-formatted-number value={selectedSlotFee} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- STEP 4: CONFIRMATION -->
+            <template lwc:if={isStep4}>
+                <div class="step-container slds-text-align_center slds-p-around_large">
+                    <lightning-icon icon-name="action:approval" size="large" class="slds-m-bottom_medium"></lightning-icon>
+                    <h2 class="slds-text-heading_large font-bold slds-m-bottom_x-small">Appointment Confirmed!</h2>
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-bottom_large">
+                        Your appointment has been successfully scheduled and capacity reserved.
+                    </p>
+
+                    <div class="slds-box slds-theme_shade slds-p-around_medium slds-m-horizontal_auto confirmation-card">
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                            <span class="slds-text-color_weak">Appointment Code:</span>
+                            <span class="font-bold">{confirmedAppt.Name}</span>
+                        </div>
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                            <span class="slds-text-color_weak">Status:</span>
+                            <span class="slds-badge slds-theme_success">{confirmedAppt.Status__c}</span>
+                        </div>
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                            <span class="slds-text-color_weak">Doctor:</span>
+                            <span class="font-bold">{confirmedApptDoctor}</span>
+                        </div>
+                        <div class="slds-grid slds-grid_align-spread">
+                            <span class="slds-text-color_weak">Total Amount:</span>
+                            <span class="font-bold fee-highlight">
+                                <lightning-formatted-number value={confirmedAppt.Total_Amount__c} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="slds-m-top_large slds-grid slds-grid_align-center slds-gutters">
+                        <div class="slds-col">
+                            <lightning-button label="Book Another Appointment" variant="neutral" onclick={handleReset}></lightning-button>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-button label="Pay Bill (Demo Flow)" variant="brand" icon-name="utility:moneybag" onclick={handleOpenDemoPayment}></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Wizard Navigation Buttons -->
+            <template lwc:if={showNavigationButtons}>
+                <div class="slds-grid slds-grid_align-spread slds-m-top_large slds-border_top slds-p-top_medium">
+                    <div>
+                        <template lwc:if={canGoBack}>
+                            <lightning-button label="Back" onclick={handleBack}></lightning-button>
+                        </template>
+                    </div>
+                    <div>
+                        <template lwc:if={isStep1}>
+                            <lightning-button label="Next: Patient" variant="brand" disabled={isNextDisabled} onclick={handleNext}></lightning-button>
+                        </template>
+                        <template lwc:if={isStep2}>
+                            <lightning-button label="Next: Review" variant="brand" disabled={isNextDisabled} onclick={handleNext}></lightning-button>
+                        </template>
+                        <template lwc:if={isStep3}>
+                            <lightning-button
+                                label="Confirm & Book Appointment"
+                                variant="brand"
+                                disabled={isSubmitting}
+                                onclick={handleConfirmBooking}
+                                class="btn-confirm">
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Demo Billing Modal -->
+        <template lwc:if={isBillingModalOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_medium">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseBillingModal}>
+                            <lightning-icon icon-name="utility:close" variant="inverse" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate font-bold">Patient Billing Demonstration</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_none">
+                        <c-patient-billing
+                            appointment-id={confirmedAppt.Id}
+                            show-close-button="true"
+                            onclose={handleCloseBillingModal}>
+                        </c-patient-billing>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,101 @@
+<template>
+    <lightning-card title="Find a Doctor" icon-name="standard:healthcare_doctor">
+        <div class="slds-p-around_medium">
+            <!-- Search & Filter Controls -->
+            <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-1 slds-medium-size_6-12">
+                    <lightning-input
+                        type="search"
+                        label="Search by Doctor Name"
+                        placeholder="e.g. Dr. Kavita Rao"
+                        value={searchKey}
+                        onchange={handleSearchChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-1 slds-medium-size_6-12">
+                    <lightning-combobox
+                        name="department"
+                        label="Department"
+                        value={selectedDepartment}
+                        placeholder="Select Department"
+                        options={departmentOptions}
+                        onchange={handleDepartmentChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <template lwc:if={isLoading}>
+                <div class="slds-is-relative slds-p-around_large spinner-container">
+                    <lightning-spinner alternative-text="Loading doctors..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template lwc:if={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <lightning-icon icon-name="utility:error" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>{error}</h2>
+                </div>
+            </template>
+
+            <!-- Doctor Grid -->
+            <template lwc:if={hasDoctors}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <template for:each={doctors} for:item="doc">
+                        <div key={doc.Id} class="slds-col slds-size_1-1 slds-medium-size_6-12 slds-large-size_4-12 slds-m-bottom_medium">
+                            <article class={doc.cardClass}>
+                                <div class="slds-card__header slds-grid">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name="standard:avatar" size="medium"></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <h3 class="slds-card__header-title slds-truncate font-bold">
+                                                {doc.Name}
+                                            </h3>
+                                            <p class="slds-text-body_small slds-text-color_weak slds-truncate">
+                                                {doc.Specialty__c}
+                                            </p>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body slds-card__body_inner">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                        <span class="slds-badge slds-badge_lightest">{doc.Department__c}</span>
+                                        <span class="slds-text-heading_small fee-highlight">
+                                            <lightning-formatted-number value={doc.Consultation_Fee__c} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                                        </span>
+                                    </div>
+                                </div>
+                                <footer class="slds-card__footer">
+                                    <lightning-button
+                                        label={doc.buttonLabel}
+                                        variant={doc.buttonVariant}
+                                        icon-name={doc.buttonIcon}
+                                        data-id={doc.Id}
+                                        data-name={doc.Name}
+                                        onclick={handleSelectDoctor}
+                                        class="slds-size_1-1">
+                                    </lightning-button>
+                                </footer>
+                            </article>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Empty State -->
+            <template lwc:if={showEmptyState}>
+                <div class="slds-illustration slds-illustration_small slds-p-around_large slds-text-align_center">
+                    <lightning-icon icon-name="utility:search" size="large" class="slds-m-bottom_medium slds-text-color_weak"></lightning-icon>
+                    <h3 class="slds-text-heading_medium">No Doctors Found</h3>
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-top_x-small">
+                        No active doctors match the selected department or search criteria.
+                    </p>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

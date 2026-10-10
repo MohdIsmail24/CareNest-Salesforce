@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <allowRecall>false</allowRecall>
+    <allowedSubmitters>
+        <type>owner</type>
+    </allowedSubmitters>
+    <approvalPageFields>
+        <field>Name</field>
+        <field>Patient__c</field>
+        <field>Slot__c</field>
+        <field>Fee_Amount__c</field>
+        <field>Discount_Percent__c</field>
+        <field>Total_Amount__c</field>
+        <field>Approval_Status__c</field>
+    </approvalPageFields>
+    <approvalStep>
+        <allowDelegate>false</allowDelegate>
+        <assignedApprover>
+            <approver>
+                <type>userHierarchyField</type>
+            </approver>
+        </assignedApprover>
+        <label>Manager Approval</label>
+        <name>Manager_Approval</name>
+        <rejectBehavior>
+            <type>RejectRequest</type>
+        </rejectBehavior>
+    </approvalStep>
+    <description>Approval process for appointments with discounts exceeding 10%.</description>
+    <entryCriteria>
+        <formula>Discount_Percent__c &gt; 0.10</formula>
+    </entryCriteria>
+    <finalApprovalActions>
+        <action>
+            <name>Set_Approval_Approved</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalApprovalActions>
+    <finalApprovalRecordLock>false</finalApprovalRecordLock>
+    <finalRejectionActions>
+        <action>
+            <name>Set_Approval_Rejected</name>
+            <type>FieldUpdate</type>
+        </action>
+        <action>
+            <name>Reset_Discount_Percent</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalRejectionActions>
+    <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <initialSubmissionActions>
+        <action>
+            <name>Set_Approval_Pending</name>
+            <type>FieldUpdate</type>
+        </action>
+    </initialSubmissionActions>
+    <label>Appointment Discount Approval</label>
+    <nextAutomatedApprover>
+        <useApproverFieldOfRecordOwner>false</useApproverFieldOfRecordOwner>
+        <userHierarchyField>Manager</userHierarchyField>
+    </nextAutomatedApprover>
+    <recordEditability>AdminOnly</recordEditability>
+    <showApprovalHistory>true</showApprovalHistory>
+</ApprovalProcess>

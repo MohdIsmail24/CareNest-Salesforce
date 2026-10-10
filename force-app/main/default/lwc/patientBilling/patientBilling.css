@@ -1,0 +1,162 @@
+:host {
+    display: block;
+}
+
+/* Demo Warning Banners */
+.demo-banner-fixed {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+}
+
+.demo-banner-warning {
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+}
+
+.demo-banner-success {
+    background-color: #d1fae5;
+    border: 1px solid #10b981;
+    color: #065f46;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+}
+
+/* Step Container */
+.step-container {
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fee & Amount Highlights */
+.fee-highlight {
+    color: #0070d2;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.fee-due {
+    color: #ba0517;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+/* Payment Method Cards */
+.payment-method-card {
+    border: 2px solid #dddbda;
+    border-radius: 8px;
+    padding: 1.25rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background: #ffffff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.payment-method-card:hover {
+    border-color: #0070d2;
+    box-shadow: 0 4px 12px rgba(0, 112, 210, 0.12);
+    transform: translateY(-2px);
+}
+
+.payment-method-card.selected {
+    border-color: #0070d2;
+    background-color: #f4f6fe;
+    box-shadow: 0 4px 12px rgba(0, 112, 210, 0.2);
+}
+
+/* Simulated Credit Card Preview */
+.mock-credit-card {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: relative;
+    max-width: 380px;
+    margin: 0 auto 1.5rem auto;
+    letter-spacing: 1px;
+}
+
+.mock-card-chip {
+    width: 44px;
+    height: 32px;
+    background: linear-gradient(135deg, #e6c875 0%, #c49c3b 100%);
+    border-radius: 6px;
+    border: 1px solid #a37c22;
+    margin-bottom: 1.25rem;
+}
+
+.mock-card-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.35rem;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+}
+
+.mock-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+/* Simulated QR Code Box */
+.mock-qr-box {
+    border: 2px dashed #0070d2;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 1.5rem;
+    text-align: center;
+    max-width: 320px;
+    margin: 0 auto 1.25rem auto;
+}
+
+.mock-qr-graphic {
+    width: 140px;
+    height: 140px;
+    background-color: #ffffff;
+    border: 2px solid #1e293b;
+    margin: 0 auto 0.75rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Receipt Card */
+.receipt-card {
+    border: 1px solid #dddbda;
+    border-radius: 8px;
+    background: #fafaf9;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.receipt-row {
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #e5e5e5;
+}
+
+.receipt-row:last-child {
+    border-bottom: none;
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unapproved_Discount_Not_Allowed</fullName>
+    <active>true</active>
+    <description>Discounts exceeding 10% cannot be applied to confirmed, completed, or billed appointments without Approved approval status.</description>
+    <errorConditionFormula>AND(
+    NOT(ISBLANK(Discount_Percent__c)),
+    Discount_Percent__c &gt; 0.10,
+    NOT(ISPICKVAL(Approval_Status__c, 'Approved')),
+    OR(
+        ISPICKVAL(Status__c, 'Confirmed'),
+        ISPICKVAL(Status__c, 'Completed'),
+        ISPICKVAL(Status__c, 'No Show'),
+        Amount_Paid__c &gt; 0
+    )
+)</errorConditionFormula>
+    <errorDisplayField>Discount_Percent__c</errorDisplayField>
+    <errorMessage>Discounts exceeding 10% require an approved discount request before the appointment can be confirmed or billed.</errorMessage>
+</ValidationRule>

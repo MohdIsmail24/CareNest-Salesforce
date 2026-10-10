@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Doctor Selected</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Message channel used when a doctor is selected in Doctor Search</description>
+    <lightningMessageFields>
+        <fieldName>doctorId</fieldName>
+        <description>Salesforce Record ID of the selected Doctor</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>doctorName</fieldName>
+        <description>Name of the selected Doctor</description>
+    </lightningMessageFields>
+</LightningMessageChannel>

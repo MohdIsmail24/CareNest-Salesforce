@@ -1,0 +1,34 @@
+.step-container {
+    min-height: 280px;
+}
+
+.summary-box {
+    background-color: #fafbfd;
+    border: 1px solid #e5e9f2;
+    border-radius: 6px;
+}
+
+.confirmation-card {
+    max-width: 480px;
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.patient-item {
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.patient-item:hover {
+    background-color: #f3f7fe;
+}
+
+.fee-highlight {
+    font-weight: 700;
+    color: #0b5cab;
+}
+
+.font-bold {
+    font-weight: 600;
+}

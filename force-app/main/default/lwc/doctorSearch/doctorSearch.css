@@ -1,0 +1,28 @@
+.doctor-card {
+    border: 1px solid #d8dde6;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.doctor-card:hover {
+    border-color: #0176d3;
+    box-shadow: 0 4px 12px rgba(1, 118, 211, 0.15);
+}
+
+.doctor-card_selected {
+    border: 2px solid #0176d3;
+    background-color: #f4f6f9;
+}
+
+.fee-highlight {
+    font-weight: 700;
+    color: #0b5cab;
+}
+
+.font-bold {
+    font-weight: 600;
+}
+
+.spinner-container {
+    min-height: 120px;
+}

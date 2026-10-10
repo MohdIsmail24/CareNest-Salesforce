@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <formula>AND(Available__c &gt; 0, Slot_Start__c &gt; NOW())</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <fullName>Is_Open__c</fullName>
+    <label>Is Open</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

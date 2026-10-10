@@ -1,0 +1,22 @@
+Appointment__r.Appointment_Code__c,Chief_Complaint__c,Follow_Up_Required__c,Follow_Up_Date__c
+CN-APT-00008,Sore throat,true,2026-09-20
+CN-APT-00012,Hearing check,true,2026-09-21
+CN-APT-00013,Itching and dryness,true,2026-09-08
+CN-APT-00016,Ear pain,false,
+CN-APT-00020,Child fever,false,
+CN-APT-00028,Itching and dryness,false,
+CN-APT-00031,Lower back pain,true,2026-09-06
+CN-APT-00032,Routine check-up,false,
+CN-APT-00037,Acne,false,
+CN-APT-00038,Sore throat,true,2026-10-25
+CN-APT-00039,Child fever,true,2026-10-26
+CN-APT-00044,Lower back pain,true,2026-10-09
+CN-APT-00054,Shoulder stiffness,true,2026-09-21
+CN-APT-00056,Shoulder stiffness,false,
+CN-APT-00065,Hair fall,false,
+CN-APT-00066,Cough and cold,false,
+CN-APT-00067,Blood sugar follow-up,false,
+CN-APT-00069,Knee pain,false,
+CN-APT-00073,Poor appetite,false,
+CN-APT-00074,Knee pain,false,
+CN-APT-00080,Cold and cough,true,2026-09-24

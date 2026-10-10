@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <description>Daily scheduled flow to mark appointments starting within 24 hours for reminder dispatch.</description>
+    <label>CareNest Appointment Daily Reminder</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Slot_Within_24_Hours</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Confirmed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Reminder_Sent__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Appointment__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-01-01</startDate>
+            <startTime>08:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <formulas>
+        <name>IsWithin24Hours</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(NOT(ISBLANK({!$Record.Slot__r.Slot_Start__c})), {!$Record.Slot__r.Slot_Start__c} &gt;= NOW(), {!$Record.Slot__r.Slot_Start__c} &lt;= (NOW() + 1))</expression>
+    </formulas>
+    <decisions>
+        <name>Check_Slot_Within_24_Hours</name>
+        <label>Check Slot Within 24 Hours</label>
+        <locationX>176</locationX>
+        <locationY>252</locationY>
+        <defaultConnectorLabel>Not Within 24h</defaultConnectorLabel>
+        <rules>
+            <name>Slot_In_Next_24_Hours</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsWithin24Hours</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Mark_Reminder_Sent</targetReference>
+            </connector>
+            <label>Slot In Next 24 Hours</label>
+        </rules>
+    </decisions>
+    <recordUpdates>
+        <name>Mark_Reminder_Sent</name>
+        <label>Mark Reminder Sent</label>
+        <locationX>50</locationX>
+        <locationY>360</locationY>
+        <faultConnector>
+            <targetReference>Log_Reminder_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Reminder_Sent__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordCreates>
+        <name>Log_Reminder_Error</name>
+        <label>Log Reminder Error</label>
+        <locationX>314</locationX>
+        <locationY>468</locationY>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Record_Id__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Source__c</field>
+            <value>
+                <stringValue>CareNest_Appointment_Daily_Reminder</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Error_Log__c</object>
+    </recordCreates>
+</Flow>

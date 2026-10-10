@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Portal patient access</description>
+    <fieldPermissions><editable>false</editable><field>Doctor__c.Department__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Doctor__c.Specialty__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Doctor__c.Is_Active__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment_Slot__c.Slot_Code__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment_Slot__c.Mode__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment_Slot__c.Booked_Count__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment_Slot__c.Available__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment_Slot__c.Is_Open__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment_Slot__c.Meeting_Link__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Appointment_Code__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Appointment__c.Slot__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Appointment__c.Patient__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Fee_Amount__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Discount_Percent__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Approval_Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Total_Amount__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Amount_Paid__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Balance_Due__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Appointment__c.Reminder_Sent__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Payment__c.Amount__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Payment__c.Method__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Payment__c.Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Payment__c.Gateway_Txn_Id__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Payment__c.Paid_On__c</field><readable>true</readable></fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>CareNest Patient</label>
+    <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Doctor__c</object><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Appointment_Slot__c</object><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Appointment__c</object><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Payment__c</object><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <tabSettings><tab>Doctor__c</tab><visibility>Visible</visibility></tabSettings>
+    <tabSettings><tab>Appointment_Slot__c</tab><visibility>Visible</visibility></tabSettings>
+    <tabSettings><tab>Appointment__c</tab><visibility>Visible</visibility></tabSettings>
+    <tabSettings><tab>Payment__c</tab><visibility>Visible</visibility></tabSettings>
+</PermissionSet>
