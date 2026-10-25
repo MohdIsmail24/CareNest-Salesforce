@@ -53,3 +53,7 @@ dist/
 scratch/
 backups/
 .playwright-mcp/
+
+# Clinical & Demo Data Exports
+data/
+

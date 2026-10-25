@@ -65,8 +65,8 @@ During architectural and financial audits, the accrued inpatient charges metric 
 - **Audited & Deployed Calculation (₹521,200 across 19 active admissions):** Scoped strictly to active admissions (`Status__c = 'Admitted'`), dynamically computing length of stay in days multiplied by the specific ward daily rate (General Ward ₹1,200/day, Semi-Private ₹2,500/day, Private Room ₹4,000/day, ICU ₹8,500/day, Paediatric Ward ₹1,800/day) evaluated as of October 25, 2026.
 - **The ₹95,200 Variance Explained:** The ₹95,200 increase represents the difference between a static legacy approximation across all cases and the accurate multi-tier ward rate accrual across the 19 active inpatient stays as of the audit date.
 
-### 2.2 Seven Backend Analytical Datasets vs. Five UI KPI Cards and Two Visual Breakdowns
-The distinction between "seven charts" and "five cards plus two breakdowns" reflects backend architecture versus frontend presentation:
+### 2.2 Financial Architecture: 7 Backend Analytical Datasets, 12 UI KPI Cards, and 7 Rendered Graphs
+The relationship between backend analytics and frontend visualization is structured across tiers:
 1. **Controller Layer (`CareNestDashboardController.FinancialChartsDto`):** Generates **7 financial analytical datasets**:
    - `monthlyRevenueTrend` (12-month rolling trend)
    - `dailyCollections` (30-day daily collections)
@@ -75,7 +75,12 @@ The distinction between "seven charts" and "five cards plus two breakdowns" refl
    - `revenueByPaymentMethod` (Cash, Card, UPI)
    - `receivablesAging` (5-bucket aging distribution)
    - `doctorRevenue` (individual clinician revenue contributions)
-2. **UI Presentation Layer (`careNestDashboardV2.html` Admin Overview Tab):** Renders **5 primary financial KPI cards** (Recorded Collections, Collections Less Refunds, Refund Entitlements, Post-Service Open Balances, Accrued Inpatient Bed Charges) and **2 primary visual data breakdowns** (Department Revenue progress distribution at 58% width and Post-Service Receivables Aging 4-bucket breakdown at 40% width).
+2. **UI Presentation Layer (`careNestDashboardV2.html` Admin Overview Tab):**
+   - **Executive KPI Grid (`care-admin-kpi-grid`):** Renders **12 executive financial KPI cards** (Today's Collections, Yesterday's, This Month's, Last Month's, YTD Collections, Total Invoiced, Outstanding Receivables, Post-Service Open Balances, Collection Rate, Avg Revenue/Patient, Avg Invoice Value, MoM Growth).
+   - **Interactive Charts Grid (`care-admin-charts-grid`):** Renders all **7 interactive financial graphs** across a 2-column responsive layout:
+     - *Left Column (58% width):* Graph 1 (Monthly Collections Trend), Graph 2 (Daily Collections Trend), Graph 3 (Invoiced vs Collected vs Outstanding).
+     - *Right Column (40% width):* Graph 4 (Revenue by Specialty), Graph 5 (Settlement Methods), Graph 6 (Receivables Aging), Graph 7 (Physician Revenue Leaderboard).
+   - *Note on Portfolio Summaries:* High-level executive summaries often highlight the **5 core accounting metrics** (Recorded Collections, Net Collections, Refund Entitlements, Outstanding Receivables, and Accrued Bed Charges) alongside the **2 primary visual container columns** (Department/Trend Analytics at 58% and Receivables/Leaderboards at 40%).
 
 ---
 
