@@ -8,16 +8,31 @@
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
-    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isNavTabPersistenceDisabled>true</isNavTabPersistenceDisabled>
     <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
     <label>CareNest</label>
     <navType>Standard</navType>
-    <tabs>CareNest_Home</tabs>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <content>CareNest_Home_V2</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>standard-home</pageOrSobjectType>
+        <type>Flexipage</type>
+    </actionOverrides>
+    <tabs>standard-home</tabs>
+    <tabs>standard-Contact</tabs>
     <tabs>Doctor__c</tabs>
     <tabs>Appointment__c</tabs>
-    <tabs>Appointment_Slot__c</tabs>
+    <tabs>Admission__c</tabs>
+    <tabs>Patient_Vital__c</tabs>
     <tabs>Payment__c</tabs>
+    <tabs>Ward__c</tabs>
+    <tabs>Bed__c</tabs>
+    <tabs>Appointment_Slot__c</tabs>
     <tabs>Cancellation__c</tabs>
     <tabs>Visit_Record__c</tabs>
+    <tabs>Inpatient_Encounter__c</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-Dashboard</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>

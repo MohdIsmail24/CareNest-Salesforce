@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CareNest Internal Dashboard V2 (TripNest Design System)</description>
+    <flexiPage>CareNest_Internal_Dashboard_V2</flexiPage>
+    <label>CareNest Dashboard V2</label>
+    <motif>Custom53: Bell</motif>
+</CustomTab>

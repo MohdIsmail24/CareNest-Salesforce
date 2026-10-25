@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deleteConstraint>Restrict</deleteConstraint>
+    <fullName>Admitting_Doctor__c</fullName>
+    <label>Admitting Doctor</label>
+    <referenceTo>Doctor__c</referenceTo>
+    <relationshipLabel>Admissions (Admitting Doctor)</relationshipLabel>
+    <relationshipName>Admitted_Admissions</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

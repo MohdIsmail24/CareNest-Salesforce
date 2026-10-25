@@ -17,28 +17,37 @@ public with sharing class NoShowBatch implements Database.Batchable<sObject>, Sc
     }
 
     public void execute(Database.BatchableContext bc, List<Appointment__c> scope) {
-        List<Appointment__c> toUpdate = new List<Appointment__c>();
-        for (Appointment__c appt : scope) {
-            if (appt.Visit_Records__r == null || appt.Visit_Records__r.isEmpty()) {
-                appt.Status__c = 'No Show';
-                toUpdate.add(appt);
-            }
-        }
-
-        if (!toUpdate.isEmpty()) {
-            Database.SaveResult[] srList = Database.update(toUpdate, false);
-            for (Database.SaveResult sr : srList) {
-                if (!sr.isSuccess()) {
-                    for (Database.Error err : sr.getErrors()) {
-                        System.debug(LoggingLevel.ERROR, 'NoShowBatch DML Error on ' + sr.getId() + ': ' + err.getMessage());
-                    }
+        try {
+            List<Appointment__c> toUpdate = new List<Appointment__c>();
+            for (Appointment__c appt : scope) {
+                if (appt.Visit_Records__r == null || appt.Visit_Records__r.isEmpty()) {
+                    appt.Status__c = 'No Show';
+                    toUpdate.add(appt);
                 }
             }
+
+            if (!toUpdate.isEmpty()) {
+                Database.SaveResult[] srList = Database.update(toUpdate, false);
+                ErrorLogService.logSaveResults('NoShowBatch', srList, toUpdate);
+            }
+        } catch (Exception ex) {
+            ErrorLogService.log('NoShowBatch', ex, null);
+            throw ex;
         }
     }
 
     public void finish(Database.BatchableContext bc) {
-        System.debug(LoggingLevel.INFO, 'NoShowBatch execution completed successfully.');
+        if (bc != null && bc.getJobId() != null) {
+            List<AsyncApexJob> jobs = [
+                SELECT Id, Status, NumberOfErrors, JobItemsProcessed, TotalJobItems
+                FROM AsyncApexJob
+                WHERE Id = :bc.getJobId()
+                LIMIT 1
+            ];
+            if (!jobs.isEmpty() && jobs[0].NumberOfErrors > 0) {
+                ErrorLogService.log('NoShowBatch.finish', 'Batch completed with ' + jobs[0].NumberOfErrors + ' error(s).', jobs[0].Id);
+            }
+        }
     }
 
     public void execute(SchedulableContext sc) {

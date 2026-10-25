@@ -1,0 +1,9 @@
+<aura:component implements="lightning:homeTemplate" description="CareNest Full Width Single Region Home Page Template">
+    <aura:attribute name="main" type="Aura.Component[]" description="Main Full Width Region" />
+
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_1-of-1">
+            {!v.main}
+        </div>
+    </div>
+</aura:component>

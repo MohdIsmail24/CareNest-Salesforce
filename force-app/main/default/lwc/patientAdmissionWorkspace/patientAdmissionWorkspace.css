@@ -1,0 +1,146 @@
+.care-container {
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+.care-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.care-brand-icon {
+    background-color: #2563eb;
+    border-radius: 6px;
+    padding: 6px;
+    display: inline-flex;
+}
+
+.care-title {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.care-subtitle {
+    color: #94a3b8 !important;
+    font-size: 0.85rem;
+}
+
+.care-filter-card {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.care-panel-card {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.care-table thead th {
+    background-color: #f1f5f9;
+    color: #334155;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.75rem;
+}
+
+.care-table tbody td {
+    padding: 0.75rem;
+}
+
+.care-modal-header {
+    position: relative;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    padding: 1.25rem;
+}
+
+.care-modal-header-destructive {
+    position: relative;
+    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%);
+    color: #ffffff;
+    padding: 1.25rem;
+}
+
+/* Accessible Modal Close Control - No white square */
+.modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    --sds-c-icon-color-foreground-default: #ffffff;
+    --slds-c-button-color-border: transparent;
+    --slds-c-button-color-background: transparent;
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.wizard-tracker {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+}
+
+.wizard-content {
+    min-height: 380px;
+}
+
+/* Card Selection Grids */
+.ward-card, .bed-card, .doctor-card {
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    transition: all 0.2s ease-in-out;
+}
+
+.ward-card:hover, .bed-card:hover, .doctor-card:hover {
+    border-color: #0284c7;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+    transform: translateY(-2px);
+}
+
+.ward-card-selected, .bed-card-selected, .doctor-card-selected {
+    border: 2px solid #0284c7 !important;
+    background: #f0f9ff !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25) !important;
+}
+
+.selected-entity-card {
+    border-left: 4px solid #0284c7;
+    background: #f8fafc;
+}
+
+.bed-code-text {
+    font-size: 1.05rem;
+    color: #0f172a;
+}
+
+.patient-results-box {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.text-dark { color: #0f172a; }
+.text-primary { color: #0284c7; }
+.text-muted { color: #64748b; }
+.text-success { color: #16a34a; }
+.text-white { color: #ffffff; }
+.text-slate-300 { color: #cbd5e1; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.text-center { text-align: center; }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ward_Type__c</fullName>
+    <description>Clinical classification of the inpatient ward</description>
+    <label>Ward Type</label>
+    <required>true</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>General</fullName>
+                <default>true</default>
+                <label>General</label>
+            </value>
+            <value>
+                <fullName>Semi-Private</fullName>
+                <default>false</default>
+                <label>Semi-Private</label>
+            </value>
+            <value>
+                <fullName>Private</fullName>
+                <default>false</default>
+                <label>Private</label>
+            </value>
+            <value>
+                <fullName>ICU</fullName>
+                <default>false</default>
+                <label>ICU</label>
+            </value>
+            <value>
+                <fullName>NICU</fullName>
+                <default>false</default>
+                <label>NICU</label>
+            </value>
+            <value>
+                <fullName>Emergency</fullName>
+                <default>false</default>
+                <label>Emergency</label>
+            </value>
+            <value>
+                <fullName>Post-Operative</fullName>
+                <default>false</default>
+                <label>Post-Operative</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

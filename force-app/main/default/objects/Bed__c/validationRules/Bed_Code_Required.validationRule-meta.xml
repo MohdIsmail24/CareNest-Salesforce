@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bed_Code_Required</fullName>
+    <active>true</active>
+    <description>Ensures bed code is populated</description>
+    <errorConditionFormula>ISBLANK(Bed_Code__c)</errorConditionFormula>
+    <errorDisplayField>Bed_Code__c</errorDisplayField>
+    <errorMessage>Bed code is required.</errorMessage>
+</ValidationRule>

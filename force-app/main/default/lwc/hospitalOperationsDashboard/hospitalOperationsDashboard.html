@@ -1,0 +1,197 @@
+<template>
+    <div class="care-container slds-p-around_medium">
+        <!-- Header Banner -->
+        <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-home care-brand-icon">
+                                <lightning-icon icon-name="standard:service_territory_location" size="medium"></lightning-icon>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1 class="slds-page-header__title slds-truncate care-title" title="CareNest Hospital Operations Center">
+                                        CareNest Hospital Operations Center
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta care-subtitle">Real-Time Inpatient &amp; Outpatient Healthcare Intelligence</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh Metrics" title="Refresh Metrics" onclick={handleRefresh} class="slds-m-right_x-small"></lightning-button-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading hospital operations data..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <!-- Alert Banner if active clinical alerts exist -->
+            <template if:true={hasActiveAlerts}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium care-alert-banner" role="alert">
+                    <span class="slds-assistive-text">Critical Alert</span>
+                    <lightning-icon icon-name="utility:warning" size="x-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>
+                        <strong>Attention Clinicians:</strong> {metrics.activeClinicalAlerts} active abnormal patient vital sign(s) detected. Please review the Clinical Workspace immediately.
+                    </h2>
+                </div>
+            </template>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                <!-- Total Active Doctors -->
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-m-bottom_small">
+                    <div class="slds-card slds-p-around_small care-kpi-card care-kpi-teal">
+                        <div class="slds-text-heading_small care-kpi-label">Active Doctors</div>
+                        <div class="slds-text-heading_large care-kpi-value">{metrics.totalDoctors}</div>
+                        <div class="care-kpi-footer">Staff Clinicians</div>
+                    </div>
+                </div>
+
+                <!-- Active Admissions -->
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-m-bottom_small">
+                    <div class="slds-card slds-p-around_small care-kpi-card care-kpi-navy">
+                        <div class="slds-text-heading_small care-kpi-label">Active Inpatients</div>
+                        <div class="slds-text-heading_large care-kpi-value">{metrics.activeAdmissions}</div>
+                        <div class="care-kpi-footer">Current Admissions</div>
+                    </div>
+                </div>
+
+                <!-- Total Beds -->
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-m-bottom_small">
+                    <div class="slds-card slds-p-around_small care-kpi-card care-kpi-slate">
+                        <div class="slds-text-heading_small care-kpi-label">Total Beds</div>
+                        <div class="slds-text-heading_large care-kpi-value">{metrics.totalBeds}</div>
+                        <div class="care-kpi-footer">Across 5 Wards</div>
+                    </div>
+                </div>
+
+                <!-- Occupied Beds -->
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-m-bottom_small">
+                    <div class="slds-card slds-p-around_small care-kpi-card care-kpi-amber">
+                        <div class="slds-text-heading_small care-kpi-label">Occupied Beds</div>
+                        <div class="slds-text-heading_large care-kpi-value">{metrics.occupiedBeds}</div>
+                        <div class="care-kpi-footer">{metrics.overallOccupancyRate}% Occupancy</div>
+                    </div>
+                </div>
+
+                <!-- Available Beds -->
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-m-bottom_small">
+                    <div class="slds-card slds-p-around_small care-kpi-card care-kpi-green">
+                        <div class="slds-text-heading_small care-kpi-label">Available Beds</div>
+                        <div class="slds-text-heading_large care-kpi-value">{metrics.availableBeds}</div>
+                        <div class="care-kpi-footer">Ready for Admission</div>
+                    </div>
+                </div>
+
+                <!-- Clinical Alerts -->
+                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-6 slds-m-bottom_small">
+                    <div class="slds-card slds-p-around_small care-kpi-card care-kpi-red">
+                        <div class="slds-text-heading_small care-kpi-label">Clinical Alerts</div>
+                        <div class="slds-text-heading_large care-kpi-value">{metrics.activeClinicalAlerts}</div>
+                        <div class="care-kpi-footer">Requires Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area: Ward Capacity & Operational Activity -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Left Column: Ward Capacity Status -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_7-of-12 slds-m-bottom_medium">
+                    <div class="slds-card care-panel-card">
+                        <div class="slds-card__header slds-grid care-panel-header">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="standard:resource_capacity" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-heading_small care-panel-title">Ward Capacity &amp; Occupancy</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <template for:each={wardSummaries} for:item="ward">
+                                <div key={ward.wardId} class="ward-row slds-m-bottom_medium">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                        <div class="slds-col">
+                                            <strong>{ward.name}</strong>
+                                            <span class="slds-badge slds-m-left_small">{ward.wardType}</span>
+                                            <span class="slds-text-body_small slds-text-color_weak slds-m-left_x-small">Floor {ward.floor}</span>
+                                        </div>
+                                        <div class="slds-col slds-text-align_right">
+                                            <span class="slds-text-body_small">
+                                                <strong>{ward.occupiedBeds}</strong> / {ward.totalBeds} Beds ({ward.occupancyRate}%) • 
+                                                <span class="slds-text-color_success font-semibold">{ward.availableBeds} Available</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <lightning-progress-bar value={ward.occupancyRate} size="medium" variant="circular"></lightning-progress-bar>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Recent Activity Feed -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_5-of-12 slds-m-bottom_medium">
+                    <div class="slds-card care-panel-card">
+                        <div class="slds-card__header slds-grid care-panel-header">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="standard:event" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span class="slds-text-heading_small care-panel-title">Recent Clinical &amp; Inpatient Activity</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <template if:true={hasActivities}>
+                                <ul class="slds-timeline">
+                                    <template for:each={activities} for:item="act">
+                                        <li key={act.id} class="slds-timeline__item_expandable slds-m-bottom_small">
+                                            <div class="slds-media slds-media_center">
+                                                <div class="slds-media__figure">
+                                                    <span class={act.badgeClass}>
+                                                        <lightning-icon icon-name="utility:record" size="xx-small"></lightning-icon>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <p class="slds-truncate font-semibold">{act.title}</p>
+                                                    <p class="slds-text-body_small slds-text-color_weak">{act.subtitle}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                            <template if:false={hasActivities}>
+                                <div class="slds-align_absolute-center slds-p-around_medium slds-text-color_weak">
+                                    No recent hospital activities recorded.
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CareNestAppointmentController</members>
+        <members>CareNestAppointmentControllerTest</members>
+        <members>CareNestClinicalController</members>
+        <members>CareNestClinicalControllerTest</members>
+        <members>CareNestDashboardController</members>
+        <members>CareNestDashboardControllerTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Patient_Vital__c.Alert_Status__c</members>
+        <members>Patient_Vital__c.Acknowledged_By__c</members>
+        <members>Patient_Vital__c.Acknowledged_At__c</members>
+        <members>Patient_Vital__c.Resolved_By__c</members>
+        <members>Patient_Vital__c.Resolved_At__c</members>
+        <members>Patient_Vital__c.Resolution_Notes__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>patientRegistrationModal</members>
+        <members>appointmentWizard</members>
+        <members>slotPicker</members>
+        <members>patientAdmissionWorkspace</members>
+        <members>inpatientClinicalWorkspace</members>
+        <members>careNestDashboardV2</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>CareNest_Admin</members>
+        <members>CareNest_Nurse</members>
+        <members>CareNest_Doctor</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>61.0</version>
+</Package>

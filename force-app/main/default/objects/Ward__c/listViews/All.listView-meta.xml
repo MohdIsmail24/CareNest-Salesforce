@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Ward_Code__c</columns>
+    <columns>Ward_Type__c</columns>
+    <columns>Floor__c</columns>
+    <columns>Capacity__c</columns>
+    <columns>Current_Bed_Count__c</columns>
+    <columns>Available_Bed_Count__c</columns>
+    <columns>Is_Active__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All Wards</label>
+</ListView>

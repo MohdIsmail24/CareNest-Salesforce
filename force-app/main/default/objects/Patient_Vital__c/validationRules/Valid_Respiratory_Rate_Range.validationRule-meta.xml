@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Respiratory_Rate_Range</fullName>
+    <active>true</active>
+    <description>Validates respiratory rate is within plausible range (5 to 70 breaths/min)</description>
+    <errorConditionFormula>!ISBLANK(Respiratory_Rate__c) &amp;&amp; (Respiratory_Rate__c &lt; 5 || Respiratory_Rate__c &gt; 70)</errorConditionFormula>
+    <errorDisplayField>Respiratory_Rate__c</errorDisplayField>
+    <errorMessage>Respiratory rate must be within the clinically plausible range of 5 to 70 breaths per minute.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <formula>Bed__r.Daily_Charge__c * IF(Length_Of_Stay__c &lt; 1, 1, Length_Of_Stay__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <fullName>Total_Bed_Charge__c</fullName>
+    <label>Total Bed Charge</label>
+    <precision>18</precision>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

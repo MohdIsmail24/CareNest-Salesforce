@@ -96,6 +96,12 @@ public with sharing class CancellationService {
                 continue;
             }
 
+            if (appt.Status__c == 'Completed') {
+                res.errorMessage = 'Completed appointments cannot be cancelled.';
+                results.add(res);
+                continue;
+            }
+
             // Calculate hours remaining before appointment slot start
             Datetime slotStart = appt.Slot__r != null ? appt.Slot__r.Slot_Start__c : null;
             Decimal hoursLeft = 0;
@@ -135,17 +141,22 @@ public with sharing class CancellationService {
             appointmentsToUpdate.add(appt);
         }
 
-        if (!cancellationsToInsert.isEmpty()) {
-            insert cancellationsToInsert;
-            for (Cancellation__c c : cancellationsToInsert) {
-                if (resMap.containsKey(c.Appointment__c)) {
-                    resMap.get(c.Appointment__c).cancellationId = c.Id;
+        try {
+            if (!cancellationsToInsert.isEmpty()) {
+                insert cancellationsToInsert;
+                for (Cancellation__c c : cancellationsToInsert) {
+                    if (resMap.containsKey(c.Appointment__c)) {
+                        resMap.get(c.Appointment__c).cancellationId = c.Id;
+                    }
                 }
             }
-        }
 
-        if (!appointmentsToUpdate.isEmpty()) {
-            update appointmentsToUpdate;
+            if (!appointmentsToUpdate.isEmpty()) {
+                update appointmentsToUpdate;
+            }
+        } catch (Exception ex) {
+            ErrorLogService.log('CancellationService.cancel', ex, null);
+            throw ex;
         }
 
         for (CancellationRequest r : requests) {

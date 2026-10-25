@@ -1,0 +1,592 @@
+<template>
+    <div class="care-container slds-p-around_medium">
+        <!-- Header -->
+        <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-contact care-brand-icon">
+                                <lightning-icon icon-name="standard:user" size="medium"></lightning-icon>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1 class="slds-page-header__title slds-truncate care-title" title="Patient Admissions &amp; Discharge Workspace">
+                                        Patient Admissions &amp; Discharge Workspace
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta care-subtitle">Inpatient intake, bed assignment validation, and discharge workflows</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning-button 
+                                label="Register New Patient" 
+                                variant="neutral" 
+                                icon-name="utility:user" 
+                                onclick={handleOpenRegisterPatientModal} 
+                                class="slds-m-right_x-small">
+                            </lightning-button>
+                            <lightning-button 
+                                label="New Patient Admission" 
+                                variant="brand" 
+                                icon-name="utility:add" 
+                                onclick={handleOpenNewAdmissionWizard} 
+                                class="slds-m-right_x-small">
+                            </lightning-button>
+                            <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="slds-card slds-p-around_small slds-m-bottom_medium care-filter-card">
+            <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-input
+                        type="search"
+                        placeholder="Search active admissions by patient name, patient code, bed code, or doctor..."
+                        value={searchTerm}
+                        onchange={handleSearchChange}
+                        variant="label-hidden">
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_right text-muted slds-p-top_xx-small">
+                    Active Inpatient Records: <strong>{activeAdmissionCount}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading admissions..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Admissions Table -->
+        <template if:false={isLoading}>
+            <div class="slds-card care-panel-card">
+                <template if:true={hasAdmissions}>
+                    <div class="slds-table_responsive">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered care-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col"><div class="slds-truncate font-bold">Admission #</div></th>
+                                    <th scope="col"><div class="slds-truncate font-bold">Patient Name &amp; Code</div></th>
+                                    <th scope="col"><div class="slds-truncate font-bold">Bed / Ward / Room</div></th>
+                                    <th scope="col"><div class="slds-truncate font-bold">Attending Doctor</div></th>
+                                    <th scope="col"><div class="slds-truncate font-bold">Admission Date</div></th>
+                                    <th scope="col"><div class="slds-truncate font-bold">Status</div></th>
+                                    <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Actions</div></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={admissions} for:item="adm">
+                                    <tr key={adm.admissionId} class="slds-hint-parent">
+                                        <td>
+                                            <span class="font-bold text-dark">{adm.admissionNumber}</span>
+                                        </td>
+                                        <td>
+                                            <div class="font-bold text-primary">{adm.patientName}</div>
+                                            <div class="text-muted slds-text-body_small">
+                                                <span class="slds-badge slds-badge_lightest slds-m-right_xx-small">{adm.patientCode}</span>
+                                                {adm.patientPhone}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div><strong>{adm.bedCode}</strong> ({adm.wardName})</div>
+                                            <div class="text-muted slds-text-body_small">Room {adm.room}</div>
+                                        </td>
+                                        <td>
+                                            <div>{adm.doctorName}</div>
+                                            <div class="text-muted slds-text-body_small">{adm.doctorSpecialty}</div>
+                                        </td>
+                                        <td>
+                                            <div>{adm.admissionDate}</div>
+                                            <span class="slds-badge slds-theme_shade">{adm.admissionType}</span>
+                                        </td>
+                                        <td>
+                                            <span class="slds-badge slds-theme_success">{adm.status}</span>
+                                        </td>
+                                        <td class="slds-text-align_right">
+                                            <lightning-button 
+                                                label="Discharge" 
+                                                variant="destructive-text" 
+                                                icon-name="utility:logout" 
+                                                data-admission-id={adm.admissionId} 
+                                                onclick={handleOpenDischargeModal}>
+                                            </lightning-button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+
+                <template if:false={hasAdmissions}>
+                    <div class="slds-align_absolute-center slds-p-around_large text-muted">
+                        No active admissions found matching your criteria.
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- ================================================================= -->
+        <!-- 1. DEDICATED NEW PATIENT REGISTRATION MODAL (Unified Component)  -->
+        <!-- ================================================================= -->
+        <c-patient-registration-modal
+            is-open={isRegisterPatientModalOpen}
+            onpatientcreated={handlePatientCreatedFromModal}
+            onclose={handleCloseRegisterPatientModal}>
+        </c-patient-registration-modal>
+
+        <!-- ================================================================= -->
+        <!-- 2. GUIDED 6-STEP INPATIENT ADMISSION WIZARD MODAL                 -->
+        <!-- ================================================================= -->
+        <template if:true={isNewAdmissionModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header care-modal-header">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close" title="Close" variant="bare-inverse" class="modal-close-btn" onclick={handleCloseNewAdmissionModal}></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium font-bold text-white">Inpatient Admission Wizard</h2>
+                        <p class="slds-m-top_x-small text-slate-300">Guided 6-Step Clinical Admission &amp; Bed Allocation Workflow</p>
+                        
+                        <!-- Step Tracker Progress Indicator -->
+                        <div class="slds-m-top_medium wizard-tracker">
+                            <lightning-progress-indicator current-step={wizardStep} type="base" variant="base">
+                                <lightning-progress-step label="1. Patient" value="1"></lightning-progress-step>
+                                <lightning-progress-step label="2. Ward" value="2"></lightning-progress-step>
+                                <lightning-progress-step label="3. Bed" value="3"></lightning-progress-step>
+                                <lightning-progress-step label="4. Doctor" value="4"></lightning-progress-step>
+                                <lightning-progress-step label="5. Details" value="5"></lightning-progress-step>
+                                <lightning-progress-step label="6. Confirm" value="6"></lightning-progress-step>
+                            </lightning-progress-indicator>
+                        </div>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_large wizard-content">
+
+                        <!-- ======================================================= -->
+                        <!-- STEP 1: PATIENT SELECTION & REGISTRATION               -->
+                        <!-- ======================================================= -->
+                        <template if:true={isStep1}>
+                            <div class="slds-text-heading_small font-bold slds-m-bottom_small text-primary">
+                                Step 1: Select or Register Patient
+                            </div>
+
+                            <template if:true={selectedPatient}>
+                                <div class="slds-box slds-theme_shade slds-m-bottom_medium selected-entity-card">
+                                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                        <div>
+                                            <div class="slds-text-heading_small font-bold text-dark">{selectedPatient.name}</div>
+                                            <div class="text-muted slds-text-body_small slds-m-top_xx-small">
+                                                <span class="slds-badge slds-theme_success slds-m-right_x-small">{selectedPatient.patientCode}</span>
+                                                Phone: <strong>{selectedPatient.phone}</strong> • Email: {selectedPatient.email}
+                                            </div>
+                                        </div>
+                                        <lightning-button label="Change Patient" variant="neutral" icon-name="utility:change_record_type" onclick={handleClearSelectedPatient}></lightning-button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template if:false={selectedPatient}>
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+                                        <lightning-input 
+                                            type="search" 
+                                            label="Search Existing Patients" 
+                                            placeholder="Search by Patient Name, Phone, Email, or Patient Code (e.g. CN-PAT-00050)..." 
+                                            value={patientSearchQuery} 
+                                            onchange={handlePatientSearchInput}>
+                                        </lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-text-align_right slds-p-top_large">
+                                        <lightning-button 
+                                            label="➕ Register New Patient" 
+                                            variant="brand" 
+                                            icon-name="utility:user" 
+                                            onclick={handleOpenRegisterPatientFromWizard}>
+                                        </lightning-button>
+                                    </div>
+                                </div>
+
+                                <!-- Search Results -->
+                                <template if:true={hasPatientSearchResults}>
+                                    <div class="slds-box slds-p-around_none slds-m-bottom_medium patient-results-box">
+                                        <div class="slds-table_responsive">
+                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered care-table">
+                                                <thead>
+                                                    <tr class="slds-line-height_reset">
+                                                        <th scope="col"><div class="slds-truncate font-bold">Patient Code</div></th>
+                                                        <th scope="col"><div class="slds-truncate font-bold">Patient Name</div></th>
+                                                        <th scope="col"><div class="slds-truncate font-bold">Phone</div></th>
+                                                        <th scope="col"><div class="slds-truncate font-bold">Email</div></th>
+                                                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Action</div></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template for:each={patientSearchResults} for:item="pat">
+                                                        <tr key={pat.id} class="slds-hint-parent">
+                                                            <td><span class="slds-badge slds-badge_lightest">{pat.patientCode}</span></td>
+                                                            <td class="font-bold text-dark">{pat.name}</td>
+                                                            <td>{pat.phone}</td>
+                                                            <td>{pat.email}</td>
+                                                            <td class="slds-text-align_right">
+                                                                <lightning-button 
+                                                                    label="Select" 
+                                                                    variant="brand-outline" 
+                                                                    size="small" 
+                                                                    data-patient-id={pat.id} 
+                                                                    data-patient-name={pat.name} 
+                                                                    data-patient-code={pat.patientCode} 
+                                                                    data-patient-phone={pat.phone} 
+                                                                    data-patient-email={pat.email} 
+                                                                    onclick={handleSelectPatientDirect}>
+                                                                </lightning-button>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                        </template>
+
+                        <!-- ======================================================= -->
+                        <!-- STEP 2: WARD SELECTION                                 -->
+                        <!-- ======================================================= -->
+                        <template if:true={isStep2}>
+                            <div class="slds-text-heading_small font-bold slds-m-bottom_small text-primary">
+                                Step 2: Select Hospital Ward
+                            </div>
+                            <p class="slds-text-body_small text-muted slds-m-bottom_medium">
+                                Choose an operational inpatient ward. Capacity displays actual installed beds and current available inventory.
+                            </p>
+
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <template for:each={wardsList} for:item="w">
+                                    <div key={w.wardId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                                        <div 
+                                            class={w.cardClass} 
+                                            data-ward-id={w.wardId} 
+                                            onclick={handleSelectWardCard}>
+                                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                                <div class="font-bold text-dark slds-text-heading_small">{w.name}</div>
+                                                <span class="slds-badge slds-badge_lightest">{w.wardType}</span>
+                                            </div>
+                                            <div class="text-muted slds-text-body_small slds-m-bottom_x-small">
+                                                Floor: <strong>{w.floor}</strong> • Installed: <strong>{w.totalInstalledBeds} Beds</strong> (Planned Cap: {w.plannedCapacity})
+                                            </div>
+                                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_small">
+                                                <div class="font-bold text-success slds-text-body_regular">
+                                                    🟢 {w.availableBeds} Available
+                                                </div>
+                                                <div class="text-muted slds-text-body_small">
+                                                    {w.occupiedBeds} Occupied
+                                                </div>
+                                            </div>
+                                            <lightning-progress-bar value={w.occupancyRate} size="x-small" class="slds-m-top_x-small"></lightning-progress-bar>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- ======================================================= -->
+                        <!-- STEP 3: BED SELECTION                                  -->
+                        <!-- ======================================================= -->
+                        <template if:true={isStep3}>
+                            <div class="slds-text-heading_small font-bold slds-m-bottom_small text-primary">
+                                Step 3: Assign Available Hospital Bed
+                            </div>
+                            <p class="slds-text-body_small text-muted slds-m-bottom_medium">
+                                Showing available beds in <strong>{selectedWardName}</strong>. Occupied and maintenance beds are strictly excluded.
+                            </p>
+
+                            <template if:true={hasAvailableBeds}>
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <template for:each={availableBedCards} for:item="bed">
+                                        <div key={bed.bedId} class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_small">
+                                            <div 
+                                                class={bed.cardClass} 
+                                                data-bed-id={bed.bedId} 
+                                                onclick={handleSelectBedCard}>
+                                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                                    <div class="font-bold bed-code-text">{bed.bedCode}</div>
+                                                    <span class="slds-badge slds-theme_success">{bed.status}</span>
+                                                </div>
+                                                <div class="text-muted slds-text-body_small">
+                                                    {bed.bedType} • Floor {bed.floor}
+                                                </div>
+                                                <div class="text-primary font-bold slds-m-top_x-small">
+                                                    ₹{bed.dailyCharge}/day
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template if:false={hasAvailableBeds}>
+                                <div class="slds-box slds-theme_warning slds-p-around_medium text-center">
+                                    ⚠️ No available beds remaining in this ward. Please navigate Back to select another ward.
+                                </div>
+                            </template>
+                        </template>
+
+                        <!-- ======================================================= -->
+                        <!-- STEP 4: DOCTOR SELECTION & AVAILABILITY                -->
+                        <!-- ======================================================= -->
+                        <template if:true={isStep4}>
+                            <div class="slds-text-heading_small font-bold slds-m-bottom_small text-primary">
+                                Step 4: Select Attending Physician
+                            </div>
+                            <p class="slds-text-body_small text-muted slds-m-bottom_medium">
+                                Select an active physician for clinical oversight. Schedule indicators reflect live Appointment Slots and inpatient coverage.
+                            </p>
+
+                            <!-- Doctor Filters -->
+                            <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <lightning-combobox 
+                                        name="doctorDept" 
+                                        label="Filter by Medical Department" 
+                                        value={doctorDeptFilter} 
+                                        options={departmentOptions} 
+                                        onchange={handleDoctorDeptFilterChange}>
+                                    </lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <lightning-input 
+                                        type="search" 
+                                        label="Search Doctor by Name" 
+                                        value={doctorSearchKey} 
+                                        onchange={handleDoctorSearchKeyChange}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <template for:each={filteredDoctors} for:item="doc">
+                                    <div key={doc.doctorId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                        <div 
+                                            class={doc.cardClass} 
+                                            data-doctor-id={doc.doctorId} 
+                                            onclick={handleSelectDoctorCard}>
+                                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                                <div class="font-bold text-dark slds-text-heading_small">{doc.name}</div>
+                                                <span class={doc.badgeClass}>{doc.availabilityStatus}</span>
+                                            </div>
+                                            <div class="text-primary slds-text-body_small">
+                                                <strong>{doc.department}</strong> • {doc.specialty}
+                                            </div>
+                                            <div class="text-muted slds-text-body_small slds-m-top_xx-small">
+                                                Schedule: <em>{doc.nextSlotTime}</em> • Fee: ₹{doc.consultationFee}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- ======================================================= -->
+                        <!-- STEP 5: ADMISSION DETAILS                              -->
+                        <!-- ======================================================= -->
+                        <template if:true={isStep5}>
+                            <div class="slds-text-heading_small font-bold slds-m-bottom_small text-primary">
+                                Step 5: Clinical Admission Details
+                            </div>
+
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-combobox 
+                                        name="admissionType" 
+                                        label="Admission Type" 
+                                        value={wizardData.admissionType} 
+                                        options={admissionTypeOptions} 
+                                        onchange={handleAdmissionTypeChange} 
+                                        required>
+                                    </lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-input 
+                                        type="datetime" 
+                                        label="Admission Timestamp" 
+                                        value={wizardData.admissionDateDisplay} 
+                                        disabled>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                                    <lightning-textarea 
+                                        name="reason" 
+                                        label="Admission Reason / Clinical Diagnosis" 
+                                        placeholder="Enter the primary clinical complaint, provisional diagnosis, or rationale for admission..." 
+                                        value={wizardData.reason} 
+                                        onchange={handleAdmissionReasonChange} 
+                                        required>
+                                    </lightning-textarea>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- ======================================================= -->
+                        <!-- STEP 6: REVIEW & CONFIRM                               -->
+                        <!-- ======================================================= -->
+                        <template if:true={isStep6}>
+                            <div class="slds-text-heading_small font-bold slds-m-bottom_small text-primary">
+                                Step 6: Review &amp; Confirm Inpatient Admission
+                            </div>
+                            <p class="slds-text-body_small text-muted slds-m-bottom_medium">
+                                Review all clinical and administrative parameters before confirming admission. Concurrency protection locks the selected bed.
+                            </p>
+
+                            <div class="slds-box slds-theme_shade slds-p-around_medium slds-m-bottom_medium">
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                        <div class="font-bold text-muted slds-text-body_small">PATIENT DETAILS</div>
+                                        <div class="font-bold text-dark slds-text-heading_small">{selectedPatient.name}</div>
+                                        <div class="text-muted slds-text-body_small">Code: <strong>{selectedPatient.patientCode}</strong> • Phone: {selectedPatient.phone}</div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                        <div class="font-bold text-muted slds-text-body_small">ASSIGNED BED &amp; WARD</div>
+                                        <div class="font-bold text-success slds-text-heading_small">{selectedBed.bedCode} ({selectedWard.name})</div>
+                                        <div class="text-muted slds-text-body_small">Floor: {selectedBed.floor} • Type: {selectedBed.bedType} • ₹{selectedBed.dailyCharge}/day</div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                        <div class="font-bold text-muted slds-text-body_small">ATTENDING PHYSICIAN</div>
+                                        <div class="font-bold text-dark slds-text-heading_small">{selectedDoctor.name}</div>
+                                        <div class="text-muted slds-text-body_small">{selectedDoctor.department} ({selectedDoctor.specialty})</div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                        <div class="font-bold text-muted slds-text-body_small">ADMISSION CLASSIFICATION</div>
+                                        <div class="font-bold text-dark slds-text-heading_small">{wizardData.admissionType}</div>
+                                        <div class="text-muted slds-text-body_small">Reason: <em>{wizardData.reason}</em></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Post-Admission Confirmation Screen -->
+                        <template if:true={admissionSuccessResult}>
+                            <div class="slds-box slds-theme_success slds-p-around_large text-center">
+                                <div class="slds-text-heading_medium font-bold slds-m-bottom_x-small">
+                                    🏥 Patient Successfully Admitted!
+                                </div>
+                                <p class="slds-m-bottom_small">{admissionSuccessResult.message}</p>
+                                <div class="slds-badge slds-badge_inverse font-bold slds-p-around_x-small slds-m-bottom_medium slds-text-heading_small">
+                                    Admission Code: {admissionSuccessResult.admissionNumber}
+                                </div>
+                                <p class="text-muted slds-text-body_small slds-m-bottom_large">
+                                    Record ID: <code>{admissionSuccessResult.admissionId}</code>
+                                </p>
+
+                                <div>
+                                    <lightning-button 
+                                        label="Open Patient in Clinical Workspace" 
+                                        variant="brand" 
+                                        icon-name="utility:stethoscope" 
+                                        onclick={handleNavigateToClinicalWorkspace}>
+                                    </lightning-button>
+                                    <lightning-button 
+                                        label="Close Wizard" 
+                                        variant="neutral" 
+                                        class="slds-m-left_x-small" 
+                                        onclick={handleCloseNewAdmissionModal}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </template>
+
+                    </div>
+
+                    <footer class="slds-modal__footer slds-grid slds-grid_align-spread">
+                        <div>
+                            <template if:true={canGoBack}>
+                                <lightning-button label="Back" variant="neutral" icon-name="utility:back" onclick={handleWizardBack}></lightning-button>
+                            </template>
+                        </div>
+                        <div>
+                            <lightning-button label="Cancel" variant="neutral" onclick={handleCloseNewAdmissionModal} class="slds-m-right_x-small"></lightning-button>
+                            <template if:true={canGoNext}>
+                                <lightning-button label="Next" variant="brand" icon-name="utility:forward" icon-position="right" onclick={handleWizardNext}></lightning-button>
+                            </template>
+                            <template if:true={isStep6}>
+                                <lightning-button label="Confirm &amp; Admit Patient" variant="brand" icon-name="utility:check" onclick={handleConfirmAdmission} disabled={isSubmittingAdmission}></lightning-button>
+                            </template>
+                        </div>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- ================================================================= -->
+        <!-- 3. DISCHARGE MODAL                                                -->
+        <!-- ================================================================= -->
+        <template if:true={isDischargeModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header care-modal-header-destructive">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close" title="Close" variant="bare-inverse" class="modal-close-btn" onclick={handleCloseDischargeModal}></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium font-bold text-white">Discharge Inpatient</h2>
+                        <p class="slds-m-top_x-small text-slate-300">Authorize patient discharge and release hospital bed</p>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template if:true={selectedAdmissionForDischarge}>
+                            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <p><strong>Patient:</strong> {selectedAdmissionForDischarge.patientName}</p>
+                                        <p><strong>Admission #:</strong> {selectedAdmissionForDischarge.admissionNumber}</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <p><strong>Ward &amp; Bed:</strong> {selectedAdmissionForDischarge.wardName} • {selectedAdmissionForDischarge.bedCode}</p>
+                                        <p><strong>Attending Doctor:</strong> {selectedAdmissionForDischarge.doctorName}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                                <lightning-combobox
+                                    name="disposition"
+                                    label="Discharge Disposition"
+                                    value={dischargeDisposition}
+                                    options={dispositionOptions}
+                                    onchange={handleDispositionChange}
+                                    required>
+                                </lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                                <lightning-textarea
+                                    name="dischargeSummary"
+                                    label="Discharge Clinical Summary"
+                                    value={dischargeSummary}
+                                    onchange={handleDischargeSummaryChange}
+                                    required>
+                                </lightning-textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" variant="neutral" onclick={handleCloseDischargeModal} class="slds-m-right_x-small"></lightning-button>
+                        <lightning-button label="Confirm Discharge &amp; Release Bed" variant="destructive" icon-name="utility:logout" onclick={handleSubmitDischarge} disabled={isSubmittingDischarge}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Patient_Required</fullName>
+    <active>true</active>
+    <description>A patient contact is required for admission.</description>
+    <errorConditionFormula>ISBLANK(Contact__c) &amp;&amp; ISBLANK(Patient__c)</errorConditionFormula>
+    <errorMessage>A patient (Contact) is required for admission.</errorMessage>
+</ValidationRule>

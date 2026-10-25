@@ -46,7 +46,10 @@ test-results/
 Thumbs.db
 ehthumbs.db
 
-# Temporary & Build Directories
+# Temporary, Scratch & Backup Directories
 tmp/
 temp/
 dist/
+scratch/
+backups/
+.playwright-mcp/

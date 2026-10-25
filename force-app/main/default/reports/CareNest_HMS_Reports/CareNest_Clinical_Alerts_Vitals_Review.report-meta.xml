@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Admission__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Recorded_Date__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Systolic_BP__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Diastolic_BP__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Pulse_BPM__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.SpO2_Percent__c</field>
+    </columns>
+    <description>Audit of physiological clinical alerts, vital abnormalities, and clinician review resolution status.</description>
+    <filter>
+        <criteriaItems>
+            <column>Patient_Vital__c.Alert_Flag__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Patient_Vital__c.Alert_Status__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>CareNest Clinical Alerts &amp; Vitals Review</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Patient_Vital__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Patient_Vital__c.Recorded_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

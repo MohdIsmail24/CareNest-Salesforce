@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Capacity_Must_Be_Positive</fullName>
+    <active>true</active>
+    <description>Ensures ward capacity is strictly greater than zero</description>
+    <errorConditionFormula>Capacity__c &lt;= 0</errorConditionFormula>
+    <errorDisplayField>Capacity__c</errorDisplayField>
+    <errorMessage>Ward capacity must be a positive integer greater than zero.</errorMessage>
+</ValidationRule>

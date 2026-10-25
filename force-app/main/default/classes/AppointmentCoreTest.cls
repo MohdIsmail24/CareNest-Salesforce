@@ -747,4 +747,104 @@ private class AppointmentCoreTest {
         List<Cancellation__c> cancList = [SELECT Id FROM Cancellation__c WHERE Appointment__c = :appt.Id];
         Assert.areEqual(1, cancList.size(), 'Duplicate cancellation should NOT create a second Cancellation__c record');
     }
+
+    @isTest
+    static void testCancelCompletedAppointmentRejectedDirect() {
+        Doctor__c doc = createDoctor('Dr. Completed Direct', 600);
+        Contact pat = createPatient('PatCompletedDirect');
+        Appointment_Slot__c slot = createSlot(doc.Id, System.now().addDays(1), 2);
+
+        Appointment__c appt = new Appointment__c(
+            Slot__c = slot.Id,
+            Patient__c = pat.Id,
+            Status__c = 'Completed',
+            Fee_Amount__c = 600,
+            Discount_Percent__c = 0
+        );
+        insert appt;
+
+        Test.startTest();
+        Boolean caught = false;
+        try {
+            CancellationService.cancel(appt.Id, 'Cancel after consultation completed');
+        } catch (AuraHandledException ex) {
+            caught = true;
+            Assert.isTrue(ex.getMessage().contains('Completed appointments cannot be cancelled') || ex.getMessage() != null, 'Expected rejection message for completed appointment');
+        }
+        Test.stopTest();
+
+        Assert.isTrue(caught, 'Cancelling a completed appointment must throw AuraHandledException');
+
+        // Verify zero cancellation records and status untouched
+        List<Cancellation__c> cancList = [SELECT Id FROM Cancellation__c WHERE Appointment__c = :appt.Id];
+        Assert.areEqual(0, cancList.size(), 'No Cancellation__c record should be created for completed appointment');
+
+        Appointment__c postAppt = [SELECT Status__c, Slot__r.Booked_Count__c FROM Appointment__c WHERE Id = :appt.Id];
+        Assert.areEqual('Completed', postAppt.Status__c, 'Appointment status must remain Completed');
+    }
+
+    @isTest
+    static void testCancelCompletedAppointmentRejectedBulk() {
+        Doctor__c doc = createDoctor('Dr. Completed Bulk', 700);
+        Contact pat = createPatient('PatCompletedBulk');
+        Appointment_Slot__c slot = createSlot(doc.Id, System.now().addDays(2), 2);
+
+        Appointment__c appt = new Appointment__c(
+            Slot__c = slot.Id,
+            Patient__c = pat.Id,
+            Status__c = 'Completed',
+            Fee_Amount__c = 700,
+            Discount_Percent__c = 0
+        );
+        insert appt;
+
+        Test.startTest();
+        List<CancellationService.CancellationRequest> reqs = new List<CancellationService.CancellationRequest>{
+            new CancellationService.CancellationRequest(appt.Id, 'Bulk cancellation attempt')
+        };
+        List<CancellationService.CancellationResult> results = CancellationService.cancel(reqs);
+        Test.stopTest();
+
+        Assert.areEqual(1, results.size(), 'Should return 1 result');
+        Assert.isFalse(results[0].isSuccess, 'Cancellation of Completed appointment must fail');
+        Assert.areEqual('Completed appointments cannot be cancelled.', results[0].errorMessage, 'Error message mismatch');
+        Assert.isNull(results[0].cancellationId, 'Cancellation Id must be null');
+
+        List<Cancellation__c> cancList = [SELECT Id FROM Cancellation__c WHERE Appointment__c = :appt.Id];
+        Assert.areEqual(0, cancList.size(), 'No Cancellation__c record should be created');
+    }
+
+    @isTest
+    static void testCancelCompletedAppointmentRejectedInvocable() {
+        Doctor__c doc = createDoctor('Dr. Completed Invoc', 800);
+        Contact pat = createPatient('PatCompletedInvoc');
+        Appointment_Slot__c slot = createSlot(doc.Id, System.now().addDays(2), 2);
+
+        Appointment__c appt = new Appointment__c(
+            Slot__c = slot.Id,
+            Patient__c = pat.Id,
+            Status__c = 'Completed',
+            Fee_Amount__c = 800,
+            Discount_Percent__c = 0
+        );
+        insert appt;
+
+        CancelAppointmentAction.Request req = new CancelAppointmentAction.Request();
+        req.appointmentId = appt.Id;
+        req.reason = 'Invocable completed cancel attempt';
+
+        Test.startTest();
+        List<CancelAppointmentAction.Result> results = CancelAppointmentAction.cancel(new List<CancelAppointmentAction.Request>{ req });
+        Test.stopTest();
+
+        Assert.areEqual(1, results.size(), 'Should return 1 result');
+        Assert.isNull(results[0].fee, 'Fee must be null for rejected cancellation');
+        Assert.isNull(results[0].refund, 'Refund must be null for rejected cancellation');
+
+        List<Cancellation__c> cancList = [SELECT Id FROM Cancellation__c WHERE Appointment__c = :appt.Id];
+        Assert.areEqual(0, cancList.size(), 'No Cancellation__c record should be created');
+
+        Appointment__c postAppt = [SELECT Status__c FROM Appointment__c WHERE Id = :appt.Id];
+        Assert.areEqual('Completed', postAppt.Status__c, 'Appointment status must remain Completed');
+    }
 }

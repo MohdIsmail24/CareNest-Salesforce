@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Pulse_Range</fullName>
+    <active>true</active>
+    <description>Validates pulse rate is within plausible range (30 to 250 BPM)</description>
+    <errorConditionFormula>!ISBLANK(Pulse__c) &amp;&amp; (Pulse__c &lt; 30 || Pulse__c &gt; 250)</errorConditionFormula>
+    <errorDisplayField>Pulse__c</errorDisplayField>
+    <errorMessage>Pulse must be within the clinically plausible range of 30 to 250 beats per minute.</errorMessage>
+</ValidationRule>

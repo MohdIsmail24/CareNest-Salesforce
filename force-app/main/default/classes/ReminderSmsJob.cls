@@ -41,28 +41,27 @@ public with sharing class ReminderSmsJob implements Queueable {
               AND Status__c = 'Confirmed'
         ];
 
-        List<Appointment__c> recordsToUpdate = new List<Appointment__c>();
-        for (Appointment__c appt : appointmentsToProcess) {
-            dispatchReminder(appt);
-            appt.Reminder_Sent__c = true;
-            recordsToUpdate.add(appt);
-        }
-
-        if (!recordsToUpdate.isEmpty()) {
-            Database.SaveResult[] srList = Database.update(recordsToUpdate, false);
-            for (Database.SaveResult sr : srList) {
-                if (!sr.isSuccess()) {
-                    for (Database.Error err : sr.getErrors()) {
-                        System.debug(LoggingLevel.ERROR, 'ReminderSmsJob DML Error on ' + sr.getId() + ': ' + err.getMessage());
-                    }
-                }
+        try {
+            List<Appointment__c> recordsToUpdate = new List<Appointment__c>();
+            for (Appointment__c appt : appointmentsToProcess) {
+                dispatchReminder(appt);
+                appt.Reminder_Sent__c = true;
+                recordsToUpdate.add(appt);
             }
-        }
 
-        // Chain subsequent chunk of appointments if any remain
-        // Avoid chaining in test execution to respect Queueable test limits
-        if (!remainingChunk.isEmpty() && !Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
-            System.enqueueJob(new ReminderSmsJob(remainingChunk));
+            if (!recordsToUpdate.isEmpty()) {
+                Database.SaveResult[] srList = Database.update(recordsToUpdate, false);
+                ErrorLogService.logSaveResults('ReminderSmsJob', srList, recordsToUpdate);
+            }
+
+            // Chain subsequent chunk of appointments if any remain
+            // Avoid chaining in test execution to respect Queueable test limits
+            if (!remainingChunk.isEmpty() && !Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
+                System.enqueueJob(new ReminderSmsJob(remainingChunk));
+            }
+        } catch (Exception ex) {
+            ErrorLogService.log('ReminderSmsJob', ex, null);
+            throw ex;
         }
     }
 

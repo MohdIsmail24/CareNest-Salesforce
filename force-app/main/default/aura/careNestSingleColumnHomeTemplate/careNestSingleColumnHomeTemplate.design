@@ -1,0 +1,7 @@
+<design:component label="CareNest Full Width Home Page Template">
+    <flexipage:template>
+        <flexipage:region name="main" label="Main Region" defaultWidth="Large">
+            <flexipage:formfactor type="Large" width="Large" />
+        </flexipage:region>
+    </flexipage:template>
+</design:component>

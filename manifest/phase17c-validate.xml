@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Admission__c</members>
+        <members>Bed__c</members>
+        <members>Doctor__c</members>
+        <members>Ward__c</members>
+        <members>Inpatient_Encounter__c</members>
+        <members>Patient_Vital__c</members>
+        <members>Error_Log_Event__e</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Admission__c-Admission Layout</members>
+        <members>Bed__c-Bed Layout</members>
+        <members>Ward__c-Ward Layout</members>
+        <members>Inpatient_Encounter__c-Inpatient Encounter Layout</members>
+        <members>Patient_Vital__c-Patient Vital Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Admission__c</members>
+        <members>Bed__c</members>
+        <members>Ward__c</members>
+        <members>Inpatient_Encounter__c</members>
+        <members>Patient_Vital__c</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>CareNest</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
+        <members>AdmissionService</members>
+        <members>AdmissionTriggerHandler</members>
+        <members>BedTriggerHandler</members>
+        <members>ClinicalDocumentationService</members>
+        <members>ClinicalDocumentationTest</members>
+        <members>ClinicalSharingService</members>
+        <members>ClinicalSharingTest</members>
+        <members>CrossCoverReconciliationBatch</members>
+        <members>DoctorTriggerHandler</members>
+        <members>ErrorLogService</members>
+        <members>ErrorLogServiceTest</members>
+        <members>InpatientAdmissionTest</members>
+        <members>InpatientDischargeTest</members>
+        <members>InpatientEncounterTriggerHandler</members>
+        <members>InpatientLifecycleE2ETest</members>
+        <members>PatientVitalTriggerHandler</members>
+        <members>WardBedManagementTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>AdmissionTrigger</members>
+        <members>BedTrigger</members>
+        <members>DoctorTrigger</members>
+        <members>ErrorLogEventTrigger</members>
+        <members>InpatientEncounterTrigger</members>
+        <members>PatientVitalTrigger</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>CareNest_Admin</members>
+        <members>CareNest_Doctor</members>
+        <members>CareNest_Front_Desk</members>
+        <members>CareNest_Nurse</members>
+        <members>CareNest_Ops_Manager</members>
+        <members>CareNest_Ward_Management</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>Nurse</members>
+        <name>Role</name>
+    </types>
+    <version>68.0</version>
+</Package>

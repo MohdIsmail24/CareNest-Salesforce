@@ -1,7 +1,10 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getDoctorSlots from '@salesforce/apex/DoctorSearchController.getDoctorSlots';
+import searchSlots from '@salesforce/apex/DoctorSearchController.searchSlots';
+
 export default class SlotPicker extends LightningElement {
     _doctorId = null;
+    @api department = '';
 
     @api
     get doctorId() {
@@ -9,7 +12,7 @@ export default class SlotPicker extends LightningElement {
     }
     set doctorId(value) {
         this._doctorId = value || null;
-        if (!this._doctorId) {
+        if (!this._doctorId && !this.department) {
             this.rawSlots = [];
             this.error = null;
         }
@@ -27,18 +30,34 @@ export default class SlotPicker extends LightningElement {
 
     @wire(getDoctorSlots, { doctorId: '$wireDoctorId', slotDate: '$selectedDate' })
     wiredSlots({ error, data }) {
-        this.isLoading = false;
-        if (data) {
-            this.rawSlots = data;
-            this.error = null;
-        } else if (error) {
-            this.rawSlots = [];
-            this.error = error.body ? error.body.message : 'Error fetching slots';
+        if (this._doctorId) {
+            this.isLoading = false;
+            if (data) {
+                this.rawSlots = data;
+                this.error = null;
+            } else if (error) {
+                this.rawSlots = [];
+                this.error = error.body ? error.body.message : 'Error fetching slots';
+            }
+        }
+    }
+
+    @wire(searchSlots, { department: '$department', mode: 'All', onDate: '$selectedDate' })
+    wiredDeptSlots({ error, data }) {
+        if (!this._doctorId && this.department) {
+            this.isLoading = false;
+            if (data) {
+                this.rawSlots = data;
+                this.error = null;
+            } else if (error) {
+                this.rawSlots = [];
+                this.error = error.body ? error.body.message : 'Error fetching department slots';
+            }
         }
     }
 
     get showNoDoctorSelected() {
-        return !this.doctorId;
+        return !this.doctorId && !this.department;
     }
 
     get hasSlots() {
@@ -46,7 +65,7 @@ export default class SlotPicker extends LightningElement {
     }
 
     get showEmptyState() {
-        return !this.isLoading && Boolean(this.doctorId) && this.slots.length === 0 && !this.error;
+        return !this.isLoading && (Boolean(this.doctorId) || Boolean(this.department)) && this.slots.length === 0 && !this.error;
     }
 
     get slots() {

@@ -1,0 +1,48 @@
+.master-workspace-wrapper {
+    background-color: #f1f5f9;
+    min-height: 100vh;
+}
+
+.care-master-header {
+    background: linear-gradient(135deg, #090d16 0%, #1e293b 100%);
+    border-radius: 8px;
+    padding: 1.25rem 1.75rem;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.12);
+}
+
+.care-master-icon {
+    background-color: #0284c7;
+    border-radius: 8px;
+    padding: 8px;
+    display: inline-flex;
+}
+
+.care-master-title {
+    color: #ffffff !important;
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: -0.01em;
+}
+
+.care-master-subtitle {
+    color: #94a3b8 !important;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.persona-select {
+    min-width: 280px;
+}
+
+.master-tabset-card {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.tab-content-container {
+    min-height: 550px;
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discharge_After_Admission</fullName>
+    <active>true</active>
+    <description>Discharge date and time cannot precede admission date and time.</description>
+    <errorConditionFormula>!ISBLANK(Discharge_Date__c) &amp;&amp; !ISBLANK(Admission_Date__c) &amp;&amp; (Discharge_Date__c &lt; Admission_Date__c)</errorConditionFormula>
+    <errorMessage>Discharge date and time cannot be earlier than admission date and time.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Weight_Range</fullName>
+    <active>true</active>
+    <description>Validates patient weight is within plausible range (0.1 to 500 kg)</description>
+    <errorConditionFormula>!ISBLANK(Weight__c) &amp;&amp; (Weight__c &lt;= 0 || Weight__c &gt; 500)</errorConditionFormula>
+    <errorDisplayField>Weight__c</errorDisplayField>
+    <errorMessage>Weight must be a positive number up to 500 kg.</errorMessage>
+</ValidationRule>

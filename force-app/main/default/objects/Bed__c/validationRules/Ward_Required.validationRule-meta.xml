@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ward_Required</fullName>
+    <active>true</active>
+    <description>Ensures bed is associated with a ward</description>
+    <errorConditionFormula>ISBLANK(Ward__c)</errorConditionFormula>
+    <errorDisplayField>Ward__c</errorDisplayField>
+    <errorMessage>Bed must be assigned to a valid Ward.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,1402 @@
+<template>
+    <div class="care-site-wrapper">
+
+        <!-- ================================================================= -->
+        <!-- 0. TOP UTILITY RIBBON (EMERGENCY HOTLINE & EXPERIENCE TOGGLE)    -->
+        <!-- ================================================================= -->
+        <div class="care-top-utility-ribbon">
+            <div class="care-utility-inner">
+                <div class="care-utility-left">
+                    <span class="care-emergency-hotline">
+                        <lightning-icon icon-name="utility:call" size="xx-small" variant="inverse"></lightning-icon>
+                        <strong>Demo Helpline:</strong> +1 (555) 019-CARE (Simulated Demo)
+                    </span>
+
+                    <span class="care-utility-divider">|</span>
+                    <span class="care-utility-info">
+                        <lightning-icon icon-name="utility:clock" size="xx-small" variant="inverse"></lightning-icon>
+                        Demo OPD: Mon - Sat 8:00 AM – 8:00 PM
+                    </span>
+                    <span class="care-utility-divider">|</span>
+                    <span class="care-utility-info care-hide-mobile">
+                        <lightning-icon icon-name="utility:connected_apps" size="xx-small" variant="inverse"></lightning-icon>
+                        Salesforce Healthcare Portfolio Showcase
+                    </span>
+                </div>
+                <div class="care-utility-right">
+                    <template if:true={isPublicExperience}>
+                        <button class="care-utility-btn" onclick={handleSwitchToStaffWorkspace}>
+                            <lightning-icon icon-name="utility:lock" size="xx-small" variant="inverse"></lightning-icon>
+                            <span>Hospital Staff Intranet</span>
+                        </button>
+                    </template>
+                    <template if:true={isStaffExperience}>
+                        <button class="care-utility-btn care-utility-btn-active" onclick={handleSwitchToPublicWebsite}>
+                            <lightning-icon icon-name="utility:arrow_left" size="xx-small" variant="inverse"></lightning-icon>
+                            <span>Return to Public Website</span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- 1. STICKY BRANDED NAVIGATION HEADER (TRIPNEST-STYLE)              -->
+        <!-- ================================================================= -->
+        <header class="care-nav-header">
+            <div class="care-nav-inner">
+                <!-- Brand Logo & Name -->
+                <div class="care-brand-link" data-page="home" onclick={handleNavSelect}>
+                    <div class="care-logo-icon-wrap">
+                        <lightning-icon icon-name="standard:hospital" size="small" variant="inverse"></lightning-icon>
+                    </div>
+                    <div class="care-brand-text">
+                        <div class="care-brand-name">
+                            Care<span class="care-brand-accent">Nest</span>
+                        </div>
+                        <span class="care-brand-tagline">Tertiary Healthcare &amp; Research</span>
+                    </div>
+                </div>
+
+                <!-- A. PUBLIC CONSUMER NAVIGATION -->
+                <template if:true={isPublicExperience}>
+                    <nav class="care-nav-menu">
+                        <a class={navHomeClass} href={homeUrl} data-page="home" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:home" size="x-small"></lightning-icon>
+                            <span>Home</span>
+                        </a>
+                        <a class={navSpecialtiesClass} href="#specialties" data-page="specialties" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:stethoscope" size="x-small"></lightning-icon>
+                            <span>Specialties</span>
+                        </a>
+                        <a class={navDoctorsClass} href={doctorsUrl} data-page="doctors" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:user_role" size="x-small"></lightning-icon>
+                            <span>Find a Doctor</span>
+                        </a>
+                        <a class={navAppointmentsClass} href={appointmentsUrl} data-page="appointments" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:event" size="x-small"></lightning-icon>
+                            <span>Book OPD</span>
+                        </a>
+                        <a class={navWardsClass} href="#facilities" data-page="facilities" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:matrix" size="x-small"></lightning-icon>
+                            <span>Facilities</span>
+                        </a>
+                        <a class={navVisitingClass} href="#visiting" data-page="visiting" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:info_alt" size="x-small"></lightning-icon>
+                            <span>Visiting Info</span>
+                        </a>
+                        <a class={navContactClass} href="#contact" data-page="contact" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:call" size="x-small"></lightning-icon>
+                            <span>Contact &amp; Emergency</span>
+                        </a>
+                    </nav>
+
+                    <!-- Right Public Header Actions -->
+                    <div class="care-nav-actions">
+                        <a href="#emergency" class="care-emergency-pill">
+                            <span class="care-emergency-dot"></span>
+                            <span>Emergency 24/7</span>
+                        </a>
+                        <button class="care-btn-primary" onclick={handleQuickAppointments}>
+                            <lightning-icon icon-name="utility:event" size="x-small" variant="inverse"></lightning-icon>
+                            <span>Book Appointment</span>
+                        </button>
+                        <button class="care-mobile-menu-btn" onclick={handleToggleMobileMenu} aria-label="Toggle Navigation Menu">
+                            <lightning-icon icon-name="utility:rows" size="x-small"></lightning-icon>
+                        </button>
+                    </div>
+                </template>
+
+                <!-- B. INTERNAL STAFF WORKSPACE NAVIGATION -->
+                <template if:true={isStaffExperience}>
+                    <nav class="care-nav-menu">
+                        <a class={navHomeClass} href={homeUrl} data-page="home" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:dashboard" size="x-small"></lightning-icon>
+                            <span>Operations Center</span>
+                        </a>
+                        <a class={navPatientsClass} href={patientsUrl} data-page="patients" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:user" size="x-small"></lightning-icon>
+                            <span>Patients</span>
+                        </a>
+                        <a class={navDoctorsClass} href={doctorsUrl} data-page="doctors" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:user_role" size="x-small"></lightning-icon>
+                            <span>Doctors</span>
+                        </a>
+                        <a class={navAppointmentsClass} href={appointmentsUrl} data-page="appointments" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:event" size="x-small"></lightning-icon>
+                            <span>Appointments</span>
+                        </a>
+                        <a class={navWardsClass} href={wardsUrl} data-page="wards" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:matrix" size="x-small"></lightning-icon>
+                            <span>Wards &amp; Beds</span>
+                            <span class="care-nav-badge care-badge-teal">{metrics.availableBeds} Free</span>
+                        </a>
+                        <a class={navAdmissionsClass} href={admissionsUrl} data-page="admissions" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:identity" size="x-small"></lightning-icon>
+                            <span>Admissions</span>
+                            <span class="care-nav-badge care-badge-amber">{metrics.activeAdmissions}</span>
+                        </a>
+                        <a class={navClinicalClass} href={clinicalUrl} data-page="clinical" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:stethoscope" size="x-small"></lightning-icon>
+                            <span>Clinical</span>
+                            <template if:true={metrics.activeClinicalAlerts}>
+                                <span class="care-nav-badge care-badge-red">{metrics.activeClinicalAlerts}</span>
+                            </template>
+                        </a>
+                        <a class={navPaymentsClass} href={paymentsUrl} data-page="payments" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:currency" size="x-small"></lightning-icon>
+                            <span>Payments</span>
+                        </a>
+                        <a class={navAgentforceClass} href={agentforceUrl} data-page="agentforce" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:einstein" size="x-small"></lightning-icon>
+                            <span>Agentforce</span>
+                        </a>
+                        <a class={navAdminClass} href={adminUrl} data-page="admin" onclick={handleNavSelect}>
+                            <lightning-icon icon-name="utility:settings" size="x-small"></lightning-icon>
+                            <span>Admin</span>
+                        </a>
+                    </nav>
+
+                    <!-- Right Staff Actions -->
+                    <div class="care-nav-actions">
+                        <button class="care-btn-primary" onclick={handleOpenRegisterModal}>
+                            <lightning-icon icon-name="utility:add" size="x-small" variant="inverse"></lightning-icon>
+                            <span>Register Patient</span>
+                        </button>
+                        <div class="care-role-pill">
+                            <span class="care-role-dot"></span>
+                            <lightning-combobox
+                                name="roleMode"
+                                value={activeRole}
+                                options={roleOptions}
+                                onchange={handleRoleChange}
+                                variant="label-hidden">
+                            </lightning-combobox>
+                        </div>
+                        <button class="care-mobile-menu-btn" onclick={handleToggleMobileMenu} aria-label="Toggle Navigation Menu">
+                            <lightning-icon icon-name="utility:rows" size="x-small"></lightning-icon>
+                        </button>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Mobile Drawer -->
+            <template if:true={isMobileMenuOpen}>
+                <div class="care-mobile-drawer">
+                    <template if:true={isPublicExperience}>
+                        <a class={navHomeClass} href={homeUrl} data-page="home" onclick={handleNavSelect}>Home</a>
+                        <a class={navSpecialtiesClass} href="#specialties" data-page="specialties" onclick={handleNavSelect}>Specialties</a>
+                        <a class={navDoctorsClass} href={doctorsUrl} data-page="doctors" onclick={handleNavSelect}>Find a Doctor</a>
+                        <a class={navAppointmentsClass} href={appointmentsUrl} data-page="appointments" onclick={handleNavSelect}>Book Appointment</a>
+                        <a class={navWardsClass} href="#facilities" data-page="facilities" onclick={handleNavSelect}>Hospital Facilities</a>
+                        <a class={navVisitingClass} href="#visiting" data-page="visiting" onclick={handleNavSelect}>Visiting Hours</a>
+                        <a class={navContactClass} href="#contact" data-page="contact" onclick={handleNavSelect}>Contact &amp; Emergency</a>
+                        <div class="slds-m-top_small">
+                            <button class="care-btn-primary slds-size_1-of-1" onclick={handleSwitchToStaffWorkspace}>
+                                🔒 Hospital Staff Intranet Login
+                            </button>
+                        </div>
+                    </template>
+                    <template if:true={isStaffExperience}>
+                        <a class={navHomeClass} href={homeUrl} data-page="home" onclick={handleNavSelect}>Operations Center</a>
+                        <a class={navPatientsClass} href={patientsUrl} data-page="patients" onclick={handleNavSelect}>Patients</a>
+                        <a class={navDoctorsClass} href={doctorsUrl} data-page="doctors" onclick={handleNavSelect}>Doctors</a>
+                        <a class={navAppointmentsClass} href={appointmentsUrl} data-page="appointments" onclick={handleNavSelect}>Appointments</a>
+                        <a class={navWardsClass} href={wardsUrl} data-page="wards" onclick={handleNavSelect}>Wards &amp; Beds</a>
+                        <a class={navAdmissionsClass} href={admissionsUrl} data-page="admissions" onclick={handleNavSelect}>Admissions</a>
+                        <a class={navClinicalClass} href={clinicalUrl} data-page="clinical" onclick={handleNavSelect}>Clinical Chart</a>
+                        <a class={navPaymentsClass} href={paymentsUrl} data-page="payments" onclick={handleNavSelect}>Payments</a>
+                        <a class={navAgentforceClass} href={agentforceUrl} data-page="agentforce" onclick={handleNavSelect}>Agentforce Assistant</a>
+                        <a class={navAdminClass} href={adminUrl} data-page="admin" onclick={handleNavSelect}>Admin Telemetry</a>
+                        <div class="slds-m-top_small">
+                            <button class="slds-button slds-button_neutral slds-size_1-of-1" onclick={handleSwitchToPublicWebsite}>
+                                ← Return to Public Website
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </header>
+
+        <!-- ================================================================= -->
+        <!-- 2. MAIN WEBSITE CONTENT (PUBLIC WEBSITE OR STAFF WORKSPACE)       -->
+        <!-- ================================================================= -->
+        <main class="care-main-content">
+
+            <!-- Route Access Denied Banner -->
+            <template if:true={isAccessDenied}>
+                <div class="care-access-denied-strip" role="alert">
+                    <div class="care-access-denied-content">
+                        <lightning-icon icon-name="utility:lock" size="small" variant="warning"></lightning-icon>
+                        <div>
+                            <strong>Authorization Notice:</strong> {accessDeniedMessage}
+                        </div>
+                    </div>
+                    <button class="care-access-denied-btn" onclick={handleDismissAccessDenied}>Dismiss</button>
+                </div>
+            </template>
+
+            <!-- ============================================================= -->
+            <!-- A. PUBLIC PATIENT/VISITOR EXPERIENCE                          -->
+            <!-- ============================================================= -->
+            <template if:true={isPublicExperience}>
+
+                <!-- PAGE 1: PUBLIC HOMEPAGE (TRIPNEST HEALTHCARE EXPERIENCE) -->
+                <template if:true={isHomePage}>
+
+                    <!-- 1. Hero Banner with Modern Healthcare Visual Composition -->
+                    <section class="care-public-hero" data-section="home">
+                        <div class="care-hero-media-overlay"></div>
+                        <div class="care-public-hero-container">
+                            <div class="care-hero-grid">
+                                <!-- Left Column: Clinical Excellence & Fast Booking -->
+                                <div class="care-hero-left">
+                                    <div class="care-hero-badge-pill">
+                                        <lightning-icon icon-name="utility:connected_apps" size="xx-small" variant="inverse"></lightning-icon>
+                                        <span>Salesforce Healthcare Architecture • Portfolio Showcase</span>
+                                    </div>
+                                    <h1 class="care-public-hero-title">
+                                        World-Class Healthcare, <br/>
+                                        <span class="care-hero-highlight">Compassionate Clinical Excellence</span>
+                                    </h1>
+                                    <p class="care-public-hero-desc">
+                                        CareNest connects specialized outpatient clinics, modern surgical suites, rapid emergency clinical triage, and intelligent Agentforce demonstration health assistance.
+                                    </p>
+
+                                    <!-- Quick Action Booking Bar -->
+                                    <div class="care-fast-booking-card">
+                                        <div class="care-fast-booking-title">
+                                            <lightning-icon icon-name="utility:event" size="x-small"></lightning-icon>
+                                            <span>Schedule an Outpatient Consultation (OPD)</span>
+                                        </div>
+                                        <div class="care-fast-booking-grid">
+                                            <div class="care-fast-field">
+                                                <label class="care-fast-label">Select Specialty</label>
+                                                <div class="care-fast-input-wrap">
+                                                    <lightning-icon icon-name="utility:stethoscope" size="x-small"></lightning-icon>
+                                                    <select class="care-native-select">
+                                                        <option>General Medicine</option>
+                                                        <option>Paediatrics &amp; Neonatology</option>
+                                                        <option>Orthopaedics &amp; Joint Replacement</option>
+                                                        <option>Dermatology &amp; Skin Care</option>
+                                                        <option>Ear, Nose &amp; Throat (ENT)</option>
+                                                        <option>Critical Care &amp; Emergency</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="care-fast-field">
+                                                <label class="care-fast-label">Consultation Mode</label>
+                                                <div class="care-fast-input-wrap">
+                                                    <lightning-icon icon-name="utility:desktop" size="x-small"></lightning-icon>
+                                                    <select class="care-native-select">
+                                                        <option>In-Person Hospital OPD</option>
+                                                        <option>Video Teleconsultation</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="care-fast-field">
+                                                <label class="care-fast-label">Preferred Date</label>
+                                                <div class="care-fast-input-wrap">
+                                                    <lightning-icon icon-name="utility:event" size="x-small"></lightning-icon>
+                                                    <input type="date" class="care-native-date" />
+                                                </div>
+                                            </div>
+                                            <div class="care-fast-action">
+                                                <button class="care-btn-fast-book" onclick={handleQuickAppointments}>
+                                                    <span>Find Doctor</span>
+                                                    <lightning-icon icon-name="utility:forward" size="xx-small" variant="inverse"></lightning-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="care-hero-disclaimer">
+                                            <lightning-icon icon-name="utility:info" size="xx-small"></lightning-icon>
+                                            <span>Simulated booking environment. For medical emergencies in real life, immediately call local emergency services (e.g. 911 / 112 / 108).</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Premium Medical Team Visual -->
+                                <div class="care-hero-right">
+                                    <div class="care-hero-image-card">
+                                        <img src={heroImageUrl} alt="CareNest Modern Clinical Suite (Royalty-free medical photography under Unsplash License)" title="CareNest Modern Clinical Suite (Unsplash License)" class="care-hero-img" />
+                                        <div class="care-hero-image-overlay"></div>
+                                        <div class="care-hero-floating-card">
+                                            <div class="care-hero-card-header">
+                                                <span class="care-dot-pulse"></span>
+                                                <strong>5 Core Clinical Specialties</strong>
+                                            </div>
+                                            <p>Dedicated Attending Consultants &amp; Agentforce Demonstration Assistant (Non-Diagnostic)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Trust Badges Bar (Verified Capabilities) -->
+                            <div class="care-trust-metrics-bar">
+                                <div class="care-trust-item">
+                                    <div class="care-trust-icon-box">
+                                        <lightning-icon icon-name="utility:user_role" size="small" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <div class="care-trust-title">Multidisciplinary OPD</div>
+                                        <div class="care-trust-subtitle">5 Specialist Departments</div>
+                                    </div>
+                                </div>
+                                <div class="care-trust-item">
+                                    <div class="care-trust-icon-box">
+                                        <lightning-icon icon-name="utility:priority" size="small" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <div class="care-trust-title">Acute Clinical Triage</div>
+                                        <div class="care-trust-subtitle">Standardized Care Protocol</div>
+                                    </div>
+                                </div>
+                                <div class="care-trust-item">
+                                    <div class="care-trust-icon-box">
+                                        <lightning-icon icon-name="utility:shield" size="small" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <div class="care-trust-title">Secure Patient Information</div>
+                                        <div class="care-trust-subtitle">Role-Gated Server Privacy</div>
+                                    </div>
+                                </div>
+                                <div class="care-trust-item">
+                                    <div class="care-trust-icon-box">
+                                        <lightning-icon icon-name="utility:einstein" size="small" variant="inverse"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <div class="care-trust-title">Agentforce AI Assistant</div>
+                                        <div class="care-trust-subtitle">Demo Operational AI (Not Medical Advice)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- 2. Medical Specialties Section -->
+                    <section class="care-public-section" data-section="specialties">
+                        <div class="care-section-header">
+                            <span class="care-section-kicker">Clinical Centers of Excellence</span>
+                            <h2 class="care-section-title">Specialized Medical Care for Every Need</h2>
+                            <p class="care-section-subtitle">
+                                Our multidisciplinary clinical departments combine cutting-edge technology with compassionate expert healthcare professionals.
+                            </p>
+                        </div>
+
+                        <div class="care-specialties-grid">
+                            <template for:each={specialties} for:item="spec">
+                                <div key={spec.id} class="care-specialty-card">
+                                    <div class="care-spec-card-top">
+                                        <div class="care-spec-icon-box">
+                                            <lightning-icon icon-name={spec.icon} size="small"></lightning-icon>
+                                        </div>
+                                        <span class="care-spec-badge">{spec.badge}</span>
+                                    </div>
+                                    <h3 class="care-spec-title">{spec.name}</h3>
+                                    <p class="care-spec-desc">{spec.desc}</p>
+                                    <div class="care-spec-footer">
+                                        <div class="care-spec-lead">
+                                            <span class="care-lead-label">Lead Specialist:</span>
+                                            <strong class="care-lead-name">{spec.leadDoc}</strong>
+                                        </div>
+                                        <button class="care-spec-action-btn" onclick={handleQuickAppointments}>
+                                            Book OPD →
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </section>
+
+                    <!-- 3. Why Choose CareNest (TripNest Value Pillars) -->
+                    <section class="care-public-section care-why-section" data-section="why-us">
+                        <div class="care-section-header">
+                            <span class="care-section-kicker">The CareNest Advantage</span>
+                            <h2 class="care-section-title">Why Patients Choose CareNest</h2>
+                            <p class="care-section-subtitle">Delivering precision clinical medicine with dignity, transparent pricing, and seamless care continuity.</p>
+                        </div>
+
+                        <div class="care-why-grid">
+                            <div class="care-why-card">
+                                <div class="care-why-icon-box">
+                                    <lightning-icon icon-name="utility:groups" size="small"></lightning-icon>
+                                </div>
+                                <h3>Collaborative Clinical Boards</h3>
+                                <p>Multidisciplinary case reviews by attending physicians establish coordinated patient care and diagnostic pathways.</p>
+                            </div>
+                            <div class="care-why-card">
+                                <div class="care-why-icon-box">
+                                    <lightning-icon icon-name="utility:priority" size="small"></lightning-icon>
+                                </div>
+                                <h3>Standardized Acute Triage</h3>
+                                <p>Systematic clinical triage protocols prioritize acute cardiac, stroke, and trauma presentations for rapid intervention.</p>
+                            </div>
+                            <div class="care-why-card">
+                                <div class="care-why-icon-box">
+                                    <lightning-icon icon-name="utility:currency" size="small"></lightning-icon>
+                                </div>
+                                <h3>Transparent Estimates</h3>
+                                <p>Clear pre-admission estimates and direct coordination with cashless health insurance TPA partners.</p>
+                            </div>
+                            <div class="care-why-card">
+                                <div class="care-why-icon-box">
+                                    <lightning-icon icon-name="utility:einstein" size="small"></lightning-icon>
+                                </div>
+                                <h3>Agentforce Demo Assistant</h3>
+                                <p>Demonstration healthcare AI assistant for administrative navigation and appointment inquiries. Portfolio demo only; does not provide medical advice or diagnosis.</p>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- 4. Hospital Facilities & Inpatient Care Showcase -->
+                    <section class="care-public-section" data-section="facilities">
+                        <div class="care-section-header">
+                            <span class="care-section-kicker">Infrastructure &amp; Amenities</span>
+                            <h2 class="care-section-title">Designed for Healing and Rapid Recovery</h2>
+                            <p class="care-section-subtitle">
+                                From quiet private suites to high-dependency critical care units, our facilities provide safe and comfortable clinical environments.
+                            </p>
+                        </div>
+
+                        <div class="care-facilities-grid">
+                            <template for:each={facilities} for:item="fac">
+                                <div key={fac.id} class="care-facility-card">
+                                    <div class="care-fac-header">
+                                        <span class="care-fac-badge">{fac.badge}</span>
+                                        <span class="care-fac-capacity">{fac.capacity}</span>
+                                    </div>
+                                    <h3 class="care-fac-title">{fac.name}</h3>
+                                    <div class="care-fac-type">{fac.type}</div>
+                                    <p class="care-fac-desc">{fac.desc}</p>
+                                    <div class="care-fac-amenity-list">
+                                        <span>✓ Central Oxygen &amp; Vacuum</span>
+                                        <span>✓ Emergency Nurse Call</span>
+                                        <span>✓ Clinical Air Filtration</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </section>
+
+                    <!-- 5. Inpatient Visiting Information & Patient Guide -->
+                    <section class="care-public-section care-visiting-section" data-section="visiting">
+                        <div class="care-visiting-container">
+                            <div class="care-visiting-card">
+                                <div class="care-visiting-badge">
+                                    <lightning-icon icon-name="utility:clock" size="x-small" variant="inverse"></lightning-icon>
+                                    <span>Visiting Hours &amp; Guidelines</span>
+                                </div>
+                                <h2>Patient Visiting Guidelines</h2>
+                                <p>To ensure infection control and patient rest, visiting hours are strictly monitored:</p>
+                                <ul class="care-visiting-rules">
+                                    <li><strong>General Wards:</strong> 4:00 PM – 7:00 PM Daily (Max 2 visitors)</li>
+                                    <li><strong>Intensive Care Unit (ICU):</strong> 11:00 AM – 12:00 PM &amp; 5:00 PM – 6:00 PM (1 visitor at a time)</li>
+                                    <li><strong>Paediatric Ward:</strong> One parent permitted 24/7 alongside the child</li>
+                                    <li><strong>Children under 12:</strong> Not permitted in ICU and post-operative wards</li>
+                                </ul>
+                                <div class="care-pass-note">
+                                    ℹ️ Digital visitor passes are issued at the Main Reception upon presenting valid government identification.
+                                </div>
+                            </div>
+                            <div class="care-visiting-card">
+                                <div class="care-visiting-badge">
+                                    <lightning-icon icon-name="utility:identity" size="x-small" variant="inverse"></lightning-icon>
+                                    <span>Admission Checklist</span>
+                                </div>
+                                <h2>What to Bring for Admission</h2>
+                                <p>Please have the following ready during inpatient admission:</p>
+                                <ul class="care-visiting-rules">
+                                    <li><strong>Government Photo ID:</strong> Aadhaar, Passport, or Voter ID</li>
+                                    <li><strong>Insurance / TPA Card:</strong> For cashless hospitalization pre-authorization</li>
+                                    <li><strong>Medical Records:</strong> Prior prescriptions, radiology scans, and lab reports</li>
+                                    <li><strong>Regular Medications:</strong> In original packaging for clinical reconciliation</li>
+                                </ul>
+                                <div class="care-pass-note">
+                                    💳 Our TPA &amp; Cashless Insurance Desk is located on the Ground Floor, open 24/7.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 6. Simulated Emergency Trauma Center Banner -->
+                    <section class="care-emergency-banner" data-section="emergency" id="emergency">
+                        <div class="care-emergency-inner">
+                            <div class="care-emergency-badge">
+                                <span class="care-pulse-circle"></span>
+                                <span>Simulated Level-1 Trauma Emergency Desk</span>
+                            </div>
+                            <h2>Acute Critical Care Demonstration Bay</h2>
+                            <p>
+                                CareNest simulated trauma center showcase featuring acute resuscitation bays, catheterization suites, and surgical care.
+                            </p>
+                            <div class="care-emergency-disclaimer-card">
+                                <lightning-icon icon-name="utility:warning" size="small" variant="warning"></lightning-icon>
+                                <span>
+                                    <strong>Portfolio Demonstration Notice:</strong> This website is a simulated portfolio system. For real medical emergencies, please immediately call your local emergency service (e.g. 911 / 112 / 108).
+                                </span>
+                            </div>
+                            <div class="care-emergency-actions">
+                                <button type="button" class="care-btn-emergency-call" onclick={handleSimulatedAction}>
+                                    <lightning-icon icon-name="utility:call" size="small" variant="inverse"></lightning-icon>
+                                    <span>Demo Helpline: +1 (555) 019-CARE (Simulated)</span>
+                                </button>
+                                <button type="button" class="care-btn-ambulance-dispatch" onclick={handleSimulatedAction}>
+                                    <lightning-icon icon-name="utility:forward" size="small" variant="inverse"></lightning-icon>
+                                    <span>Demo Ambulance: +1 (555) 019-9110 (Simulated)</span>
+                                </button>
+                            </div>
+                            <div class="care-emergency-disclaimer">
+                                <span>Simulated demo helpline only — non-functional links. In an acute medical emergency, please immediately call local emergency services (e.g. 911 / 112 / 108).</span>
+                            </div>
+                        </div>
+                    </section>
+
+
+                    <!-- 7. Hospital Location & Patient Inquiry Form -->
+                    <section class="care-public-section" data-section="contact" id="contact">
+                        <div class="care-contact-grid">
+                            <div class="care-contact-info-card">
+                                <span class="care-section-kicker">Find Us</span>
+                                <h2>CareNest Hospital Campus</h2>
+                                <p>Simulated medical campus with 24/7 patient reception, ambulance bays, and OPD consultations.</p>
+                                
+                                <div class="care-info-item">
+                                    <div class="care-info-icon-box">
+                                        <lightning-icon icon-name="utility:checkin" size="small"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <strong>Hospital Campus (Demo):</strong>
+                                        <p>Plot 14, Health City Knowledge Park, Outer Ring Road, Bangalore, Karnataka 560100</p>
+                                    </div>
+                                </div>
+                                <div class="care-info-item">
+                                    <div class="care-info-icon-box">
+                                        <lightning-icon icon-name="utility:call" size="small"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <strong>Demo Desk Enquiries:</strong>
+                                        <p>+1 (555) 019-8900 / +1 (555) 019-8901</p>
+                                    </div>
+                                </div>
+                                <div class="care-info-item">
+                                    <div class="care-info-icon-box">
+                                        <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <strong>Demo Email Desk:</strong>
+                                        <p>demo-care@carenest-health.example.com</p>
+                                    </div>
+                                </div>
+                                <div class="care-info-item">
+                                    <div class="care-info-icon-box">
+                                        <lightning-icon icon-name="utility:clock" size="small"></lightning-icon>
+                                    </div>
+                                    <div>
+                                        <strong>Demo Hours:</strong>
+                                        <p>Simulated OPD: Mon - Sat 8:00 AM – 8:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Patient Inquiry Form -->
+                            <div class="care-contact-form-card">
+                                <h3>Send an Inquiry or Feedback</h3>
+                                <p class="care-form-subtext">Portfolio Demonstration Inquiry Desk • Please do not submit real patient data or protected health information (PHI).</p>
+                                <div class="care-form-demo-alert">
+                                    <lightning-icon icon-name="utility:info_alt" size="x-small" variant="info"></lightning-icon>
+                                    <span><strong>Simulated Demonstration:</strong> Inquiries are demonstrated in memory only. No production records, Salesforce Cases, or outbound notifications are transmitted. For real medical emergencies, please immediately contact emergency services (e.g. 911 / 112 / 108).</span>
+                                </div>
+
+                                <template if:true={inquirySubmitted}>
+                                    <div class="slds-box slds-theme_shade slds-p-around_medium slds-m-top_medium care-demo-success-box">
+                                        <h4>✓ Demonstration Inquiry Logged (Simulated)</h4>
+                                        <p>In an active hospital deployment, this inquiry would route directly to Salesforce Case Queues or Patient Services. For this portfolio demonstration, no real data or notification was transmitted.</p>
+                                        <p class="slds-m-top_x-small text-muted">Submitted contact: <strong>{inquiryForm.name}</strong> ({inquiryForm.phone}) • Department: <strong>{inquiryForm.department}</strong></p>
+                                        <button class="slds-button slds-button_neutral slds-m-top_small" onclick={handleResetInquiry}>
+                                            Submit Another Demo Message
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <template if:false={inquirySubmitted}>
+                                    <form onsubmit={handleInquirySubmit} class="care-form-fields">
+                                        <div class="care-form-row">
+                                            <div class="care-form-group">
+                                                <label>Your Name *</label>
+                                                <input type="text" name="name" value={inquiryForm.name} oninput={handleInquiryInputChange} required placeholder="Full Name" />
+                                            </div>
+                                            <div class="care-form-group">
+                                                <label>Phone Number *</label>
+                                                <input type="tel" name="phone" value={inquiryForm.phone} oninput={handleInquiryInputChange} required placeholder="+91 98765 43210" />
+                                            </div>
+                                        </div>
+                                        <div class="care-form-row">
+                                            <div class="care-form-group">
+                                                <label>Email Address</label>
+                                                <input type="email" name="email" value={inquiryForm.email} oninput={handleInquiryInputChange} placeholder="name@example.com" />
+                                            </div>
+                                            <div class="care-form-group">
+                                                <label>Department of Interest</label>
+                                                <select name="department" value={inquiryForm.department} onchange={handleInquiryInputChange}>
+                                                    <option>General Medicine</option>
+                                                    <option>Paediatrics &amp; Neonatology</option>
+                                                    <option>Orthopaedics</option>
+                                                    <option>Dermatology</option>
+                                                    <option>ENT</option>
+                                                    <option>Hospital Admissions Desk</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="care-form-group">
+                                            <label>Message / Clinical Question</label>
+                                            <textarea name="message" value={inquiryForm.message} oninput={handleInquiryInputChange} rows="3" placeholder="How can our clinical team help you today?"></textarea>
+                                        </div>
+                                        <button type="submit" class="care-btn-primary care-btn-full" disabled={isSubmittingInquiry}>
+                                            <span>Send Inquiry</span>
+                                            <lightning-icon icon-name="utility:send" size="x-small" variant="inverse"></lightning-icon>
+                                        </button>
+                                    </form>
+                                </template>
+                            </div>
+                        </div>
+                    </section>
+                </template>
+
+                <!-- PAGE 3: PUBLIC DOCTORS DIRECTORY (CONSUMER) -->
+                <template if:true={isDoctorsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Find a Specialist Physician</h1>
+                                <p class="care-page-subtitle">Browse attending consultants, verified department schedules, and OPD booking</p>
+                            </div>
+                            <div class="care-page-actions">
+                                <lightning-combobox
+                                    name="deptFilter"
+                                    label="Specialty"
+                                    value={doctorDeptFilter}
+                                    options={doctorDeptOptions}
+                                    onchange={handleDoctorDeptChange}
+                                    variant="label-hidden">
+                                </lightning-combobox>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Search Input -->
+                        <div class="care-filter-card slds-m-bottom_medium">
+                            <lightning-input 
+                                type="search" 
+                                placeholder="Search doctors by name or specialty..." 
+                                value={doctorSearchKey} 
+                                onchange={handleDoctorSearchChange} 
+                                variant="label-hidden">
+                            </lightning-input>
+                        </div>
+
+                        <!-- Doctors Grid -->
+                        <template if:true={isLoadingDoctors}>
+                            <div class="slds-p-around_large slds-text-align_center">
+                                <lightning-spinner alternative-text="Loading doctors..." size="medium"></lightning-spinner>
+                            </div>
+                        </template>
+                        <template if:false={isLoadingDoctors}>
+                            <div class="care-doctors-grid">
+                                <template for:each={filteredDoctors} for:item="doc">
+                                    <div key={doc.doctorId} class="care-doctor-card">
+                                        <div>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                                                <div class="doctor-avatar-circle slds-m-right_small">
+                                                    {doc.initials}
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-bold text-dark slds-text-heading_small">{doc.name}</h3>
+                                                    <div class="text-muted slds-text-body_small">{doc.department}</div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-m-bottom_small">
+                                                <span class={doc.badgeClass}>{doc.badgeLabel}</span>
+                                            </div>
+                                            <div class="text-muted slds-text-body_small slds-m-bottom_xx-small">
+                                                <strong>Specialty:</strong> {doc.specialty}
+                                            </div>
+                                            <div class="text-muted slds-text-body_small slds-m-bottom_small">
+                                                <strong>Consultation Fee:</strong> ₹{doc.consultationFee}
+                                            </div>
+                                        </div>
+                                        <div class="slds-grid slds-gutters slds-m-top_small">
+                                            <div class="slds-col slds-size_1-of-1">
+                                                <button class="care-btn-primary slds-size_1-of-1" onclick={handleBookWithDoctor}>
+                                                    Book OPD Appointment
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- PAGE 4: PUBLIC APPOINTMENTS BOOKING (CONSUMER) -->
+                <template if:true={isAppointmentsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Book an Outpatient Appointment</h1>
+                                <p class="care-page-subtitle">Schedule a consultation with an attending medical specialist</p>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-appointment-wizard></c-appointment-wizard>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-doctor-search></c-doctor-search>
+                                <div class="slds-m-top_medium">
+                                    <c-my-appointments></c-my-appointments>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            </template>
+
+
+            <!-- ============================================================= -->
+            <!-- B. SECURE AUTHENTICATED HOSPITAL STAFF WORKSPACE              -->
+            <!-- ============================================================= -->
+            <template if:true={isStaffExperience}>
+
+                <!-- Staff Top Context Bar -->
+                <div class="care-staff-banner">
+                    <div class="care-staff-banner-inner">
+                        <div class="care-staff-banner-left">
+                            <span class="care-staff-badge">Internal Operations Suite</span>
+                            <span class="care-staff-context">
+                                Active Workspace: <strong>{activePage}</strong> • Persona Simulation: <strong>{activeRole}</strong>
+                            </span>
+                        </div>
+                        <div class="care-staff-banner-right">
+                            <button class="care-btn-outline-light" onclick={handleSwitchToPublicWebsite}>
+                                ← Exit to Public Website
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. OPERATIONS DASHBOARD (HOME IN STAFF MODE) -->
+                <template if:true={isHomePage}>
+                    <div class="care-page-container">
+                        <!-- Live KPI Summary Grid -->
+                        <div class="care-kpi-grid">
+                            <div class="care-kpi-card">
+                                <div class="care-kpi-header">
+                                    <span class="care-kpi-label">Active Inpatients</span>
+                                    <div class="care-kpi-icon-wrap kpi-icon-teal">
+                                        <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="care-kpi-value">{metrics.activeAdmissions}</div>
+                                <div class="care-kpi-subtext">Current Admitted Census</div>
+                            </div>
+
+                            <div class="care-kpi-card">
+                                <div class="care-kpi-header">
+                                    <span class="care-kpi-label">Bed Occupancy</span>
+                                    <div class="care-kpi-icon-wrap kpi-icon-navy">
+                                        <lightning-icon icon-name="standard:asset_relationship" size="small"></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="care-kpi-value">{metrics.overallOccupancyRate}%</div>
+                                <div class="care-kpi-subtext">{metrics.occupiedBeds} of {metrics.totalBeds} Beds Occupied</div>
+                            </div>
+
+                            <div class="care-kpi-card">
+                                <div class="care-kpi-header">
+                                    <span class="care-kpi-label">Available Beds</span>
+                                    <div class="care-kpi-icon-wrap kpi-icon-amber">
+                                        <lightning-icon icon-name="standard:service_territory_location" size="small"></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="care-kpi-value">{metrics.availableBeds}</div>
+                                <div class="care-kpi-subtext">Ready for Immediate Admission</div>
+                            </div>
+
+                            <div class="care-kpi-card">
+                                <div class="care-kpi-header">
+                                    <span class="care-kpi-label">Active Doctors</span>
+                                    <div class="care-kpi-icon-wrap kpi-icon-teal">
+                                        <lightning-icon icon-name="standard:user_role" size="small"></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="care-kpi-value">{metrics.totalDoctors}</div>
+                                <div class="care-kpi-subtext">5 Clinical Specialties</div>
+                            </div>
+                        </div>
+
+                        <!-- Abnormal Vitals Alert Ticker -->
+                        <template if:true={metrics.activeClinicalAlerts}>
+                            <div class="care-alert-ticker">
+                                <div class="care-alert-message">
+                                    <lightning-icon icon-name="utility:warning" size="small" variant="error"></lightning-icon>
+                                    <span>
+                                        <strong>Clinical Notice:</strong> {metrics.activeClinicalAlerts} active abnormal patient vital sign alerts detected in Inpatient Wards.
+                                    </span>
+                                </div>
+                                <button class="care-alert-action-btn" onclick={handleQuickClinical}>
+                                    Review Clinical Chart →
+                                </button>
+                            </div>
+                        </template>
+
+                        <!-- Hospital Operations Dashboard -->
+                        <c-hospital-operations-dashboard></c-hospital-operations-dashboard>
+                    </div>
+                </template>
+
+                <!-- 2. PATIENTS DIRECTORY & REGISTRATION (STAFF ONLY) -->
+                <template if:true={isPatientsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Hospital Master Patient Index</h1>
+                                <p class="care-page-subtitle">Stage 2 server-side restricted patient lookup &amp; intake registration</p>
+                            </div>
+                            <div class="care-page-actions">
+                                <button class="care-btn-primary" onclick={handleOpenRegisterModal}>
+                                    <lightning-icon icon-name="utility:user" size="x-small" variant="inverse"></lightning-icon>
+                                    <span>Register New Patient</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Patient Filter & Search -->
+                        <div class="care-filter-card">
+                            <div class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-center">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3">
+                                    <lightning-input 
+                                        type="search" 
+                                        placeholder="Search by patient name, Patient Code (CN-PAT-XXXXX), phone, or email..." 
+                                        value={patientSearchTerm} 
+                                        onchange={handlePatientSearchChange} 
+                                        variant="label-hidden">
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-text-align_right text-muted slds-p-top_xx-small">
+                                    Discovered Patients: <strong>{patientsList.length}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Patients Data Table -->
+                        <div class="care-table-card">
+                            <template if:true={isLoadingPatients}>
+                                <div class="slds-p-around_large slds-text-align_center">
+                                    <lightning-spinner alternative-text="Loading patients..." size="medium"></lightning-spinner>
+                                </div>
+                            </template>
+                            <template if:false={isLoadingPatients}>
+                                <table class="care-patient-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient Code</th>
+                                            <th>Full Name</th>
+                                            <th>Phone</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th class="slds-text-align_right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={patientsList} for:item="pat">
+                                            <tr key={pat.id}>
+                                                <td>
+                                                    <span class="patient-code-tag">{pat.patientCode}</span>
+                                                </td>
+                                                <td>
+                                                    <strong>{pat.name}</strong>
+                                                </td>
+                                                <td>{pat.phone}</td>
+                                                <td>{pat.email}</td>
+                                                <td>
+                                                    <span class={pat.badgeClass}>Patient</span>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <button 
+                                                        class="slds-button slds-button_neutral slds-button_small" 
+                                                        data-id={pat.id} 
+                                                        onclick={handleViewPatientProfile}>
+                                                        View Profile
+                                                    </button>
+                                                    <button 
+                                                        class="slds-button slds-button_brand slds-button_small slds-m-left_xx-small" 
+                                                        onclick={handleQuickAdmit}>
+                                                        Admit Bed
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 3. DOCTORS (STAFF ROSTER) -->
+                <template if:true={isDoctorsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Attending Physician Rosters</h1>
+                                <p class="care-page-subtitle">Hospital medical staff registry, departments, and on-call status</p>
+                            </div>
+                            <div class="care-page-actions">
+                                <lightning-combobox
+                                    name="deptFilter"
+                                    label="Specialty"
+                                    value={doctorDeptFilter}
+                                    options={doctorDeptOptions}
+                                    onchange={handleDoctorDeptChange}
+                                    variant="label-hidden">
+                                </lightning-combobox>
+                            </div>
+                        </div>
+
+                        <div class="care-filter-card slds-m-bottom_medium">
+                            <lightning-input 
+                                type="search" 
+                                placeholder="Search doctor by name or specialty..." 
+                                value={doctorSearchKey} 
+                                onchange={handleDoctorSearchChange} 
+                                variant="label-hidden">
+                            </lightning-input>
+                        </div>
+
+                        <template if:true={isLoadingDoctors}>
+                            <div class="slds-p-around_large slds-text-align_center">
+                                <lightning-spinner alternative-text="Loading doctors..." size="medium"></lightning-spinner>
+                            </div>
+                        </template>
+                        <template if:false={isLoadingDoctors}>
+                            <div class="care-doctors-grid">
+                                <template for:each={filteredDoctors} for:item="doc">
+                                    <div key={doc.doctorId} class="care-doctor-card">
+                                        <div>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                                                <div class="doctor-avatar-circle slds-m-right_small">
+                                                    {doc.initials}
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-bold text-dark slds-text-heading_small">{doc.name}</h3>
+                                                    <div class="text-muted slds-text-body_small">{doc.department}</div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-m-bottom_small">
+                                                <span class={doc.badgeClass}>{doc.badgeLabel}</span>
+                                            </div>
+                                            <div class="text-muted slds-text-body_small slds-m-bottom_xx-small">
+                                                <strong>Specialty:</strong> {doc.specialty}
+                                            </div>
+                                            <div class="text-muted slds-text-body_small slds-m-bottom_small">
+                                                <strong>Consultation Fee:</strong> ₹{doc.consultationFee}
+                                            </div>
+                                        </div>
+                                        <div class="slds-grid slds-gutters slds-m-top_small">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <button class="slds-button slds-button_neutral slds-size_1-of-1" onclick={handleBookWithDoctor}>
+                                                    Book OPD
+                                                </button>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <button class="slds-button slds-button_brand slds-size_1-of-1" onclick={handleAdmitWithDoctor}>
+                                                    Admit Bed
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- 4. APPOINTMENTS (STAFF SCHEDULING) -->
+                <template if:true={isAppointmentsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Hospital Outpatient Scheduling</h1>
+                                <p class="care-page-subtitle">OPD booking wizard, specialist slot allocation, and schedule administration</p>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-appointment-wizard></c-appointment-wizard>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-doctor-search></c-doctor-search>
+                                <div class="slds-m-top_medium">
+                                    <c-my-appointments></c-my-appointments>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 5. WARDS & BEDS (STAFF INVENTORY) -->
+                <template if:true={isWardsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Ward Capacity &amp; Bed Management</h1>
+                                <p class="care-page-subtitle">Real-time bed allocation, room status visualization, and maintenance controls</p>
+                            </div>
+                            <div class="care-page-actions">
+                                <button class="care-btn-primary" onclick={handleQuickAdmit}>
+                                    <span>Assign Inpatient Bed</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <c-ward-bed-manager></c-ward-bed-manager>
+                    </div>
+                </template>
+
+                <!-- 6. ADMISSIONS (STAFF 6-STEP WORKFLOW) -->
+                <template if:true={isAdmissionsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Inpatient Admissions &amp; Discharge</h1>
+                                <p class="care-page-subtitle">Concurrency-protected 6-step admission wizard and discharge authorization</p>
+                            </div>
+                        </div>
+
+                        <c-patient-admission-workspace onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
+                    </div>
+                </template>
+
+                <!-- 7. CLINICAL CHART & VITALS (STAFF ONLY) -->
+                <template if:true={isClinicalPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Inpatient Clinical Documentation &amp; Vitals</h1>
+                                <p class="care-page-subtitle">Longitudinal vital surveillance, doctor rounds, and abnormal alerts</p>
+                            </div>
+                        </div>
+
+                        <c-inpatient-clinical-workspace></c-inpatient-clinical-workspace>
+                    </div>
+                </template>
+
+                <!-- 8. PAYMENTS & BILLING (STAFF ONLY) -->
+                <template if:true={isPaymentsPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Hospital Billing &amp; Invoicing</h1>
+                                <p class="care-page-subtitle">Inpatient &amp; outpatient invoice records, settlement confirmation, and receipts</p>
+                            </div>
+                        </div>
+
+                        <c-patient-billing></c-patient-billing>
+                    </div>
+                </template>
+
+                <!-- 9. AGENTFORCE AI (STAFF ASSISTANT) -->
+                <template if:true={isAgentforcePage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">CareNest Assistant (Agentforce AI)</h1>
+                                <p class="care-page-subtitle">Autonomous healthcare AI assistant grounded in Salesforce hospital records</p>
+                            </div>
+                        </div>
+
+                        <c-agentforce-assistant-widget></c-agentforce-assistant-widget>
+                    </div>
+                </template>
+
+                <!-- 10. ADMIN & TELEMETRY (STAFF ONLY) -->
+                <template if:true={isAdminPage}>
+                    <div class="care-page-container">
+                        <div class="care-page-header">
+                            <div class="care-page-title-group">
+                                <h1 class="care-page-title">Hospital Operations Telemetry &amp; System Health</h1>
+                                <p class="care-page-subtitle">Enterprise database census, security policies, concurrency locks, and telemetry audit</p>
+                            </div>
+                        </div>
+
+                        <div class="care-admin-telemetry-grid">
+                            <div class="care-admin-panel">
+                                <div class="care-admin-panel-title">
+                                    <lightning-icon icon-name="standard:database" size="small"></lightning-icon>
+                                    <span>Live Database Census</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Active Inpatient Admissions (Admission__c)</span>
+                                    <span class="care-census-count">{metrics.activeAdmissions}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Total Installed Hospital Beds (Bed__c)</span>
+                                    <span class="care-census-count">{metrics.totalBeds}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Available Inpatient Beds</span>
+                                    <span class="care-census-count">{metrics.availableBeds}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Occupied Inpatient Beds</span>
+                                    <span class="care-census-count">{metrics.occupiedBeds}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Active Attending Doctors (Doctor__c)</span>
+                                    <span class="care-census-count">{metrics.totalDoctors}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Active Abnormal Clinical Alerts</span>
+                                    <span class="care-census-count">{metrics.activeClinicalAlerts}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Total Outstanding / Billed (INR)</span>
+                                    <span class="care-census-count">₹{metrics.totalBilled}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Total Revenue Settled (INR)</span>
+                                    <span class="care-census-count">₹{metrics.totalPaid}</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Patients in Master Directory</span>
+                                    <span class="care-census-count">{patientCount}</span>
+                                </div>
+                            </div>
+
+                            <div class="care-admin-panel">
+                                <div class="care-admin-panel-title">
+                                    <lightning-icon icon-name="standard:shield" size="small"></lightning-icon>
+                                    <span>Security &amp; Architecture Status</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Agentforce Bot Version</span>
+                                    <span class="slds-badge slds-theme_success font-bold">CareNest_Assistant v1</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Concurrency Control</span>
+                                    <span class="slds-badge slds-theme_success font-bold">FOR UPDATE Bed Locking</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Data Sharing Model</span>
+                                    <span class="slds-badge slds-badge_lightest font-bold">Private + Apex Sharing</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Field-Level Security (FLS)</span>
+                                    <span class="slds-badge slds-badge_lightest font-bold">Enforced (WITH USER_MODE)</span>
+                                </div>
+                                <div class="care-census-row">
+                                    <span class="care-census-label">Target Salesforce Org</span>
+                                    <span class="font-bold">carenest (00Dg700000Cpr9pEAB)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            </template>
+        </main>
+
+        <!-- ================================================================= -->
+        <!-- 3. PATIENT REGISTRATION MODAL                                     -->
+        <!-- ================================================================= -->
+        <template if:true={isRegisterPatientModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header care-modal-header">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close" title="Close" variant="bare-inverse" class="slds-modal__close" onclick={handleCloseRegisterModal}></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium font-bold">Register New Hospital Patient</h2>
+                        <p class="slds-m-top_x-small text-muted">Create official patient contact record with auto-generated Patient Code (CN-PAT-XXXXX)</p>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template if:true={registrationSuccessData}>
+                            <div class="slds-box slds-theme_success slds-p-around_large slds-text-align_center">
+                                <div class="slds-text-heading_medium font-bold slds-m-bottom_small">
+                                    🎉 Patient Registered Successfully!
+                                </div>
+                                <p><strong>Name:</strong> {registrationSuccessData.patientName}</p>
+                                <p><strong>Patient Code:</strong> <span class="slds-badge slds-badge_inverse font-bold">{registrationSuccessData.patientCode}</span></p>
+                                <div class="slds-m-top_medium">
+                                    <button class="care-btn-primary" onclick={handleJumpToAdmissionsFromRegister}>
+                                        Admit Patient to Hospital Bed Now →
+                                    </button>
+                                    <button class="slds-button slds-button_neutral slds-m-left_x-small" onclick={handleCloseRegisterModal}>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template if:false={registrationSuccessData}>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-input name="firstName" label="First Name" value={newPatientForm.firstName} onchange={handleNewPatientInputChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-input name="lastName" label="Last Name" value={newPatientForm.lastName} onchange={handleNewPatientInputChange} required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-input name="phone" type="tel" label="Phone Number" placeholder="+91 98765 43210" value={newPatientForm.phone} onchange={handleNewPatientInputChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-input name="email" type="email" label="Email Address" placeholder="patient@example.com" value={newPatientForm.email} onchange={handleNewPatientInputChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <lightning-input name="birthdate" type="date" label="Date of Birth" value={newPatientForm.birthdate} onchange={handleNewPatientInputChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <div class="slds-form-element slds-p-top_large text-muted slds-text-body_small">
+                                        ℹ️ A unique sequential <strong>Patient Code (CN-PAT-XXXXX)</strong> will be automatically generated upon saving.
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={handleCloseRegisterModal}>Cancel</button>
+                        <template if:false={registrationSuccessData}>
+                            <button class="care-btn-primary slds-m-left_x-small" onclick={handleSubmitRegisterPatient} disabled={isSubmittingRegistration}>
+                                Save &amp; Register Patient
+                            </button>
+                        </template>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- ================================================================= -->
+        <!-- 4. PATIENT PROFILE MODAL                                          -->
+        <!-- ================================================================= -->
+        <template if:true={isPatientProfileModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close" title="Close" variant="bare-inverse" class="slds-modal__close" onclick={handleClosePatientProfile}></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium font-bold">Patient Master Record</h2>
+                        <p class="slds-m-top_x-small text-muted">{selectedPatientProfile.name} • {selectedPatientProfile.patientCode}</p>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <div class="text-muted slds-text-body_small font-bold">FULL NAME</div>
+                                    <div class="slds-text-heading_small font-bold">{selectedPatientProfile.name}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <div class="text-muted slds-text-body_small font-bold">PATIENT CODE</div>
+                                    <div><span class="patient-code-tag">{selectedPatientProfile.patientCode}</span></div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <div class="text-muted slds-text-body_small font-bold">CONTACT PHONE</div>
+                                    <div>{selectedPatientProfile.phone}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <div class="text-muted slds-text-body_small font-bold">EMAIL ADDRESS</div>
+                                    <div>{selectedPatientProfile.email}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={handleClosePatientProfile}>Close</button>
+                        <button class="care-btn-primary slds-m-left_x-small" onclick={handleQuickAdmit}>Admit to Bed</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- ================================================================= -->
+        <!-- 5. PROFESSIONAL HEALTHCARE FOOTER (TRIPNEST-STYLE)                -->
+        <!-- ================================================================= -->
+        <footer class="care-site-footer">
+            <div class="care-footer-grid">
+                <!-- Col 1: About -->
+                <div class="care-footer-col">
+                    <div class="care-footer-brand">
+                        <div class="care-logo-icon-wrap care-logo-sm">
+                            <lightning-icon icon-name="standard:hospital" size="x-small" variant="inverse"></lightning-icon>
+                        </div>
+                        <span class="care-footer-brand-name">Care<span>Nest</span></span>
+                    </div>
+                    <p class="care-footer-text">
+                        CareNest Hospital is an architectural showcase showcasing unified healthcare on Salesforce Experience Cloud, Health Cloud, and Agentforce.
+                    </p>
+                    <div class="care-footer-accreditation">
+                        <span class="care-accred-badge">Salesforce Portfolio</span>
+                        <span class="care-accred-badge">Health Cloud Demo</span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Quick Links -->
+                <div class="care-footer-col">
+                    <h4 class="care-footer-heading">Patient Portals</h4>
+                    <ul class="care-footer-list">
+                        <li><a href={homeUrl} data-page="home" onclick={handleNavSelect}>Home Overview</a></li>
+                        <li><a href="#specialties" data-page="specialties" onclick={handleNavSelect}>Medical Specialties</a></li>
+                        <li><a href={doctorsUrl} data-page="doctors" onclick={handleNavSelect}>Find a Doctor</a></li>
+                        <li><a href={appointmentsUrl} data-page="appointments" onclick={handleNavSelect}>Book Appointment</a></li>
+                        <li><a href="#facilities" data-page="facilities" onclick={handleNavSelect}>Wards &amp; Facilities</a></li>
+                        <li><a href="#visiting" data-page="visiting" onclick={handleNavSelect}>Visiting Hours</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Clinical Services -->
+                <div class="care-footer-col">
+                    <h4 class="care-footer-heading">Specialties</h4>
+                    <ul class="care-footer-list">
+                        <li><span>General &amp; Internal Medicine</span></li>
+                        <li><span>Paediatrics &amp; Neonatology</span></li>
+                        <li><span>Orthopaedics &amp; Joint Replacement</span></li>
+                        <li><span>Dermatology &amp; Cosmetology</span></li>
+                        <li><span>Ear, Nose &amp; Throat (ENT)</span></li>
+                        <li><span>Critical Care &amp; Intensive Care Unit</span></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Emergency & Staff -->
+                <div class="care-footer-col">
+                    <h4 class="care-footer-heading">Demo Emergency Desk</h4>
+                    <p class="care-footer-text">Plot 14, Health City Knowledge Park, Bangalore 560100 (Demo Campus)</p>
+                    <div class="care-footer-callout">
+                        <div class="care-footer-phone">Demo Helpline: +1 (555) 019-CARE (Simulated Demo)</div>
+                        <div class="care-footer-phone">Demo Ambulance: (555) 019-9110 (Simulated Demo)</div>
+                    </div>
+
+                    <div class="slds-m-top_medium">
+                        <template if:true={isPublicExperience}>
+                            <button class="care-btn-outline-footer" onclick={handleSwitchToStaffWorkspace}>
+                                🔒 Hospital Staff Intranet Portal →
+                            </button>
+                        </template>
+                        <template if:true={isStaffExperience}>
+                            <button class="care-btn-outline-footer" onclick={handleSwitchToPublicWebsite}>
+                                ← Public Patient Website
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="care-footer-bottom">
+                <p>CareNest Hospital Demonstration System © 2026 • Salesforce Portfolio Showcase • Not a live medical service</p>
+            </div>
+        </footer>
+
+    </div>
+</template>

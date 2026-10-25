@@ -1,0 +1,113 @@
+<template>
+    <div class="master-workspace-wrapper">
+        <!-- Top App Navigation & Persona Selector Bar -->
+        <div class="slds-page-header care-master-header slds-m-bottom_medium">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-hospital care-master-icon">
+                                <lightning-icon icon-name="standard:hospital" size="medium"></lightning-icon>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <h1 class="slds-page-header__title care-master-title">
+                                CareNest Hospital Management System
+                            </h1>
+                            <p class="care-master-subtitle">Enterprise Healthcare Intelligence • Inpatient &amp; Outpatient Operations Suite</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning-button
+                                label="Register New Patient"
+                                variant="brand"
+                                icon-name="utility:user"
+                                onclick={handleQuickRegisterPatient}
+                                class="slds-m-right_small">
+                            </lightning-button>
+                        </div>
+                        <!-- Role / Persona Quick Selector -->
+                        <div class="slds-page-header__control">
+                            <lightning-combobox
+                                name="personaSelector"
+                                label="View Mode"
+                                value={activePersona}
+                                options={personaOptions}
+                                onchange={handlePersonaChange}
+                                variant="label-hidden"
+                                class="persona-select">
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Master Tabset for All Hospital Workspaces -->
+        <div class="slds-card master-tabset-card">
+            <lightning-tabset variant="scoped" active-tab-value={activeTab}>
+                <!-- 1. Hospital Operations Dashboard -->
+                <lightning-tab label="Operations Center" value="dashboard" icon-name="standard:service_territory_location">
+                    <div class="tab-content-container">
+                        <c-hospital-operations-dashboard></c-hospital-operations-dashboard>
+                    </div>
+                </lightning-tab>
+
+                <!-- 2. Ward & Bed Capacity -->
+                <lightning-tab label="Ward &amp; Bed Capacity" value="wards" icon-name="standard:asset_relationship">
+                    <div class="tab-content-container">
+                        <c-ward-bed-manager></c-ward-bed-manager>
+                    </div>
+                </lightning-tab>
+
+                <!-- 3. Patient Admissions & Discharge -->
+                <lightning-tab label="Admissions &amp; Discharge" value="admissions" icon-name="standard:user">
+                    <div class="tab-content-container">
+                        <c-patient-admission-workspace onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
+                    </div>
+                </lightning-tab>
+
+                <!-- 4. Inpatient Clinical Workspace & Vitals -->
+                <lightning-tab label="Inpatient Clinical Chart" value="clinical" icon-name="standard:stethoscope">
+                    <div class="tab-content-container">
+                        <c-inpatient-clinical-workspace></c-inpatient-clinical-workspace>
+                    </div>
+                </lightning-tab>
+
+                <!-- 5. Outpatient Appointments & Booking -->
+                <lightning-tab label="Appointments &amp; Booking" value="appointments" icon-name="standard:event">
+                    <div class="tab-content-container slds-p-around_medium">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-appointment-wizard></c-appointment-wizard>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-doctor-search></c-doctor-search>
+                                <div class="slds-m-top_medium">
+                                    <c-my-appointments></c-my-appointments>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-tab>
+
+                <!-- 6. Billing & Payments -->
+                <lightning-tab label="Billing &amp; Payments" value="billing" icon-name="standard:currency">
+                    <div class="tab-content-container slds-p-around_medium">
+                        <c-patient-billing></c-patient-billing>
+                    </div>
+                </lightning-tab>
+
+                <!-- 7. Agentforce Assistant -->
+                <lightning-tab label="Agentforce Assistant" value="assistant" icon-name="standard:einstein">
+                    <div class="tab-content-container">
+                        <c-agentforce-assistant-widget></c-agentforce-assistant-widget>
+                    </div>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+    </div>
+</template>

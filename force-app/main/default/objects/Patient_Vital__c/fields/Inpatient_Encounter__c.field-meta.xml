@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Inpatient_Encounter__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Associated inpatient encounter during which vitals were recorded</description>
+    <label>Inpatient Encounter</label>
+    <referenceTo>Inpatient_Encounter__c</referenceTo>
+    <relationshipLabel>Patient Vitals</relationshipLabel>
+    <relationshipName>Patient_Vitals</relationshipName>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

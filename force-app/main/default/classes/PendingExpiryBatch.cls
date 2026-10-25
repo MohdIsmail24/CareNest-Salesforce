@@ -18,28 +18,37 @@ public with sharing class PendingExpiryBatch implements Database.Batchable<sObje
     }
 
     public void execute(Database.BatchableContext bc, List<Appointment__c> scope) {
-        List<Appointment__c> toCancel = new List<Appointment__c>();
-        for (Appointment__c appt : scope) {
-            if (appt.Amount_Paid__c == null || appt.Amount_Paid__c == 0) {
-                appt.Status__c = 'Cancelled';
-                toCancel.add(appt);
-            }
-        }
-
-        if (!toCancel.isEmpty()) {
-            Database.SaveResult[] srList = Database.update(toCancel, false);
-            for (Database.SaveResult sr : srList) {
-                if (!sr.isSuccess()) {
-                    for (Database.Error err : sr.getErrors()) {
-                        System.debug(LoggingLevel.ERROR, 'PendingExpiryBatch DML Error on ' + sr.getId() + ': ' + err.getMessage());
-                    }
+        try {
+            List<Appointment__c> toCancel = new List<Appointment__c>();
+            for (Appointment__c appt : scope) {
+                if (appt.Amount_Paid__c == null || appt.Amount_Paid__c == 0) {
+                    appt.Status__c = 'Cancelled';
+                    toCancel.add(appt);
                 }
             }
+
+            if (!toCancel.isEmpty()) {
+                Database.SaveResult[] srList = Database.update(toCancel, false);
+                ErrorLogService.logSaveResults('PendingExpiryBatch', srList, toCancel);
+            }
+        } catch (Exception ex) {
+            ErrorLogService.log('PendingExpiryBatch', ex, null);
+            throw ex;
         }
     }
 
     public void finish(Database.BatchableContext bc) {
-        System.debug(LoggingLevel.INFO, 'PendingExpiryBatch execution completed successfully.');
+        if (bc != null && bc.getJobId() != null) {
+            List<AsyncApexJob> jobs = [
+                SELECT Id, Status, NumberOfErrors, JobItemsProcessed, TotalJobItems
+                FROM AsyncApexJob
+                WHERE Id = :bc.getJobId()
+                LIMIT 1
+            ];
+            if (!jobs.isEmpty() && jobs[0].NumberOfErrors > 0) {
+                ErrorLogService.log('PendingExpiryBatch.finish', 'Batch completed with ' + jobs[0].NumberOfErrors + ' error(s).', jobs[0].Id);
+            }
+        }
     }
 
     public void execute(SchedulableContext sc) {

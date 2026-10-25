@@ -1,0 +1,2922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareNest Hospital — Tertiary Healthcare & Research (Salesforce Showcase)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        /* =========================================================================
+   CARENEST MODERN HOSPITAL WEBSITE — TRIPNEST-STYLE STYLESHEET
+   Medical Brand Palette: Teal (#0d9488, #0f766e) & Navy (#0f172a, #1e293b)
+   ========================================================================= */
+
+:host {
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+/* Base Wrapper */
+.care-site-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* =========================================================================
+   0. TOP UTILITY RIBBON
+   ========================================================================= */
+.care-top-utility-ribbon {
+    background: #0f172a;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    padding: 0.35rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.care-utility-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.care-utility-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.care-emergency-hotline {
+    color: #fca5a5;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.care-utility-divider {
+    color: #334155;
+}
+
+.care-utility-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.care-utility-right {
+    display: flex;
+    align-items: center;
+}
+
+.care-utility-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.15s ease;
+}
+
+.care-utility-btn:hover {
+    background: rgba(13, 148, 136, 0.4);
+    border-color: #0d9488;
+}
+
+.care-utility-btn-active {
+    background: #0d9488;
+    border-color: #0d9488;
+}
+
+/* =========================================================================
+   1. TOP STICKY NAVIGATION HEADER (WHITE, MODERN, BRANDED)
+   ========================================================================= */
+.care-nav-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease-in-out;
+}
+
+.care-nav-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0.45rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+}
+
+/* Brand Identity */
+.care-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.care-logo-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
+    transition: transform 0.2s ease;
+}
+
+.care-logo-sm {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+}
+
+.care-brand-link:hover .care-logo-icon-wrap {
+    transform: scale(1.05);
+}
+
+.care-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.care-brand-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+    line-height: 1.1;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.care-brand-accent {
+    color: #0d9488;
+}
+
+.care-brand-tagline {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+/* Center Navigation Links */
+.care-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow-x: visible;
+    flex-shrink: 0;
+}
+
+.care-nav-menu::-webkit-scrollbar {
+    display: none;
+}
+
+.care-nav-menu a,
+.care-nav-link,
+.care-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.38rem 0.52rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #334155 !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    position: relative;
+    user-select: none;
+}
+
+
+
+.care-nav-menu a:hover,
+.care-nav-link:hover,
+.care-nav-item:hover {
+    color: #0f766e !important;
+    background-color: #f0fdfa;
+    border-color: #ccfbf1;
+    text-decoration: none !important;
+}
+
+.care-nav-menu a:focus-visible,
+.care-nav-link:focus-visible,
+.care-nav-item:focus-visible {
+    outline: 2px solid #0d9488;
+    outline-offset: 2px;
+}
+
+.care-nav-link.care-nav-link-active,
+.care-nav-menu a.care-nav-link-active,
+.care-nav-item.is-active {
+    color: #0f766e !important;
+    background-color: #f0fdfa;
+    border-color: #99f6e4;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(13, 148, 136, 0.1);
+    text-decoration: none !important;
+}
+
+.care-nav-link.care-nav-link-active::after,
+.care-nav-item.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.25rem;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    background-color: #0d9488;
+    border-radius: 3px 3px 0 0;
+}
+
+/* Nav Badges */
+.care-nav-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 9999px;
+    line-height: 1;
+}
+
+.care-badge-teal {
+    background-color: #ccfbf1;
+    color: #0f766e;
+}
+
+.care-badge-amber {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+.care-badge-red {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    animation: pulseAlert 2s infinite;
+}
+
+@keyframes pulseAlert {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.08); }
+}
+
+/* Header Right Actions */
+.care-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+}
+
+
+.care-emergency-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 0.35rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.care-emergency-pill:hover {
+    background: #fee2e2;
+    transform: translateY(-1px);
+}
+
+.care-emergency-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    animation: emergencyPulse 1.5s infinite;
+}
+
+@keyframes emergencyPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+.care-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+    transition: all 0.15s ease;
+}
+
+
+.care-btn-primary:hover {
+    background: linear-gradient(135deg, #115e59 0%, #0f766e 100%);
+    box-shadow: 0 4px 8px rgba(13, 148, 136, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Staff Top Ribbon in Staff Mode */
+.care-staff-banner {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 0.65rem 1.25rem;
+    border-bottom: 2px solid #0d9488;
+}
+
+.care-staff-banner-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.care-staff-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.care-staff-badge {
+    background: #0d9488;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+}
+
+.care-staff-context {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+}
+
+.care-btn-outline-light {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.care-btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+
+/* Role / Persona Badge Pill */
+.care-role-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.25rem 0.5rem;
+}
+
+.care-role-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+}
+
+/* =========================================================================
+   2. PUBLIC HERO BANNER (TRIPNEST HEALTHCARE EXPERIENCE)
+   ========================================================================= */
+.care-public-hero {
+    position: relative;
+    background: linear-gradient(135deg, #042f2e 0%, #0f172a 60%, #1e293b 100%);
+    color: #ffffff;
+    padding: 3.5rem 1.25rem 3.5rem 1.25rem;
+    overflow: hidden;
+}
+
+.care-hero-media-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(13, 148, 136, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, rgba(15, 118, 110, 0.25) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.care-public-hero-container {
+    max-width: 1360px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+.care-hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.care-hero-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(13, 148, 136, 0.2);
+    border: 1px solid rgba(45, 212, 191, 0.4);
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #5eead4;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.025em;
+}
+
+.care-public-hero-title {
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin-bottom: 1.25rem;
+}
+
+.care-hero-highlight {
+    background: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.care-public-hero-desc {
+    max-width: 680px;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin-bottom: 2rem;
+}
+
+/* Fast Booking Card */
+.care-fast-booking-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.care-fast-booking-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.care-fast-booking-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1.4fr 1.4fr 1.1fr;
+    gap: 0.85rem;
+    align-items: flex-end;
+}
+
+.care-fast-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 0.35rem;
+}
+
+.care-fast-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.care-fast-input-wrap:focus-within {
+    border-color: #0d9488;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.care-native-select, .care-native-date {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f172a;
+    outline: none;
+}
+
+.care-btn-fast-book {
+    width: 100%;
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.care-btn-fast-book:hover {
+    background: linear-gradient(135deg, #115e59 0%, #0f766e 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(13, 148, 136, 0.4);
+}
+
+.care-hero-disclaimer {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+/* Right Column: Hero Visual Image Card */
+.care-hero-right {
+    display: flex;
+    justify-content: center;
+}
+
+.care-hero-image-card {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
+    background: #0f172a;
+}
+
+.care-hero-img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.care-hero-image-card:hover .care-hero-img {
+    transform: scale(1.03);
+}
+
+.care-hero-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(15, 23, 42, 0.9) 100%);
+    pointer-events: none;
+}
+
+.care-hero-floating-card {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0.85rem 1.15rem;
+    color: #ffffff;
+}
+
+.care-hero-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.care-dot-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    animation: emergencyPulse 1.8s infinite;
+}
+
+.care-hero-floating-card p {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Trust Badges Bar */
+.care-trust-metrics-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+.care-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.care-trust-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.care-trust-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(13, 148, 136, 0.3);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2dd4bf;
+    flex-shrink: 0;
+}
+
+.care-trust-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.care-trust-subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.2rem;
+}
+
+.care-why-icon-box,
+.care-info-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #f0fdfa;
+    border: 1px solid #ccfbf1;
+    color: #0d9488;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.care-emergency-disclaimer-card {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 1.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #fca5a5;
+    max-width: 800px;
+}
+
+/* =========================================================================
+   3. PUBLIC SECTIONS SHARED STYLING
+   ========================================================================= */
+.care-public-section {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 4.5rem 1.25rem;
+}
+
+.care-section-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 3rem auto;
+}
+
+.care-section-kicker {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0d9488;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.care-section-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.75rem;
+}
+
+.care-section-subtitle {
+    font-size: 1.05rem;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+/* Specialties Grid */
+.care-specialties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 1.5rem;
+}
+
+.care-specialty-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.care-specialty-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(13, 148, 136, 0.12);
+    border-color: #99f6e4;
+}
+
+.care-spec-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.care-spec-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f0fdfa;
+    color: #0d9488;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.care-spec-badge {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+}
+
+.care-spec-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.care-spec-desc {
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.55;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.care-spec-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.care-spec-lead {
+    font-size: 0.8125rem;
+}
+
+.care-lead-label {
+    color: #94a3b8;
+    display: block;
+}
+
+.care-lead-name {
+    color: #0f172a;
+}
+
+.care-spec-action-btn {
+    background: #f0fdfa;
+    color: #0f766e;
+    border: 1px solid #ccfbf1;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.care-spec-action-btn:hover {
+    background: #0d9488;
+    color: #ffffff;
+    border-color: #0d9488;
+}
+
+/* Why Choose Section */
+.care-why-section {
+    background: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.care-why-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.care-why-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.03);
+    text-align: left;
+}
+
+.care-why-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.care-why-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.care-why-card p {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.55;
+}
+
+/* Facilities Grid */
+.care-facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.care-facility-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.care-fac-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.care-fac-badge {
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+}
+
+.care-fac-capacity {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.care-fac-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.care-fac-type {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0d9488;
+    margin-bottom: 0.75rem;
+}
+
+.care-fac-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.care-fac-amenity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #e2e8f0;
+}
+
+/* Visiting Guidelines Section */
+.care-visiting-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.care-visiting-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2.25rem;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.care-visiting-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #0f766e;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    margin-bottom: 1rem;
+}
+
+.care-visiting-card h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+}
+
+.care-visiting-card p {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin-bottom: 1.25rem;
+}
+
+.care-visiting-rules {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.care-visiting-rules li {
+    font-size: 0.875rem;
+    color: #334155;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.care-visiting-rules li::before {
+    content: '•';
+    position: absolute;
+    left: 0.5rem;
+    color: #0d9488;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.care-pass-note {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+    color: #475569;
+}
+
+/* Emergency Banner */
+.care-emergency-banner {
+    background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    color: #ffffff;
+    padding: 3.5rem 1.25rem;
+    text-align: center;
+}
+
+.care-emergency-inner {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.care-emergency-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.care-pulse-circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #fca5a5;
+    animation: emergencyPulse 1.5s infinite;
+}
+
+.care-emergency-inner h2 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.care-emergency-inner p {
+    font-size: 1.1rem;
+    color: #fee2e2;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.care-emergency-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.care-btn-emergency-call {
+    background: #ffffff;
+    color: #b91c1c;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 0.85rem 1.75rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.care-btn-emergency-call:hover {
+    transform: scale(1.03);
+}
+
+.care-btn-ambulance-dispatch {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.85rem 1.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.care-btn-ambulance-dispatch:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.care-emergency-disclaimer {
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
+    color: #fee2e2;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    border: 1px solid rgba(254, 202, 202, 0.25);
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.45;
+}
+
+
+/* Contact & Inquiry Grid */
+.care-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 2.5rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.care-contact-info-card h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+}
+
+.care-contact-info-card p {
+    color: #64748b;
+    margin-bottom: 2rem;
+}
+
+.care-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.care-info-icon {
+    font-size: 1.5rem;
+}
+
+.care-info-item strong {
+    color: #0f172a;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.care-info-item p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.care-contact-form-card h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.35rem;
+}
+
+.care-contact-form-card p {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.care-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.care-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.care-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.care-form-group label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.care-form-group input, .care-form-group select, .care-form-group textarea {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #0f172a;
+    background: #f8fafc;
+    transition: border-color 0.2s ease;
+}
+
+.care-form-group input:focus, .care-form-group select:focus, .care-form-group textarea:focus {
+    border-color: #0d9488;
+    background: #ffffff;
+    outline: none;
+}
+
+.care-btn-full {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9375rem;
+    justify-content: center;
+}
+
+/* =========================================================================
+   4. STAFF WORKSPACE & CONTAINER STYLES
+   ========================================================================= */
+.care-main-content {
+    flex: 1;
+}
+
+.care-page-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem 1.25rem;
+}
+
+.care-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.care-page-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.care-page-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+/* Operational KPI Grid */
+.care-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.care-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.care-kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.care-kpi-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.care-kpi-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-icon-teal { background: #f0fdfa; color: #0d9488; }
+.kpi-icon-navy { background: #f1f5f9; color: #0f172a; }
+.kpi-icon-amber { background: #fffbeb; color: #d97706; }
+
+.care-kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    margin-bottom: 0.25rem;
+}
+
+.care-kpi-subtext {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Alert Ticker */
+.care-alert-ticker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #991b1b;
+}
+
+.care-alert-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.care-alert-action-btn {
+    background: #ffffff;
+    border: 1px solid #f87171;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Filter Card */
+.care-filter-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Table Card */
+.care-table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.care-patient-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.care-patient-table th {
+    background: #f8fafc;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.care-patient-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+.patient-code-tag {
+    display: inline-block;
+    background: #f0fdfa;
+    color: #0f766e;
+    border: 1px solid #ccfbf1;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+}
+
+.status-badge-active {
+    background: #ecfdf5;
+    color: #047857;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.status-badge-inactive {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Doctors Grid */
+.care-doctors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.care-doctor-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.doctor-avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f0fdfa;
+    color: #0d9488;
+    border: 1px solid #ccfbf1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.badge-opd-available {
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+}
+
+.badge-inpatient-oncall {
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+}
+
+/* Admin Telemetry */
+.care-admin-telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.care-admin-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.care-admin-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.care-census-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f8fafc;
+    font-size: 0.875rem;
+}
+
+.care-census-label { color: #475569; font-weight: 500; }
+.care-census-count { font-weight: 700; color: #0f172a; }
+
+/* Access Denied Strip */
+.care-access-denied-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    margin: 1.5rem 1.25rem 0 1.25rem;
+}
+
+.care-access-denied-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #92400e;
+    font-size: 0.875rem;
+}
+
+.care-access-denied-btn {
+    background: #ffffff;
+    border: 1px solid #fcd34d;
+    color: #b45309;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* =========================================================================
+   5. TRIPNEST-STYLE FOOTER
+   ========================================================================= */
+.care-site-footer {
+    background: #0f172a;
+    color: #94a3b8;
+    padding: 4rem 1.25rem 2rem 1.25rem;
+    margin-top: auto;
+}
+
+.care-footer-grid {
+    max-width: 1320px;
+    margin: 0 auto 3rem auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 2.5rem;
+}
+
+.care-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.care-footer-brand-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.care-footer-brand-name span { color: #0d9488; }
+
+.care-footer-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+.care-footer-accreditation {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.care-accred-badge {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #5eead4;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.care-footer-heading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.25rem;
+}
+
+.care-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+}
+
+.care-footer-list a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.care-footer-list a:hover {
+    color: #2dd4bf;
+}
+
+.care-footer-callout {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+}
+
+.care-footer-phone {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.care-btn-outline-footer {
+    background: transparent;
+    border: 1px solid #0d9488;
+    color: #2dd4bf;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.45rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.care-btn-outline-footer:hover {
+    background: #0d9488;
+    color: #ffffff;
+}
+
+.care-footer-bottom {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    border-top: 1px solid #1e293b;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+/* =========================================================================
+   6. RESPONSIVE DESIGN & MOBILE DRAWER
+   ========================================================================= */
+.care-mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.4rem;
+    cursor: pointer;
+    color: #475569;
+}
+
+.care-mobile-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1.25rem;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.care-mobile-drawer a {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #334155;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.care-mobile-drawer a:hover {
+    background-color: #f1f5f9;
+    color: #0f766e;
+}
+
+@media (max-width: 1280px) and (min-width: 1025px) {
+    .care-nav-inner {
+        padding: 0.4rem 0.75rem;
+        gap: 0.35rem;
+    }
+    .care-nav-menu {
+        gap: 0.15rem;
+    }
+    .care-nav-menu a,
+    .care-nav-link,
+    .care-nav-item {
+        padding: 0.38rem 0.45rem;
+        font-size: 0.78rem;
+        gap: 0.25rem;
+    }
+    .care-brand-tagline {
+        display: none;
+    }
+    .care-nav-actions .care-btn-primary {
+        padding: 0.38rem 0.65rem;
+        font-size: 0.78rem;
+    }
+    .care-nav-actions .care-emergency-pill {
+        padding: 0.38rem 0.6rem;
+        font-size: 0.76rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .care-nav-menu {
+        display: none;
+    }
+    .care-mobile-menu-btn {
+        display: flex;
+    }
+    .care-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .care-fast-booking-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .care-trust-metrics-bar {
+        grid-template-columns: 1fr 1fr;
+    }
+    .care-why-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .care-footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .care-public-hero-title {
+        font-size: 2rem;
+    }
+    .care-fast-booking-grid {
+        grid-template-columns: 1fr;
+    }
+    .care-trust-metrics-bar {
+        grid-template-columns: 1fr;
+    }
+    .care-why-grid {
+        grid-template-columns: 1fr;
+    }
+    .care-visiting-container {
+        grid-template-columns: 1fr;
+    }
+    .care-contact-grid {
+        grid-template-columns: 1fr;
+    }
+    .care-form-row {
+        grid-template-columns: 1fr;
+    }
+    .care-footer-grid {
+        grid-template-columns: 1fr;
+    }
+    .care-hide-mobile {
+        display: none !important;
+    }
+    .care-utility-inner {
+        flex-direction: column;
+        gap: 0.35rem;
+        align-items: stretch;
+    }
+    .care-utility-left {
+        justify-content: space-between;
+        font-size: 0.7rem;
+    }
+    .care-utility-right {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 640px) {
+    .care-site-wrapper {
+        overflow-x: hidden;
+    }
+    .care-top-utility-ribbon {
+        font-size: 0.68rem;
+        padding: 0.3rem 0.6rem;
+    }
+    .care-utility-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .care-utility-left {
+        gap: 0.3rem;
+    }
+    .care-utility-divider, .care-utility-info {
+        display: none !important;
+    }
+    .care-utility-btn {
+        padding: 0.15rem 0.45rem;
+        font-size: 0.68rem;
+    }
+    .care-nav-header {
+        padding: 0.4rem 0.75rem;
+    }
+    .care-brand-tagline {
+        display: none !important;
+    }
+    .care-brand-name {
+        font-size: 1.15rem;
+    }
+    .care-nav-actions {
+        gap: 0.45rem;
+    }
+    .care-nav-actions .care-btn-primary {
+        display: none !important;
+    }
+    .care-nav-actions .care-emergency-pill {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+        gap: 0.3rem;
+    }
+    .care-public-hero-title {
+        font-size: 1.7rem;
+        line-height: 1.25;
+    }
+    .care-fast-booking-card {
+        padding: 1rem;
+    }
+    .care-hero-section {
+        padding: 2rem 1rem 3rem;
+    }
+}
+
+
+        
+        .svg-icon { display: inline-flex; vertical-align: middle; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <div class="care-site-wrapper" id="app-root">
+
+        <!-- ================================================================= -->
+        <!-- 0. TOP UTILITY RIBBON (EMERGENCY HOTLINE & EXPERIENCE TOGGLE)    -->
+        <!-- ================================================================= -->
+        <div class="care-top-utility-ribbon">
+            <div class="care-utility-inner">
+                <div class="care-utility-left">
+                    <span class="care-emergency-hotline">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <strong>Demo Helpline:</strong> +1 (555) 019-CARE (Simulated Demo)
+                    </span>
+
+                    <span class="care-utility-divider">|</span>
+                    <span class="care-utility-info">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Demo OPD: Mon - Sat 8:00 AM – 8:00 PM
+                    </span>
+                    <span class="care-utility-divider">|</span>
+                    <span class="care-utility-info care-hide-mobile">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        Salesforce Healthcare Portfolio Showcase
+                    </span>
+                </div>
+                <div class="care-utility-right">
+                    <button id="toggle-experience-btn" class="care-utility-btn" onclick="toggleExperience()">
+                        <span id="toggle-icon"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                        <span id="toggle-experience-text">Hospital Staff Intranet</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- 1. STICKY BRANDED NAVIGATION HEADER (TRIPNEST-STYLE)              -->
+        <!-- ================================================================= -->
+        <header class="care-nav-header">
+            <div class="care-nav-inner">
+                <!-- Brand Logo & Name -->
+                <div class="care-brand-link" onclick="switchPublicSection('home')">
+                    <div class="care-logo-icon-wrap">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h-4"/><path d="M6 12h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M10 22v-4a2 2 0 0 1 4 0v4"/></svg>
+                    </div>
+                    <div class="care-brand-text">
+                        <div class="care-brand-name">Care<span class="care-brand-accent">Nest</span></div>
+                        <span class="care-brand-tagline">Tertiary Healthcare &amp; Research</span>
+                    </div>
+                </div>
+
+                <!-- A. PUBLIC CONSUMER NAVIGATION -->
+                <nav id="public-nav" class="care-nav-menu">
+                    <a class="care-nav-link care-nav-link-active" href="#home" onclick="switchPublicSection('home')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <span>Home</span>
+                    </a>
+                    <a class="care-nav-link" href="#specialties" onclick="switchPublicSection('specialties')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+                        <span>Specialties</span>
+                    </a>
+                    <a class="care-nav-link" href="#doctors" onclick="switchPublicSection('doctors')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Find a Doctor</span>
+                    </a>
+                    <a class="care-nav-link" href="#appointments" onclick="switchPublicSection('appointments')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                        <span>Book OPD</span>
+                    </a>
+                    <a class="care-nav-link" href="#facilities" onclick="switchPublicSection('facilities')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M9 8h1"/><path d="M9 12h1"/><path d="M9 16h1"/><path d="M14 8h1"/><path d="M14 12h1"/><path d="M14 16h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+                        <span>Facilities</span>
+                    </a>
+                    <a class="care-nav-link" href="#visiting" onclick="switchPublicSection('visiting')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        <span>Visiting Info</span>
+                    </a>
+                    <a class="care-nav-link" href="#contact" onclick="switchPublicSection('contact')">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span>Contact &amp; Emergency</span>
+                    </a>
+                </nav>
+
+                <!-- B. INTERNAL STAFF WORKSPACE NAVIGATION (Initially hidden) -->
+                <nav id="staff-nav" class="care-nav-menu" style="display: none;">
+                    <a class="care-nav-link care-nav-link-active" href="#staff-home">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        <span>Operations Center</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-patients">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Patients</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-doctors">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+                        <span>Doctors</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-appointments">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                        <span>Appointments</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-wards">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M9 8h1"/><path d="M9 12h1"/><path d="M9 16h1"/><path d="M14 8h1"/><path d="M14 12h1"/><path d="M14 16h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+                        <span>Wards &amp; Beds</span>
+                        <span class="care-nav-badge care-badge-teal">18 Free</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-admissions">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        <span>Admissions</span>
+                        <span class="care-nav-badge care-badge-amber">14</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-clinical">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        <span>Clinical</span>
+                        <span class="care-nav-badge care-badge-red">2 Alerts</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-payments">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <span>Payments</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-agentforce">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                        <span>Agentforce</span>
+                    </a>
+                    <a class="care-nav-link" href="#staff-admin">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        <span>Admin</span>
+                    </a>
+                </nav>
+
+                <!-- Right Header Actions -->
+                <div class="care-nav-actions">
+                    <a href="#emergency" class="care-emergency-pill">
+                        <span class="care-emergency-dot"></span>
+                        <span>Emergency 24/7</span>
+                    </a>
+                    <button class="care-btn-primary" id="nav-primary-action-btn" onclick="handlePrimaryAction()">
+                        <span id="primary-action-icon"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></span>
+                        <span id="primary-action-text">Book Appointment</span>
+                    </button>
+                    <button class="care-mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
+                        <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Drawer -->
+            <div id="mobile-drawer" class="care-mobile-drawer" style="display: none;">
+                <div id="mobile-public-links">
+                    <a class="care-nav-link" href="#home" onclick="switchPublicSection('home')">Home</a>
+                    <a class="care-nav-link" href="#specialties" onclick="switchPublicSection('specialties')">Specialties</a>
+                    <a class="care-nav-link" href="#doctors" onclick="switchPublicSection('doctors')">Find a Doctor</a>
+                    <a class="care-nav-link" href="#appointments" onclick="switchPublicSection('appointments')">Book Appointment</a>
+                    <a class="care-nav-link" href="#facilities" onclick="switchPublicSection('facilities')">Hospital Facilities</a>
+                    <a class="care-nav-link" href="#visiting" onclick="switchPublicSection('visiting')">Visiting Hours</a>
+                    <a class="care-nav-link" href="#contact" onclick="switchPublicSection('contact')">Contact &amp; Emergency</a>
+                    <div style="margin-top: 1rem;">
+                        <button class="care-btn-primary" style="width: 100%;" onclick="toggleExperience()">
+                            Hospital Staff Intranet Login
+                        </button>
+                    </div>
+                </div>
+                <div id="mobile-staff-links" style="display: none;">
+                    <a class="care-nav-link" href="#staff-home">Operations Center</a>
+                    <a class="care-nav-link" href="#staff-patients">Patients</a>
+                    <a class="care-nav-link" href="#staff-doctors">Doctors</a>
+                    <a class="care-nav-link" href="#staff-appointments">Appointments</a>
+                    <a class="care-nav-link" href="#staff-wards">Wards &amp; Beds</a>
+                    <a class="care-nav-link" href="#staff-admissions">Admissions</a>
+                    <a class="care-nav-link" href="#staff-clinical">Clinical Chart</a>
+                    <a class="care-nav-link" href="#staff-payments">Payments</a>
+                    <a class="care-nav-link" href="#staff-agentforce">Agentforce AI</a>
+                    <a class="care-nav-link" href="#staff-admin">Admin Telemetry</a>
+                    <div style="margin-top: 1rem;">
+                        <button class="care-utility-btn" style="width: 100%;" onclick="toggleExperience()">
+                            ← Return to Public Website
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================================================================= -->
+        <!-- 2. MAIN WEBSITE CONTENT (PUBLIC WEBSITE OR STAFF WORKSPACE)       -->
+        <!-- ================================================================= -->
+        <main class="care-main-content">
+
+            <!-- ============================================================= -->
+            <!-- A. PUBLIC PATIENT/VISITOR EXPERIENCE                          -->
+            <!-- ============================================================= -->
+            <div id="public-experience">
+
+                <!-- 1. Hero Banner with Modern Healthcare Visual Composition -->
+                <section class="care-public-hero" id="home">
+                    <div class="care-hero-media-overlay"></div>
+                    <div class="care-public-hero-container">
+                        <div class="care-hero-grid">
+                            <!-- Left Column: Copy & Fast Booking -->
+                            <div class="care-hero-left">
+                                <div class="care-hero-badge-pill">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                                    <span>Salesforce Healthcare Architecture • Portfolio Showcase</span>
+                                </div>
+                                <h1 class="care-public-hero-title">
+                                    World-Class Healthcare, <br/>
+                                    <span class="care-hero-highlight">Compassionate Clinical Excellence</span>
+                                </h1>
+                                <p class="care-public-hero-desc">
+                                    CareNest connects specialized outpatient clinics, modern surgical suites, rapid emergency clinical triage, and intelligent Agentforce demonstration health assistance.
+                                </p>
+
+                                <!-- Fast Booking Bar -->
+                                <div class="care-fast-booking-card">
+                                    <div class="care-fast-booking-title">
+                                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                        <span>Schedule an Outpatient Consultation (OPD)</span>
+                                    </div>
+                                    <div class="care-fast-booking-grid">
+                                        <div class="care-fast-field">
+                                            <label class="care-fast-label">Clinical Specialty</label>
+                                            <div class="care-fast-input-wrap">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+                                                <select class="care-native-select">
+                                                    <option>General Medicine</option>
+                                                    <option>Paediatrics &amp; Neonatology</option>
+                                                    <option>Orthopaedics &amp; Joint Replacement</option>
+                                                    <option>Dermatology &amp; Skin Care</option>
+                                                    <option>Ear, Nose &amp; Throat (ENT)</option>
+                                                    <option>Critical Care &amp; Emergency</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="care-fast-field">
+                                            <label class="care-fast-label">Consultation Mode</label>
+                                            <div class="care-fast-input-wrap">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                                                <select class="care-native-select">
+                                                    <option>In-Person Hospital OPD</option>
+                                                    <option>Video Teleconsultation</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="care-fast-field">
+                                            <label class="care-fast-label">Preferred Date</label>
+                                            <div class="care-fast-input-wrap">
+                                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                                <input type="date" class="care-native-date" value="2026-10-20" />
+                                            </div>
+                                        </div>
+                                        <div class="care-fast-action">
+                                            <button class="care-btn-fast-book" onclick="alert('Searching doctors...')">
+                                                <span>Find Doctor</span>
+                                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="care-hero-disclaimer">
+                                        <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        <span>Simulated booking environment. For medical emergencies in real life, immediately call local emergency services (e.g. 911 / 112 / 108).</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Premium Medical Team Visual -->
+                            <div class="care-hero-right">
+                                <div class="care-hero-image-card">
+                                    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80" alt="CareNest Modern Clinical Suite (Royalty-free medical photography under Unsplash License)" title="CareNest Modern Clinical Suite (Unsplash License)" class="care-hero-img" />
+                                    <div class="care-hero-image-overlay"></div>
+                                    <div class="care-hero-floating-card">
+                                        <div class="care-hero-card-header">
+                                            <span class="care-dot-pulse"></span>
+                                            <strong>5 Core Clinical Specialties</strong>
+                                        </div>
+                                        <p>Dedicated Attending Consultants &amp; Agentforce Demonstration Assistant (Non-Diagnostic)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trust Metrics Bar (Verified Capabilities) -->
+                        <div class="care-trust-metrics-bar">
+                            <div class="care-trust-item">
+                                <div class="care-trust-icon-box">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                </div>
+                                <div>
+                                    <div class="care-trust-title">Multidisciplinary OPD</div>
+                                    <div class="care-trust-subtitle">5 Specialist Departments</div>
+                                </div>
+                            </div>
+                            <div class="care-trust-item">
+                                <div class="care-trust-icon-box">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                </div>
+                                <div>
+                                    <div class="care-trust-title">Acute Clinical Triage</div>
+                                    <div class="care-trust-subtitle">Standardized Care Protocol</div>
+                                </div>
+                            </div>
+                            <div class="care-trust-item">
+                                <div class="care-trust-icon-box">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="care-trust-title">Secure Patient Information</div>
+                                    <div class="care-trust-subtitle">Role-Gated Server Privacy</div>
+                                </div>
+                            </div>
+                            <div class="care-trust-item">
+                                <div class="care-trust-icon-box">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="care-trust-title">Agentforce AI Assistant</div>
+                                    <div class="care-trust-subtitle">Demo Operational AI (Not Medical Advice)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 2. Medical Specialties Section -->
+                <section class="care-public-section" id="specialties">
+                    <div class="care-section-header">
+                        <span class="care-section-kicker">Clinical Centers of Excellence</span>
+                        <h2 class="care-section-title">Specialized Medical Care for Every Need</h2>
+                        <p class="care-section-subtitle">
+                            Our multidisciplinary clinical departments combine modern diagnostics with compassionate expert healthcare professionals.
+                        </p>
+                    </div>
+
+                    <div class="care-specialties-grid">
+                        <div class="care-specialty-card">
+                            <div class="care-spec-card-top">
+                                <div class="care-spec-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg></div>
+                                <span class="care-spec-badge">Primary OPD</span>
+                            </div>
+                            <h3 class="care-spec-title">General &amp; Internal Medicine</h3>
+                            <p class="care-spec-desc">Comprehensive adult healthcare, diagnostic workups, preventive medicine, and chronic disease management.</p>
+                            <div class="care-spec-footer">
+                                <div class="care-spec-lead">
+                                    <span class="care-lead-label">Attending Consultant:</span>
+                                    <strong class="care-lead-name">Dr. Kavita Rao</strong>
+                                </div>
+                                <button class="care-spec-action-btn">Book OPD →</button>
+                            </div>
+                        </div>
+
+                        <div class="care-specialty-card">
+                            <div class="care-spec-card-top">
+                                <div class="care-spec-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                                <span class="care-spec-badge">Child &amp; Infant</span>
+                            </div>
+                            <h3 class="care-spec-title">Paediatrics &amp; Neonatology</h3>
+                            <p class="care-spec-desc">Dedicated newborn and infant care, immunizations, developmental surveillance, and Level-3 NICU support.</p>
+                            <div class="care-spec-footer">
+                                <div class="care-spec-lead">
+                                    <span class="care-lead-label">Attending Consultant:</span>
+                                    <strong class="care-lead-name">Dr. Anil Mehta</strong>
+                                </div>
+                                <button class="care-spec-action-btn">Book OPD →</button>
+                            </div>
+                        </div>
+
+                        <div class="care-specialty-card">
+                            <div class="care-spec-card-top">
+                                <div class="care-spec-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                                <span class="care-spec-badge">Surgical Excellence</span>
+                            </div>
+                            <h3 class="care-spec-title">Orthopaedics &amp; Joint Replacement</h3>
+                            <p class="care-spec-desc">Arthroscopic sports injury repair, joint replacements, complex fracture reconstruction, and physical therapy.</p>
+                            <div class="care-spec-footer">
+                                <div class="care-spec-lead">
+                                    <span class="care-lead-label">Attending Consultant:</span>
+                                    <strong class="care-lead-name">Dr. Rajesh Pandey</strong>
+                                </div>
+                                <button class="care-spec-action-btn">Book OPD →</button>
+                            </div>
+                        </div>
+
+                        <div class="care-specialty-card">
+                            <div class="care-spec-card-top">
+                                <div class="care-spec-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                                <span class="care-spec-badge">Clinical Dermatology</span>
+                            </div>
+                            <h3 class="care-spec-title">Dermatology &amp; Cosmetology</h3>
+                            <p class="care-spec-desc">Clinical dermatology for skin disorders, allergy diagnostics, phototherapy, and aesthetic dermatology.</p>
+                            <div class="care-spec-footer">
+                                <div class="care-spec-lead">
+                                    <span class="care-lead-label">Attending Consultant:</span>
+                                    <strong class="care-lead-name">Dr. Neha Kapoor</strong>
+                                </div>
+                                <button class="care-spec-action-btn">Book OPD →</button>
+                            </div>
+                        </div>
+
+                        <div class="care-specialty-card">
+                            <div class="care-spec-card-top">
+                                <div class="care-spec-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></div>
+                                <span class="care-spec-badge">Head &amp; Neck</span>
+                            </div>
+                            <h3 class="care-spec-title">Ear, Nose &amp; Throat (ENT)</h3>
+                            <p class="care-spec-desc">Endoscopic sinus surgery, microscopic ear surgery, audiology evaluations, and pediatric airway management.</p>
+                            <div class="care-spec-footer">
+                                <div class="care-spec-lead">
+                                    <span class="care-lead-label">Attending Consultant:</span>
+                                    <strong class="care-lead-name">Dr. Meena Iyer</strong>
+                                </div>
+                                <button class="care-spec-action-btn">Book OPD →</button>
+                            </div>
+                        </div>
+
+                        <div class="care-specialty-card">
+                            <div class="care-spec-card-top">
+                                <div class="care-spec-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                                <span class="care-spec-badge">24/7 Level-1</span>
+                            </div>
+                            <h3 class="care-spec-title">Critical Care &amp; Emergency</h3>
+                            <p class="care-spec-desc">Advanced resuscitation, mechanical ventilation support, invasive arterial monitoring, and acute trauma management.</p>
+                            <div class="care-spec-footer">
+                                <div class="care-spec-lead">
+                                    <span class="care-lead-label">Attending Consultant:</span>
+                                    <strong class="care-lead-name">Dr. Imran Qureshi</strong>
+                                </div>
+                                <button class="care-spec-action-btn">Book OPD →</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Why Choose CareNest (Pillars with SVG Icons) -->
+                <section class="care-public-section care-why-section">
+                    <div class="care-section-header">
+                        <span class="care-section-kicker">The CareNest Advantage</span>
+                        <h2 class="care-section-title">Why Patients Choose CareNest</h2>
+                        <p class="care-section-subtitle">Delivering precision clinical medicine with dignity, transparent pricing, and seamless care continuity.</p>
+                    </div>
+
+                    <div class="care-why-grid">
+                        <div class="care-why-card">
+                            <div class="care-why-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                            <h3>Collaborative Clinical Boards</h3>
+                            <p>Multidisciplinary case reviews by attending physicians establish coordinated patient care and diagnostic pathways.</p>
+                        </div>
+                        <div class="care-why-card">
+                            <div class="care-why-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                            <h3>Standardized Acute Triage</h3>
+                            <p>Systematic clinical triage protocols prioritize acute cardiac, stroke, and trauma presentations for rapid intervention.</p>
+                        </div>
+                        <div class="care-why-card">
+                            <div class="care-why-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                            <h3>Transparent Estimates</h3>
+                            <p>Clear pre-admission estimates and direct coordination with cashless health insurance TPA partners.</p>
+                        </div>
+                        <div class="care-why-card">
+                            <div class="care-why-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>
+                            <h3>Agentforce Demo Assistant</h3>
+                            <p>Demonstration healthcare AI assistant for administrative navigation and appointment inquiries. Portfolio demo only; does not provide medical advice or diagnosis.</p>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- 4. Hospital Facilities Showcase (Specifications, No Live Bed Count Exposure) -->
+                <section class="care-public-section" id="facilities">
+                    <div class="care-section-header">
+                        <span class="care-section-kicker">Infrastructure &amp; Amenities</span>
+                        <h2 class="care-section-title">Designed for Healing and Rapid Recovery</h2>
+                        <p class="care-section-subtitle">
+                            From quiet private suites to high-dependency critical care units, our facilities provide safe and comfortable clinical environments.
+                        </p>
+                    </div>
+
+                    <div class="care-facilities-grid">
+                        <div class="care-facility-card">
+                            <div class="care-fac-header">
+                                <span class="care-fac-badge">Monitored Care</span>
+                                <span class="care-fac-capacity">25 Beds Unit</span>
+                            </div>
+                            <h3 class="care-fac-title">General Inpatient Wards</h3>
+                            <div class="care-fac-type">Continuous Vital Monitoring</div>
+                            <p class="care-fac-desc">Spacious, well-ventilated recovery wards equipped with central oxygen and 24/7 rapid nurse call stations.</p>
+                            <div class="care-fac-amenity-list">
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Central Oxygen &amp; Vacuum</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Emergency Nurse Call</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Clinical Air Filtration</span>
+                            </div>
+                        </div>
+
+                        <div class="care-facility-card">
+                            <div class="care-fac-header">
+                                <span class="care-fac-badge">Dual Occupancy</span>
+                                <span class="care-fac-capacity">15 Beds Unit</span>
+                            </div>
+                            <h3 class="care-fac-title">Semi-Private Suites</h3>
+                            <div class="care-fac-type">Companion Recliner &amp; Privacy</div>
+                            <p class="care-fac-desc">Quiet shared suites featuring motorized clinical beds, privacy curtains, companion recliners, and ensuite washrooms.</p>
+                            <div class="care-fac-amenity-list">
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Central Oxygen &amp; Vacuum</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Emergency Nurse Call</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Clinical Air Filtration</span>
+                            </div>
+                        </div>
+
+                        <div class="care-facility-card">
+                            <div class="care-fac-header">
+                                <span class="care-fac-badge">Critical Care</span>
+                                <span class="care-fac-capacity">10 Beds Unit</span>
+                            </div>
+                            <h3 class="care-fac-title">Intensive Care Unit (ICU)</h3>
+                            <div class="care-fac-type">1:1 Nurse-Patient Ratio</div>
+                            <p class="care-fac-desc">Critical care ward featuring advanced mechanical ventilators, invasive arterial lines, and defibrillators.</p>
+                            <div class="care-fac-amenity-list">
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Central Oxygen &amp; Vacuum</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Emergency Nurse Call</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Clinical Air Filtration</span>
+                            </div>
+                        </div>
+
+                        <div class="care-facility-card">
+                            <div class="care-fac-header">
+                                <span class="care-fac-badge">Pediatric Wing</span>
+                                <span class="care-fac-capacity">10 Beds Unit</span>
+                            </div>
+                            <h3 class="care-fac-title">Paediatric Inpatient Wing</h3>
+                            <div class="care-fac-type">Specialized Child Care</div>
+                            <p class="care-fac-desc">Warm, child-friendly pediatric ward tailored for children with dedicated parent accommodation and isolation units.</p>
+                            <div class="care-fac-amenity-list">
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Central Oxygen &amp; Vacuum</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Emergency Nurse Call</span>
+                                <span><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Clinical Air Filtration</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. Visiting Hours & Inpatient Checklist -->
+                <section class="care-public-section care-visiting-section" id="visiting">
+                    <div class="care-visiting-container">
+                        <div class="care-visiting-card">
+                            <div class="care-visiting-badge">
+                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Visiting Hours &amp; Guidelines</span>
+                            </div>
+                            <h2>Patient Visiting Guidelines</h2>
+                            <p>To ensure infection control and patient rest, visiting hours are strictly monitored:</p>
+                            <ul class="care-visiting-rules">
+                                <li><strong>General Wards:</strong> 4:00 PM – 7:00 PM Daily (Max 2 visitors)</li>
+                                <li><strong>Intensive Care Unit (ICU):</strong> 11:00 AM – 12:00 PM &amp; 5:00 PM – 6:00 PM (1 visitor at a time)</li>
+                                <li><strong>Paediatric Ward:</strong> One parent permitted 24/7 alongside the child</li>
+                                <li><strong>Children under 12:</strong> Not permitted in ICU and post-operative wards</li>
+                            </ul>
+                            <div class="care-pass-note">
+                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Digital visitor passes are issued at the Main Reception upon presenting valid government identification.
+                            </div>
+                        </div>
+                        <div class="care-visiting-card">
+                            <div class="care-visiting-badge">
+                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                                <span>Admission Checklist</span>
+                            </div>
+                            <h2>What to Bring for Admission</h2>
+                            <p>Please have the following ready during inpatient admission:</p>
+                            <ul class="care-visiting-rules">
+                                <li><strong>Government Photo ID:</strong> Aadhaar, Passport, or Voter ID</li>
+                                <li><strong>Insurance / TPA Card:</strong> For cashless hospitalization pre-authorization</li>
+                                <li><strong>Medical Records:</strong> Prior prescriptions, radiology scans, and lab reports</li>
+                                <li><strong>Regular Medications:</strong> In original packaging for clinical reconciliation</li>
+                            </ul>
+                            <div class="care-pass-note">
+                                <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Our TPA &amp; Cashless Insurance Desk is located on the Ground Floor, open 24/7.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. Simulated Emergency Trauma Center Banner -->
+                <section class="care-emergency-banner" id="emergency">
+                    <div class="care-emergency-inner">
+                        <div class="care-emergency-badge">
+                            <span class="care-pulse-circle"></span>
+                            <span>Simulated Level-1 Trauma Emergency Desk</span>
+                        </div>
+                        <h2>Acute Critical Care Demonstration Bay</h2>
+                        <p>
+                            CareNest simulated trauma center showcase featuring acute resuscitation bays, catheterization suites, and surgical care.
+                        </p>
+                        <div class="care-emergency-disclaimer-card">
+                            <svg class="svg-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <span>
+                                <strong>Portfolio Demonstration Notice:</strong> This website is a simulated portfolio system. For real medical emergencies, please immediately call your local emergency service (e.g. 911 / 112 / 108).
+                            </span>
+                        </div>
+                        <div class="care-emergency-actions">
+                            <button type="button" class="care-btn-emergency-call" onclick="handleSimulatedEmergency('Helpline')">
+                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span>Demo Helpline: +1 (555) 019-CARE (Simulated)</span>
+                            </button>
+                            <button type="button" class="care-btn-ambulance-dispatch" onclick="handleSimulatedEmergency('Ambulance')">
+                                <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                <span>Demo Ambulance: +1 (555) 019-9110 (Simulated)</span>
+                            </button>
+                        </div>
+                        <div class="care-emergency-disclaimer">
+                            <span>Simulated demo helpline only — non-functional links. In an acute medical emergency, please immediately call local emergency services (e.g. 911 / 112 / 108).</span>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 7. Hospital Location & Patient Inquiry Form -->
+                <section class="care-public-section" id="contact">
+                    <div class="care-contact-grid">
+                        <div class="care-contact-info-card">
+                            <span class="care-section-kicker">Find Us</span>
+                            <h2>CareNest Hospital Campus</h2>
+                            <p>Simulated medical campus with 24/7 patient reception, ambulance bays, and OPD consultations.</p>
+                            
+                            <div class="care-info-item">
+                                <div class="care-info-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M9 8h1"/><path d="M9 12h1"/><path d="M9 16h1"/><path d="M14 8h1"/><path d="M14 12h1"/><path d="M14 16h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg></div>
+                                <div>
+                                    <strong>Hospital Campus (Demo):</strong>
+                                    <p>Plot 14, Health City Knowledge Park, Outer Ring Road, Bangalore, Karnataka 560100</p>
+                                </div>
+                            </div>
+                            <div class="care-info-item">
+                                <div class="care-info-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                                <div>
+                                    <strong>Demo Desk Enquiries:</strong>
+                                    <p>+1 (555) 019-8900 / +1 (555) 019-8901</p>
+                                </div>
+                            </div>
+                            <div class="care-info-item">
+                                <div class="care-info-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></div>
+                                <div>
+                                    <strong>Demo Email Desk:</strong>
+                                    <p>demo-care@carenest-health.example.com</p>
+                                </div>
+                            </div>
+                            <div class="care-info-item">
+                                <div class="care-info-icon-box"><svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                                <div>
+                                    <strong>Demo Hours:</strong>
+                                    <p>Simulated OPD: Mon - Sat 8:00 AM – 8:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="care-contact-form-card">
+                            <h3>Send an Inquiry or Feedback</h3>
+                            <p>Our patient care coordination team will respond within 30 minutes.</p>
+
+                            <form onsubmit="handleInquiry(event)" class="care-form-fields">
+                                <div class="care-form-row">
+                                    <div class="care-form-group">
+                                        <label>Your Name *</label>
+                                        <input type="text" placeholder="e.g. Rahul Sharma" required />
+                                    </div>
+                                    <div class="care-form-group">
+                                        <label>Phone Number *</label>
+                                        <input type="tel" placeholder="+1 (555) 019-4321" required />
+                                    </div>
+                                </div>
+                                <div class="care-form-row">
+                                    <div class="care-form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" placeholder="rahul@example.com" />
+                                    </div>
+                                    <div class="care-form-group">
+                                        <label>Department of Interest</label>
+                                        <select>
+                                            <option>General &amp; Internal Medicine</option>
+                                            <option>Paediatrics &amp; Neonatology</option>
+                                            <option>Orthopaedics &amp; Joint Surgery</option>
+                                            <option>Dermatology &amp; Cosmetology</option>
+                                            <option>Ear, Nose &amp; Throat (ENT)</option>
+                                            <option>Hospital Admissions Desk</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="care-form-group">
+                                    <label>Message / Clinical Question</label>
+                                    <textarea rows="3" placeholder="How can our clinical team help you today?"></textarea>
+                                </div>
+                                <button type="submit" class="care-btn-primary care-btn-full">
+                                    <span>Send Inquiry</span>
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+
+            <!-- ============================================================= -->
+            <!-- B. SECURE AUTHENTICATED HOSPITAL STAFF WORKSPACE              -->
+            <!-- ============================================================= -->
+            <div id="staff-experience" style="display: none;">
+
+                <!-- Staff Top Context Bar -->
+                <div class="care-staff-banner">
+                    <div class="care-staff-banner-inner">
+                        <div class="care-staff-banner-left">
+                            <span class="care-staff-badge">Internal Operations Suite</span>
+                            <span class="care-staff-context">
+                                Active Workspace: <strong>Operations Center</strong> • Persona Simulation: <strong>Operations Manager</strong>
+                            </span>
+                        </div>
+                        <div class="care-staff-banner-right">
+                            <button class="care-btn-outline-light" onclick="toggleExperience()">
+                                ← Exit to Public Website
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="care-page-container">
+                    <!-- Live KPI Summary Grid -->
+                    <div class="care-kpi-grid">
+                        <div class="care-kpi-card">
+                            <div class="care-kpi-header">
+                                <span class="care-kpi-label">Active Inpatients</span>
+                                <div class="care-kpi-icon-wrap kpi-icon-teal">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                </div>
+                            </div>
+                            <div class="care-kpi-value">14</div>
+                            <div class="care-kpi-subtext">Current Admitted Census</div>
+                        </div>
+
+                        <div class="care-kpi-card">
+                            <div class="care-kpi-header">
+                                <span class="care-kpi-label">Bed Occupancy</span>
+                                <div class="care-kpi-icon-wrap kpi-icon-navy">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M9 8h1"/><path d="M9 12h1"/><path d="M9 16h1"/><path d="M14 8h1"/><path d="M14 12h1"/><path d="M14 16h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+                                </div>
+                            </div>
+                            <div class="care-kpi-value">62.5%</div>
+                            <div class="care-kpi-subtext">30 of 48 Beds Occupied</div>
+                        </div>
+
+                        <div class="care-kpi-card">
+                            <div class="care-kpi-header">
+                                <span class="care-kpi-label">Available Beds</span>
+                                <div class="care-kpi-icon-wrap kpi-icon-amber">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                                </div>
+                            </div>
+                            <div class="care-kpi-value">18</div>
+                            <div class="care-kpi-subtext">Ready for Immediate Admission</div>
+                        </div>
+
+                        <div class="care-kpi-card">
+                            <div class="care-kpi-header">
+                                <span class="care-kpi-label">Active Doctors</span>
+                                <div class="care-kpi-icon-wrap kpi-icon-teal">
+                                    <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+                                </div>
+                            </div>
+                            <div class="care-kpi-value">6</div>
+                            <div class="care-kpi-subtext">5 Clinical Specialties on Duty</div>
+                        </div>
+                    </div>
+
+                    <!-- Abnormal Vitals Alert Ticker -->
+                    <div class="care-alert-ticker">
+                        <div class="care-alert-message">
+                            <span style="color: #ef4444;"><svg class="svg-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                            <span>
+                                <strong>Clinical Notice:</strong> 2 active abnormal patient vital sign alerts detected in Inpatient Wards (SpO2 &lt; 92%, T &gt; 38.5°C).
+                            </span>
+                        </div>
+                        <button class="care-alert-action-btn" onclick="alert('Navigating to Inpatient Clinical Workspace...')">
+                            Review Clinical Chart →
+                        </button>
+                    </div>
+
+                    <!-- Hospital Master Patient Index / Roster Overview -->
+                    <div class="care-table-card" style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <h3 style="font-size: 1.125rem; font-weight: 700; color: #0f172a;">Active Inpatient Census &amp; Assigned Staff</h3>
+                                <p style="font-size: 0.8125rem; color: #64748b;">Stage 2 Server-Side Restricted Patient Access Enforced via CareNestPatientAccessService</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="care-btn-primary" onclick="alert('Opening Register Patient Modal')">
+                                    <span>+ Register New Patient</span>
+                                </button>
+                                <button class="care-utility-btn" style="background: #0f172a; color: white;" onclick="alert('Opening Bed Admission Workspace')">
+                                    <span>Admit Bed</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <table class="care-patient-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient Code</th>
+                                    <th>Patient Name</th>
+                                    <th>Admitted Ward</th>
+                                    <th>Bed Number</th>
+                                    <th>Attending Doctor</th>
+                                    <th>Vitals Status</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="patient-code-tag">CN-PAT-10021</span></td>
+                                    <td><strong>Aarav Sharma</strong></td>
+                                    <td>General Medical Ward</td>
+                                    <td>BED-GMW-04</td>
+                                    <td>Dr. Rajesh Iyer</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">Stable</span></td>
+                                    <td style="text-align: right;">
+                                        <button class="care-spec-action-btn" onclick="alert('Viewing Clinical Chart')">Chart →</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="patient-code-tag">CN-PAT-10042</span></td>
+                                    <td><strong>Priya Patel</strong></td>
+                                    <td>Pediatric Care Ward</td>
+                                    <td>BED-PED-02</td>
+                                    <td>Dr. Sarah Varma</td>
+                                    <td><span style="background: #fee2e2; color: #b91c1c; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">T: 38.6°C</span></td>
+                                    <td style="text-align: right;">
+                                        <button class="care-spec-action-btn" onclick="alert('Viewing Clinical Chart')">Chart →</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="patient-code-tag">CN-PAT-10055</span></td>
+                                    <td><strong>Kiran Verma</strong></td>
+                                    <td>Intensive Care Unit (ICU)</td>
+                                    <td>BED-ICU-01</td>
+                                    <td>Dr. Vikram Singhania</td>
+                                    <td><span style="background: #fee2e2; color: #b91c1c; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">SpO2: 89%</span></td>
+                                    <td style="text-align: right;">
+                                        <button class="care-spec-action-btn" onclick="alert('Viewing Clinical Chart')">Chart →</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="patient-code-tag">CN-PAT-10088</span></td>
+                                    <td><strong>Rohan Deshmukh</strong></td>
+                                    <td>Surgical &amp; Ortho Ward</td>
+                                    <td>BED-ORT-03</td>
+                                    <td>Dr. Amit Khurana</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">Post-Op Day 1</span></td>
+                                    <td style="text-align: right;">
+                                        <button class="care-spec-action-btn" onclick="alert('Viewing Clinical Chart')">Chart →</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Operational Child LWC Wiring Banner -->
+                    <div style="margin-top: 1.5rem; padding: 1.25rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem;">
+                        <h4 style="font-size: 0.875rem; font-weight: 700; color: #166534; margin-bottom: 0.25rem;">Live Salesforce Child Modules Connected</h4>
+                        <p style="font-size: 0.8125rem; color: #15803d;">
+                            <code>c-hospital-operations-dashboard</code>, <code>c-ward-bed-manager</code>, <code>c-patient-admission-workspace</code>, <code>c-inpatient-clinical-workspace</code>, <code>c-appointment-wizard</code>, <code>c-doctor-search</code>, <code>c-my-appointments</code>, <code>c-patient-billing</code>, <code>c-agentforce-assistant-widget</code>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ================================================================= -->
+        <!-- 3. FOOTER                                                         -->
+        <!-- ================================================================= -->
+        <footer class="care-site-footer">
+            <div class="care-footer-inner">
+                <div class="care-footer-col">
+                    <div class="care-brand-link" style="margin-bottom: 0.75rem;">
+                        <div class="care-logo-icon-wrap care-logo-sm">
+                            <svg class="svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h-4"/><path d="M6 12h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M10 22v-4a2 2 0 0 1 4 0v4"/></svg>
+                        </div>
+                        <div class="care-brand-name" style="color: white;">Care<span class="care-brand-accent">Nest</span></div>
+                    </div>
+                    <p class="care-footer-desc">
+                        CareNest Hospital is an architectural showcase demonstrating unified healthcare on Salesforce Experience Cloud, Health Cloud, and Agentforce.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <span class="care-accreditation-pill">Salesforce Portfolio</span>
+                        <span class="care-accreditation-pill">Health Cloud Demo</span>
+                    </div>
+                </div>
+
+                <div class="care-footer-col">
+                    <h4 class="care-footer-heading">Medical Specialties</h4>
+                    <ul class="care-footer-links">
+                        <li><a href="#specialties">General &amp; Internal Medicine</a></li>
+                        <li><a href="#specialties">Paediatrics &amp; Neonatology</a></li>
+                        <li><a href="#specialties">Orthopaedics &amp; Joint Surgery</a></li>
+                        <li><a href="#specialties">Dermatology &amp; Cosmetology</a></li>
+                        <li><a href="#specialties">Ear, Nose &amp; Throat (ENT)</a></li>
+                        <li><a href="#specialties">Critical Care &amp; Resuscitation</a></li>
+                    </ul>
+                </div>
+
+                <div class="care-footer-col">
+                    <h4 class="care-footer-heading">Patient Resources</h4>
+                    <ul class="care-footer-links">
+                        <li><a href="#visiting">Visiting Hours &amp; Guidelines</a></li>
+                        <li><a href="#visiting">Inpatient Admission Checklist</a></li>
+                        <li><a href="#facilities">Inpatient Facilities &amp; Amenities</a></li>
+                        <li><a href="#contact">Cashless Insurance / TPA</a></li>
+                        <li><a href="#contact">Directions &amp; Parking Map</a></li>
+                    </ul>
+                </div>
+
+                <div class="care-footer-col">
+                    <h4 class="care-footer-heading">Demo Emergency &amp; Staff</h4>
+                    <ul class="care-footer-links">
+                        <li><strong style="color: #ef4444;">Demo Helpline: +1 (555) 019-CARE</strong></li>
+                        <li><span>Demo Ambulance: (555) 019-9110</span></li>
+                        <li><span>Simulated OPD: 8:00 AM – 8:00 PM</span></li>
+                        <li style="margin-top: 1rem;">
+                            <a href="#staff" onclick="toggleExperience()" style="color: #2dd4bf; font-weight: 600;">
+                                🔒 Hospital Staff Workspace →
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="care-footer-bottom">
+                <div class="care-footer-bottom-inner">
+                    <p>© 2026 CareNest Hospital Demonstration System • Salesforce Portfolio Showcase • Not an operational medical provider.</p>
+                    <div class="care-footer-legal-links">
+                        <a href="#privacy">Demonstration Privacy Notice</a>
+                        <a href="#terms">Terms of Showcase</a>
+                        <a href="#security">Stage 2 Access Protocol</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let isStaff = false;
+        function toggleExperience() {
+            isStaff = !isStaff;
+            document.getElementById('public-nav').style.display = isStaff ? 'none' : 'flex';
+            document.getElementById('staff-nav').style.display = isStaff ? 'flex' : 'none';
+            document.getElementById('public-experience').style.display = isStaff ? 'none' : 'block';
+            document.getElementById('staff-experience').style.display = isStaff ? 'block' : 'none';
+            document.getElementById('mobile-public-links').style.display = isStaff ? 'none' : 'block';
+            document.getElementById('mobile-staff-links').style.display = isStaff ? 'block' : 'none';
+            document.getElementById('toggle-experience-text').textContent = isStaff ? 'Return to Public Website' : 'Hospital Staff Intranet';
+            document.getElementById('toggle-experience-btn').className = isStaff ? 'care-utility-btn care-utility-btn-active' : 'care-utility-btn';
+            
+            // Toggle header CTA button text
+            document.getElementById('primary-action-text').textContent = isStaff ? 'Register Patient' : 'Book Appointment';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function toggleMobileMenu() {
+            const drawer = document.getElementById('mobile-drawer');
+            drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+        }
+        function switchPublicSection(sec) {
+            if (isStaff) toggleExperience();
+            const el = document.getElementById(sec);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('mobile-drawer').style.display = 'none';
+        }
+        function handlePrimaryAction() {
+            if (isStaff) {
+                alert('Opening Register Patient modal...');
+            } else {
+                switchPublicSection('home');
+            }
+        }
+        function handleInquiry(e) {
+            e.preventDefault();
+            alert('Thank you for reaching out! A CareNest patient care coordinator will call you back within 30 minutes.');
+        }
+        function handleSimulatedEmergency(service) {
+            alert('Simulated Demo ' + service + ': This is a portfolio simulation. In a real medical emergency, please call 911 / 112 / 108 immediately.');
+        }
+
+        // Hash checking
+        if (window.location.hash === '#staff') {
+            toggleExperience();
+        }
+    </script>
+</body>
+</html>

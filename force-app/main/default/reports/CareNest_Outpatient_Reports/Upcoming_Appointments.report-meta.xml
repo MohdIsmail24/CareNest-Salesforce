@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Doctor__c.Specialty__c</field>
+    </columns>
+    <columns>
+        <field>Appointment_Slot__c.Mode__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Appointment_Slot__c.Booked_Count__c</field>
+    </columns>
+    <columns>
+        <field>Appointment_Slot__c.Available__c</field>
+    </columns>
+    <description>Upcoming outpatient appointments scheduled for today onwards</description>
+    <filter>
+        <criteriaItems>
+            <column>Appointment_Slot__c.Booked_Count__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>greaterThan</operator>
+            <value>0</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Appointment_Slot__c.Slot_Start__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Upcoming Appointments</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$Doctor__c$Appointment_Slot__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Appointment_Slot__c.Slot_Start__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2026-10-14</startDate>
+    </timeFrameFilter>
+</Report>

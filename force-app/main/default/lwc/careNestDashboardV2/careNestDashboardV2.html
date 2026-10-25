@@ -1,0 +1,1528 @@
+<template>
+    <div class="care-internal-app">
+        <!-- 0. TOP UTILITY RIBBON -->
+        <header class="care-utility-bar">
+            <div class="care-utility-container">
+                <div class="care-utility-left">
+                    <span class="care-live-indicator">
+                        <span class="care-pulse-dot"></span>
+                        LIVE HOSPITAL COMMAND CENTER
+                    </span>
+                    <span class="care-utility-divider">|</span>
+                    <span class="care-utility-text">CareNest Enterprise Healthcare Platform</span>
+                    <span class="care-utility-divider">|</span>
+                    <span class="care-utility-hotline">
+                        <lightning-icon icon-name="utility:call" size="x-small" class="care-icon-emergency"></lightning-icon>
+                        Emergency Hotline Ext: <strong>911 / 4567</strong>
+                    </span>
+                </div>
+                <div class="care-utility-right">
+                    <span class="care-staff-badge">
+                        <lightning-icon icon-name="utility:identity" size="x-small"></lightning-icon>
+                        <span class="care-staff-name">{userName}</span>
+                        <span class="care-staff-role">({activeRoleLabel})</span>
+                    </span>
+                    <template if:true={metrics}>
+                        <span class="care-kpi-chip">
+                            <span class="care-kpi-chip-label">Occupancy:</span>
+                            <span class="care-kpi-chip-val">{metrics.overallOccupancyRate}%</span>
+                        </span>
+                        <span class="care-kpi-chip">
+                            <span class="care-kpi-chip-label">Inpatients:</span>
+                            <span class="care-kpi-chip-val">{metrics.activeAdmissions}</span>
+                        </span>
+                        <span class="care-kpi-chip">
+                            <span class="care-kpi-chip-label">Beds:</span>
+                            <span class="care-kpi-chip-val">{metrics.availableBeds} Avail / {metrics.totalBeds}</span>
+                        </span>
+                    </template>
+                </div>
+            </div>
+        </header>
+
+        <!-- 1. STICKY BRANDED NAVIGATION HEADER -->
+        <nav class="care-brand-nav">
+            <div class="care-brand-nav-container">
+                <!-- Logo & System Identity -->
+                <div class="care-logo-group" onclick={handleLogoClick}>
+                    <div class="care-logo-mark">
+                        <svg class="care-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="8" fill="#0d9488"/>
+                            <path d="M16 8V24M8 16H24" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="care-logo-text">
+                        <div class="care-logo-title">CareNest</div>
+                        <div class="care-logo-tagline">Hospital Admin Command Center</div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs (Pills) with Scroll Controls -->
+                <div class="care-nav-pills-container">
+                    <button class="care-nav-scroll-btn care-nav-scroll-left" onclick={handleScrollNavLeft} title="Scroll modules left" aria-label="Scroll left">
+                        <lightning-icon icon-name="utility:chevronleft" size="xx-small"></lightning-icon>
+                    </button>
+                    <div class="care-nav-pills-wrapper">
+                        <div class="care-nav-pills">
+                            <template for:each={navItems} for:item="item">
+                                <button
+                                    key={item.id}
+                                    class={item.buttonClass}
+                                    data-id={item.id}
+                                    onclick={handleNavClick}>
+                                    <lightning-icon icon-name={item.icon} size="x-small" class="care-pill-icon"></lightning-icon>
+                                    <span>{item.label}</span>
+                                    <template if:true={item.badge}>
+                                        <span class="care-pill-badge">{item.badge}</span>
+                                    </template>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                    <button class="care-nav-scroll-btn care-nav-scroll-right" onclick={handleScrollNavRight} title="Scroll modules right" aria-label="Scroll right">
+                        <lightning-icon icon-name="utility:chevronright" size="xx-small"></lightning-icon>
+                    </button>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="care-nav-actions">
+                    <!-- All Modules Dropdown Launcher -->
+                    <div class="care-modules-dropdown-wrapper">
+                        <button class="care-btn-all-modules" onclick={handleToggleModulesDropdown} aria-expanded={showModulesDropdown} title="View all 12 modules">
+                            <lightning-icon icon-name="utility:apps" size="x-small" class="care-btn-icon"></lightning-icon>
+                            <span>All Modules</span>
+                            <lightning-icon icon-name="utility:down" size="xx-small" class="care-btn-icon-right"></lightning-icon>
+                        </button>
+                        <template if:true={showModulesDropdown}>
+                            <div class="care-modules-menu" role="menu">
+                                <div class="care-modules-menu-header">12 Hospital Management Modules</div>
+                                <div class="care-modules-menu-grid">
+                                    <template for:each={navItems} for:item="item">
+                                        <button key={item.id} class="care-module-menu-item" data-id={item.id} onclick={handleSelectModule} role="menuitem">
+                                            <lightning-icon icon-name={item.icon} size="small" class="care-menu-icon"></lightning-icon>
+                                            <div class="care-menu-item-text">
+                                                <span class="care-menu-item-label">{item.label}</span>
+                                            </div>
+                                            <template if:true={item.badge}>
+                                                <span class="care-pill-badge">{item.badge}</span>
+                                            </template>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <button class="care-btn-register" onclick={handleQuickRegisterPatient}>
+                        <lightning-icon icon-name="utility:add" size="x-small" class="care-btn-icon"></lightning-icon>
+                        <span>Register Patient</span>
+                    </button>
+                    <!-- Mobile Hamburger Toggle -->
+                    <button class="care-mobile-toggle" onclick={handleToggleMobileMenu} aria-label="Toggle navigation menu">
+                        <lightning-icon icon-name="utility:rows" size="small"></lightning-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation Drawer -->
+            <template if:true={showMobileMenu}>
+                <div class="care-mobile-drawer">
+                    <template for:each={navItems} for:item="item">
+                        <button
+                            key={item.id}
+                            class={item.mobileClass}
+                            data-id={item.id}
+                            onclick={handleMobileNavClick}>
+                            <lightning-icon icon-name={item.icon} size="small" class="care-mobile-icon"></lightning-icon>
+                            <span>{item.label}</span>
+                        </button>
+                    </template>
+                </div>
+            </template>
+        </nav>
+
+        <!-- 2. CLINICAL ALERT BANNER (If Active Abnormal Vitals Detected) -->
+        <template if:true={hasActiveAlerts}>
+            <div class="care-alert-strip">
+                <div class="care-alert-inner">
+                    <lightning-icon icon-name="utility:warning" size="small" class="care-alert-icon"></lightning-icon>
+                    <div class="care-alert-content">
+                        <strong>URGENT CLINICAL ALERT:</strong> {metrics.activeClinicalAlerts} abnormal patient vital signs require immediate review in the Clinical Chart workspace.
+                    </div>
+                    <button class="care-alert-action-btn" data-id="clinical" onclick={handleNavClick}>
+                        Review Patient Vitals &rarr;
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <!-- 3. MAIN WORKSPACE CONTAINER -->
+        <main class="care-main-viewport">
+            <!-- Loading Indicator -->
+            <template if:true={isLoading}>
+                <div class="care-loading-container">
+                    <lightning-spinner alternative-text="Loading CareNest workspace..." size="medium"></lightning-spinner>
+                    <p class="care-loading-text">Synchronizing authorized hospital operations telemetry...</p>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <!-- =========================================================
+                     MODULE 1: EXECUTIVE HOSPITAL COMMAND CENTER (HERO + KPIS)
+                     ========================================================= -->
+                <template if:true={isOverviewTab}>
+                    <div class="care-command-center">
+                        <!-- A. PHOTOGRAPHIC HERO BANNER -->
+                        <div class="care-hero-banner" style={heroImageStyle}>
+                            <div class="care-hero-overlay-content">
+                                <div class="care-hero-badge-row">
+                                    <span class="care-hero-pill-teal">
+                                        <lightning-icon icon-name="utility:check" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        Tertiary Hospital Care
+                                    </span>
+                                    <span class="care-hero-pill-dark">
+                                        <lightning-icon icon-name="utility:shield" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        Zero-Trust Stage 2 RBAC
+                                    </span>
+                                    <span class="care-hero-pill-dark">
+                                        <lightning-icon icon-name="utility:connected_apps" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        Live Telemetry: Online
+                                    </span>
+                                    <span class="care-hero-pill-dark">
+                                        <lightning-icon icon-name="utility:lock" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        HIPAA &amp; DISHA Compliant
+                                    </span>
+                                </div>
+                                <h1 class="care-hero-title">Welcome, Hospital Administration</h1>
+                                <p class="care-hero-subtitle">
+                                    Executive Command Center — Real-time inpatient bed allocation, clinical rounds telemetry, outpatient capacity, and enterprise hospital governance.
+                                </p>
+                                <div class="care-hero-actions-row">
+                                    <button class="care-hero-btn-primary" onclick={handleQuickRegisterPatient}>
+                                        <lightning-icon icon-name="utility:user" size="x-small" class="care-icon-white"></lightning-icon>
+                                        <span>+ Register Patient</span>
+                                    </button>
+                                    <button class="care-hero-btn-secondary" data-id="admissions" onclick={handleNavClick}>
+                                        <lightning-icon icon-name="utility:hospital" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span>Inpatient Admissions</span>
+                                    </button>
+                                    <button class="care-hero-btn-secondary" data-id="appointments" onclick={handleNavClick}>
+                                        <lightning-icon icon-name="utility:event" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span>Schedule OPD Slot</span>
+                                    </button>
+                                    <button class="care-hero-btn-secondary" data-id="clinical" onclick={handleNavClick}>
+                                        <lightning-icon icon-name="utility:heart" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span>Clinical &amp; Vitals</span>
+                                    </button>
+                                    <button class="care-hero-btn-accent" data-id="adminOverview" onclick={handleNavClick}>\n                                        <lightning-icon icon-name="utility:graph" size="x-small" class="care-icon-white"></lightning-icon>\n                                        <span>Executive Analytics</span>\n                                    </button>\n                                    <button class="care-hero-btn-secondary" data-id="billing" onclick={handleNavClick}>
+                                        <lightning-icon icon-name="utility:currency" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span>Billing &amp; Payments</span>
+                                    </button>
+                                    <button class="care-hero-btn-glass" onclick={handleRefresh} title="Synchronize latest live data">
+                                        <lightning-icon icon-name="utility:refresh" size="x-small" class="care-icon-white"></lightning-icon>
+                                        <span>Sync Live Data</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- B. FLOATING EXECUTIVE KPI MATRIX (12 METRICS) -->
+                        <template if:true={metrics}>
+                            <div class="care-kpi-matrix-grid">
+                                <!-- Card 1: Active Inpatients -->
+                                <div class="care-kpi-card care-kpi-navy" data-id="admissions" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Inpatients</span>
+                                        <lightning-icon icon-name="standard:hospital" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.activeAdmissions}</div>
+                                    <div class="care-kpi-meta">Current Admitted Census</div>
+                                </div>
+
+                                <!-- Card 2: Total Beds -->
+                                <div class="care-kpi-card care-kpi-teal" data-id="wards" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Total Beds</span>
+                                        <lightning-icon icon-name="standard:asset_relationship" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.totalBeds}</div>
+                                    <div class="care-kpi-meta">Across 5 Hospital Wards</div>
+                                </div>
+
+                                <!-- Card 3: Occupied Beds -->
+                                <div class="care-kpi-card care-kpi-amber" data-id="wards" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Occupied Beds</span>
+                                        <lightning-icon icon-name="utility:bed" size="small" class="care-icon-amber"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.occupiedBeds}</div>
+                                    <div class="care-kpi-meta">{metrics.overallOccupancyRate}% Occupancy Rate</div>
+                                </div>
+
+                                <!-- Card 4: Available Beds -->
+                                <div class="care-kpi-card care-kpi-green" data-id="wards" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Available Beds</span>
+                                        <lightning-icon icon-name="utility:check" size="small" class="care-icon-green"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.availableBeds}</div>
+                                    <div class="care-kpi-meta">Ready For Immediate Intake</div>
+                                </div>
+
+                                <!-- Card 5: Active Doctors -->
+                                <div class="care-kpi-card care-kpi-slate" data-id="doctors" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Active Doctors</span>
+                                        <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.totalDoctors}</div>
+                                    <div class="care-kpi-meta">Credentialed Physicians</div>
+                                </div>
+
+                                <!-- Card 6: Clinical Alerts -->
+                                <div class="care-kpi-card care-kpi-red" data-id="clinical" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Clinical Alerts</span>
+                                        <lightning-icon icon-name="utility:warning" size="small" class="care-icon-red"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.activeClinicalAlerts}</div>
+                                    <div class="care-kpi-meta">Abnormal Vitals Flagged</div>
+                                </div>
+
+                                <!-- Card 7: Appointments Today -->
+                                <div class="care-kpi-card care-kpi-teal" data-id="appointments" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Today OPD</span>
+                                        <lightning-icon icon-name="standard:event" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.todayAppointments}</div>
+                                    <div class="care-kpi-meta">Scheduled Consultations</div>
+                                </div>
+
+                                <!-- Card 8: Upcoming Slots -->
+                                <div class="care-kpi-card care-kpi-slate" data-id="appointments" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Upcoming Booked</span>
+                                        <lightning-icon icon-name="utility:date_time" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{metrics.upcomingAppointments}</div>
+                                    <div class="care-kpi-meta">Confirmed Bookings</div>
+                                </div>
+
+                                <!-- Card 9: Recorded Collections -->
+                                <div class="care-kpi-card care-kpi-green" data-id="billing" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Collections</span>
+                                        <lightning-icon icon-name="standard:currency" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">₹{metrics.totalPaid}</div>
+                                    <div class="care-kpi-meta">Recorded Successful Collections</div>
+                                </div>
+
+                                <!-- Card 10: Outstanding Arrears -->
+                                <div class="care-kpi-card care-kpi-amber" data-id="billing" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Outstanding</span>
+                                        <lightning-icon icon-name="utility:moneybag" size="small" class="care-icon-amber"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">₹{metrics.totalOutstanding}</div>
+                                    <div class="care-kpi-meta">Unsettled Patient Invoices</div>
+                                </div>
+
+                                <!-- Card 11: Patient Population -->
+                                <div class="care-kpi-card care-kpi-navy" data-id="patients" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Patients</span>
+                                        <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">113</div>
+                                    <div class="care-kpi-meta">Enrolled (164 Total Contacts)</div>
+                                </div>
+
+                                <!-- Card 12: Recovery Ratio -->
+                                <div class="care-kpi-card care-kpi-teal" data-id="billing" onclick={handleNavClick}>
+                                    <div class="care-kpi-card-header">
+                                        <span class="care-kpi-tag">Collection Rate</span>
+                                        <lightning-icon icon-name="utility:trending" size="small"></lightning-icon>
+                                    </div>
+                                    <div class="care-kpi-metric-val">{collectionRate}%</div>
+                                    <div class="care-kpi-meta">Fiscal Efficiency Index</div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- C. SPLIT OPERATIONS & TELEMETRY PANELS -->
+                        <div class="care-command-grid">
+                            <!-- LEFT COLUMN (60%): Ward Capacity & Financials -->
+                            <div class="care-grid-col-left">
+                                <!-- Ward Occupancy Matrix -->
+                                <div class="care-card-panel">
+                                    <div class="care-panel-header">
+                                        <div>
+                                            <h3 class="care-panel-title">Real-Time Ward Capacity &amp; Occupancy Matrix</h3>
+                                            <p class="care-panel-sub">Live telemetry across 5 inpatient wards and 42 bed assignments.</p>
+                                        </div>
+                                        <button class="care-panel-action-link" data-id="wards" onclick={handleNavClick}>
+                                            Manage Wards &rarr;
+                                        </button>
+                                    </div>
+
+                                    <div class="care-ward-list">
+                                        <template for:each={wardSummaries} for:item="ward">
+                                            <div key={ward.wardId} class="care-ward-row">
+                                                <div class="care-ward-meta-col">
+                                                    <div class="care-ward-name-row">
+                                                        <span class="care-ward-title">{ward.name}</span>
+                                                        <span class="care-ward-code-badge">{ward.wardCode}</span>
+                                                        <span class="care-ward-type-badge">{ward.wardType} • Floor {ward.floor}</span>
+                                                    </div>
+                                                    <div class="care-ward-progress-wrapper">
+                                                        <div class="care-ward-progress-bar">
+                                                            <div class={ward.barClass} style={ward.progressStyle}></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="care-ward-stat-col">
+                                                    <span class="care-ward-occ-text"><strong>{ward.occupiedBeds}</strong> / {ward.totalBeds} Beds ({ward.occupancyRate}%)</span>
+                                                    <span class={ward.availableBadgeClass}>
+                                                        {ward.availableBeds} Avail
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Financial & Revenue Overview -->
+                                <div class="care-card-panel slds-m-top_medium">
+                                    <div class="care-panel-header">
+                                        <div>
+                                            <h3 class="care-panel-title">Hospital Revenue &amp; Financial Governance</h3>
+                                            <p class="care-panel-sub">Real-time ledger aggregation from authorized Payment records.</p>
+                                        </div>
+                                        <button class="care-panel-action-link" data-id="billing" onclick={handleNavClick}>
+                                            Open Ledger &rarr;
+                                        </button>
+                                    </div>
+
+                                    <template if:true={metrics}>
+                                        <div class="care-finance-summary-grid">
+                                            <div class="care-finance-box">
+                                                <div class="care-finance-label">Total Billed Invoices</div>
+                                                <div class="care-finance-value">₹{metrics.totalBilled}</div>
+                                                <div class="care-finance-sub">Cumulative Healthcare Billings</div>
+                                            </div>
+                                            <div class="care-finance-box care-finance-box-green">
+                                                <div class="care-finance-label">Recorded Successful Collections</div>
+                                                <div class="care-finance-value">₹{metrics.totalPaid}</div>
+                                                <div class="care-finance-sub">69 Successful Payment Records</div>
+                                            </div>
+                                            <div class="care-finance-box care-finance-box-amber">
+                                                <div class="care-finance-label">Outstanding Receivables</div>
+                                                <div class="care-finance-value">₹{metrics.totalOutstanding}</div>
+                                                <div class="care-finance-sub">Unsettled Patient Accounts</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT COLUMN (40%): Live Feed & Quick Actions -->
+                            <div class="care-grid-col-right">
+                                <!-- Real-Time Hospital Activity Stream -->
+                                <div class="care-card-panel">
+                                    <div class="care-panel-header">
+                                        <div class="care-title-with-pulse">
+                                            <span class="care-pulse-dot"></span>
+                                            <div>
+                                                <h3 class="care-panel-title">Live Hospital Activity Feed</h3>
+                                                <p class="care-panel-sub">Stream of recent admissions and clinical vital sign telemetry.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="care-activity-feed">
+                                        <template for:each={recentActivities} for:item="act">
+                                            <div key={act.id} class="care-activity-row">
+                                                <div class="care-activity-icon-col">
+                                                    <lightning-icon icon-name={act.iconName} size="small" class={act.iconClass}></lightning-icon>
+                                                </div>
+                                                <div class="care-activity-body">
+                                                    <div class="care-activity-title">{act.title}</div>
+                                                    <div class="care-activity-sub">{act.subtitle}</div>
+                                                </div>
+                                                <div class="care-activity-badge-col">
+                                                    <span class={act.badgeStyle}>{act.badgeLabel}</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Administrative Quick Launchpad -->
+                                <div class="care-card-panel slds-m-top_medium">
+                                    <div class="care-panel-header">
+                                        <div>
+                                            <h3 class="care-panel-title">Administrative Quick Launchpad</h3>
+                                            <p class="care-panel-sub">Instant shortcuts to core departmental workspaces.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="care-launchpad-grid">
+                                        <button class="care-launchpad-btn" data-id="patients" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                            <span>Patient Directory</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="doctors" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                                            <span>Physician Staff</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="appointments" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:event" size="small"></lightning-icon>
+                                            <span>Appointment Slots</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="admissions" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:hospital" size="small"></lightning-icon>
+                                            <span>Bed Allocation</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="clinical" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:stethoscope" size="small"></lightning-icon>
+                                            <span>Inpatient Charts</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="reports" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:report" size="small"></lightning-icon>
+                                            <span>Operations Reports</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="assistant" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:einstein" size="small"></lightning-icon>
+                                            <span>Agentforce AI</span>
+                                        </button>
+                                        <button class="care-launchpad-btn" data-id="automation" onclick={handleNavClick}>
+                                            <lightning-icon icon-name="standard:process" size="small"></lightning-icon>
+                                            <span>Automation Jobs</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                
+                <!-- =========================================================
+                     MODULE: DEDICATED EXECUTIVE HOSPITAL ADMIN OVERVIEW & REVENUE ANALYTICS
+                     ========================================================= -->
+                <template if:true={isAdminOverviewTab}>
+                    <div class="care-admin-overview-container">
+                        <!-- A. EXECUTIVE BANNER & BREADCRUMB -->
+                        <div class="care-admin-banner">
+                            <div class="care-admin-banner-content">
+                                <div class="care-admin-badge-row">
+                                    <span class="care-admin-pill-teal">
+                                        <lightning-icon icon-name="utility:money" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        Certified Salesforce Financial Ledger
+                                    </span>
+                                    <span class="care-admin-pill-dark">
+                                        <lightning-icon icon-name="utility:shield" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        Admin Authorized Session
+                                    </span>
+                                    <span class="care-admin-pill-green">
+                                        <lightning-icon icon-name="utility:database" size="xx-small" class="care-icon-white"></lightning-icon>
+                                        Live Salesforce Data (No Demo Data)
+                                    </span>
+                                </div>
+                                <h1 class="care-admin-title">Hospital Executive Overview &amp; Revenue Analytics</h1>
+                                <p class="care-admin-subtitle">
+                                    Real-time financial intelligence, revenue trajectory, receivables aging, department attribution, and enterprise hospital operational capacity.
+                                </p>
+                            </div>
+                            <div class="care-admin-banner-actions">
+                                <button class="care-btn-glass" data-id="overview" onclick={handleNavClick} title="Return to Command Center Telemetry">
+                                    <lightning-icon icon-name="utility:service_territory_location" size="x-small" class="care-icon-white"></lightning-icon>
+                                    <span>Command Center &rarr;</span>
+                                </button>
+                                <button class="care-btn-primary-teal" onclick={handleRefreshAdmin} title="Synchronize latest live ledger">
+                                    <lightning-icon icon-name="utility:refresh" size="x-small" class="care-icon-white"></lightning-icon>
+                                    <span>Sync Financial Data</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- B. INTERACTIVE FILTER CONTROLS BAR -->
+                        <div class="care-admin-filter-bar">
+                            <div class="care-filter-section-left">
+                                <span class="care-filter-label">Reporting Period:</span>
+                                <div class="care-filter-btn-group">
+                                    <button class={periodAllClass} data-period="all" onclick={handleSelectPeriod}>All Time</button>
+                                    <button class={periodTodayClass} data-period="today" onclick={handleSelectPeriod}>Today</button>
+                                    <button class={period7DClass} data-period="last7days" onclick={handleSelectPeriod}>7 Days</button>
+                                    <button class={period30DClass} data-period="last30days" onclick={handleSelectPeriod}>30 Days</button>
+                                    <button class={periodThisMonthClass} data-period="thismonth" onclick={handleSelectPeriod}>This Month</button>
+                                    <button class={periodLastMonthClass} data-period="lastmonth" onclick={handleSelectPeriod}>Last Month</button>
+                                    <button class={periodQuarterClass} data-period="thisquarter" onclick={handleSelectPeriod}>Quarter</button>
+                                    <button class={periodYearClass} data-period="thisyear" onclick={handleSelectPeriod}>YTD 2026</button>
+                                    <button class={periodCustomClass} data-period="custom" onclick={handleSelectPeriod}>Custom</button>
+                                </div>
+                            </div>
+
+                            <div class="care-filter-section-right">
+                                <template if:true={isCustomPeriod}>
+                                    <div class="care-custom-date-inputs">
+                                        <input type="date" class="care-date-picker" onchange={handleStartDateChange} aria-label="Start Date" />
+                                        <span class="care-date-sep">to</span>
+                                        <input type="date" class="care-date-picker" onchange={handleEndDateChange} aria-label="End Date" />
+                                    </div>
+                                </template>
+
+                                <div class="care-select-wrapper">
+                                    <select class="care-dropdown-select" onchange={handleDepartmentChange} aria-label="Filter by department">
+                                        <option value="all">All Departments</option>
+                                        <option value="Orthopaedics">Orthopaedics</option>
+                                        <option value="Dermatology">Dermatology</option>
+                                        <option value="ENT">ENT</option>
+                                        <option value="General Medicine">General Medicine</option>
+                                        <option value="Paediatrics">Paediatrics</option>
+                                    </select>
+                                </div>
+
+                                <button class="care-btn-export-csv" onclick={handleExportCsv} title="Export financial ledger to CSV">
+                                    <lightning-icon icon-name="utility:download" size="x-small" class="care-icon-teal"></lightning-icon>
+                                    <span>Export CSV</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- C. LOADING / ERROR STATES -->
+                        <template if:true={isAdminLoading}>
+                            <div class="care-loading-container slds-m-vertical_large">
+                                <lightning-spinner alternative-text="Calculating financial aggregates..." size="medium"></lightning-spinner>
+                                <p class="care-loading-text">Reconciling verified Salesforce Payment, Invoice, and Receivables ledgers...</p>
+                            </div>
+                        </template>
+
+                        <template if:true={adminError}>
+                            <div class="care-error-card slds-m-vertical_large">
+                                <lightning-icon icon-name="utility:error" size="medium" class="care-error-icon"></lightning-icon>
+                                <div>
+                                    <h3 class="care-error-title">Access Restricted or Query Error</h3>
+                                    <p class="care-error-msg">{adminError}</p>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- D. MAIN EXECUTIVE FINANCIAL DASHBOARD BODY -->
+                        <template if:true={adminKpi}>
+                            <!-- 1. 12 EXECUTIVE FINANCIAL KPI CARDS GRID -->
+                            <div class="care-admin-kpi-grid">
+                                <!-- KPI 1: Today's Collections -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Today's Collections</span>
+                                        <lightning-icon icon-name="utility:moneybag" size="x-small" class="care-kpi-ico-green"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.todayCollections}</div>
+                                    <div class="care-fin-kpi-sub">Recorded successful payments</div>
+                                </div>
+
+                                <!-- KPI 2: Yesterday's Collections -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Yesterday's Collections</span>
+                                        <lightning-icon icon-name="utility:clock" size="x-small" class="care-kpi-ico-blue"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.yesterdayCollections}</div>
+                                    <div class="care-fin-kpi-sub">Prior business day clearing</div>
+                                </div>
+
+                                <!-- KPI 3: This Month's Collections -->
+                                <div class="care-fin-kpi-card care-fin-kpi-highlight-teal">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">This Month's Collections</span>
+                                        <span class="care-tag-teal">Oct 2026</span>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.thisMonthCollections}</div>
+                                    <div class="care-fin-kpi-sub">47 verified transactions</div>
+                                </div>
+
+                                <!-- KPI 4: Last Month's Collections -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Last Month's Collections</span>
+                                        <span class="care-tag-slate">Sep 2026</span>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.lastMonthCollections}</div>
+                                    <div class="care-fin-kpi-sub">13 verified transactions</div>
+                                </div>
+
+                                <!-- KPI 5: Year-to-Date Collections -->
+                                <div class="care-fin-kpi-card care-fin-kpi-highlight-navy">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Year-to-Date Collections</span>
+                                        <span class="care-tag-navy">FY 2026</span>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.ytdCollections}</div>
+                                    <div class="care-fin-kpi-sub">Collections Less Refund Obligations: ₹{adminKpi.netCollections}</div>
+                                </div>
+
+                                <!-- KPI 6: Total Invoiced -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Total Invoiced</span>
+                                        <lightning-icon icon-name="utility:standard_objects" size="x-small" class="care-kpi-ico-navy"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.totalInvoiced}</div>
+                                    <div class="care-fin-kpi-sub">81 OPD consultation billings</div>
+                                </div>
+
+                                <!-- KPI 7: Outstanding Receivables -->
+                                <div class="care-fin-kpi-card care-fin-kpi-highlight-amber">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Outstanding Receivables</span>
+                                        <span class="care-tag-amber">18 Active Appts</span>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.outstandingReceivables}</div>
+                                    <div class="care-fin-kpi-sub">18 active appts (19 total, 1 cancelled ₹600 excluded)</div>
+                                </div>
+
+                                <!-- KPI 8: Post-Service Open Balances -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Post-Service Open Balances</span>
+                                        <lightning-icon icon-name="utility:clock" size="x-small" class="care-kpi-ico-amber"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.overdueReceivables}</div>
+                                    <div class="care-fin-kpi-sub">2 appts past consultation date (no invoice due dates)</div>
+                                </div>
+
+                                <!-- KPI 9: Collection Rate -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Collection Rate</span>
+                                        <span class="care-tag-green">Recorded</span>
+                                    </div>
+                                    <div class="care-fin-kpi-val">{adminKpi.collectionRate}%</div>
+                                    <div class="care-fin-kpi-sub">Recorded Collections vs Invoiced ratio</div>
+                                </div>
+
+                                <!-- KPI 10: Avg Revenue per Patient -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Avg Revenue / Patient</span>
+                                        <lightning-icon icon-name="utility:user" size="x-small" class="care-kpi-ico-teal"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.avgRevenuePerPatient}</div>
+                                    <div class="care-fin-kpi-sub">Across 58 billed patients</div>
+                                </div>
+
+                                <!-- KPI 11: Avg Invoice Value -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">Avg Invoice Value</span>
+                                        <lightning-icon icon-name="utility:receipt" size="x-small" class="care-kpi-ico-teal"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">₹{adminKpi.avgInvoiceValue}</div>
+                                    <div class="care-fin-kpi-sub">Mean OPD appointment bill</div>
+                                </div>
+
+                                <!-- KPI 12: MoM Collection Growth -->
+                                <div class="care-fin-kpi-card">
+                                    <div class="care-fin-kpi-header">
+                                        <span class="care-fin-kpi-title">MoM Collection Growth</span>
+                                        <lightning-icon icon-name="utility:trending" size="x-small" class="care-kpi-ico-green"></lightning-icon>
+                                    </div>
+                                    <div class="care-fin-kpi-val">+{adminKpi.momGrowth}%</div>
+                                    <div class="care-fin-kpi-sub">Oct (₹27.1K) vs Sep (₹8.9K)</div>
+                                </div>
+                            </div>
+
+                            <!-- 2. INTERACTIVE FINANCIAL GRAPHS SECTION -->
+                            <div class="care-admin-charts-grid slds-m-top_large">
+                                <!-- LEFT COLUMN (60%): Revenue Trends & Invoiced vs Collected -->
+                                <div class="care-charts-col-left">
+                                    <!-- GRAPH 1: Monthly Revenue Trend -->
+                                    <div class="care-chart-card">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 1: Monthly Collections Trend (Last 12 Months)</h3>
+                                                <p class="care-chart-subtitle">Recorded monthly successful collections from Salesforce Payment records.</p>
+                                            </div>
+                                            <span class="care-tag-teal">Line &amp; Area Chart</span>
+                                        </div>
+                                        <div class="care-svg-chart-container">
+                                            <svg viewBox="0 0 500 160" class="care-trend-svg">
+                                                <defs>
+                                                    <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stop-color="#0d9488" stop-opacity="0.35"/>
+                                                        <stop offset="100%" stop-color="#0d9488" stop-opacity="0.02"/>
+                                                    </linearGradient>
+                                                </defs>
+                                                <!-- Horizontal gridlines -->
+                                                <line x1="30" y1="30" x2="470" y2="30" stroke="#e2e8f0" stroke-dasharray="3,3"/>
+                                                <line x1="30" y1="75" x2="470" y2="75" stroke="#e2e8f0" stroke-dasharray="3,3"/>
+                                                <line x1="30" y1="120" x2="470" y2="120" stroke="#e2e8f0" stroke-dasharray="3,3"/>
+                                                <!-- Area fill -->
+                                                <path d={monthlyTrendSvg.areaPath} fill="url(#trendGradient)"/>
+                                                <!-- Trend Line -->
+                                                <path d={monthlyTrendSvg.linePath} fill="none" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/>
+                                                <!-- Points and labels -->
+                                                <template for:each={monthlyTrendSvg.points} for:item="pt">
+                                                    <g key={pt.label}>
+                                                        <circle cx={pt.x} cy={pt.y} r="5" fill="#ffffff" stroke="#0d9488" stroke-width="2.5"/>
+                                                        <text x={pt.x} y="148" text-anchor="middle" class="care-svg-axis-label">{pt.label}</text>
+                                                        <template if:true={pt.value}>
+                                                             <text x={pt.x} y={pt.y} dy="-10" text-anchor="middle" class="care-svg-val-label">{pt.formattedVal}</text>
+                                                        </template>
+                                                    </g>
+                                                </template>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- GRAPH 2: Daily Collections (Last 30 Days) -->
+                                    <div class="care-chart-card slds-m-top_medium">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 2: Daily Collections Trend (Last 30 Days)</h3>
+                                                <p class="care-chart-subtitle">Daily cash desk and online settlement distribution.</p>
+                                            </div>
+                                            <span class="care-tag-teal">Bar Chart</span>
+                                        </div>
+                                        <div class="care-svg-chart-container">
+                                            <svg viewBox="0 0 600 150" class="care-bars-svg">
+                                                <line x1="0" y1="130" x2="600" y2="130" stroke="#cbd5e1" stroke-width="1.5"/>
+                                                <template for:each={dailyCollectionsBars} for:item="b">
+                                                    <g key={b.label}>
+                                                        <rect x={b.x} y={b.y} width={b.width} height={b.height} rx="2" class={b.barClass}>
+                                                            <title>{b.label}: {b.formattedVal} ({b.count} recorded payments)</title>
+                                                        </rect>
+                                                    </g>
+                                                </template>
+                                            </svg>
+                                            <div class="care-bar-dates-row">
+                                                <span>30 Days Ago</span>
+                                                <span>Mid Month</span>
+                                                <span>Today (Oct 20)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- GRAPH 3: Invoiced vs Collected vs Outstanding -->
+                                    <div class="care-chart-card slds-m-top_medium">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 3: Invoiced vs Recorded Successful Collections vs Outstanding</h3>
+                                                <p class="care-chart-subtitle">Comparative ledger reconciliation: Collections Less Refund Obligations: ₹37,287.50 (Total Invoiced: ₹52,062.50).</p>
+                                            </div>
+                                            <span class="care-tag-navy">Reconciliation</span>
+                                        </div>
+                                        <div class="care-comparative-bars-list">
+                                            <template for:each={invoicedVsCollectedList} for:item="item">
+                                                <div key={item.label} class="care-comp-bar-row">
+                                                    <div class="care-comp-bar-label-col">
+                                                        <span class="care-comp-bar-label">{item.label}</span>
+                                                        <span class="care-comp-bar-val">{item.formatted}</span>
+                                                    </div>
+                                                    <div class="care-comp-bar-track">
+                                                        <div class={item.barClass} style={item.widthStyle}></div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- RIGHT COLUMN (40%): Department, Methods, Aging & Doctors -->
+                                <div class="care-charts-col-right">
+                                    <!-- GRAPH 4: Revenue by Specialty -->
+                                    <div class="care-chart-card">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 4: Revenue by Specialty</h3>
+                                                <p class="care-chart-subtitle">Recorded collections by medical specialty.</p>
+                                            </div>
+                                        </div>
+                                        <div class="care-slices-breakdown">
+                                            <template for:each={departmentRevenueSlices} for:item="s">
+                                                <div key={s.label} class="care-slice-item">
+                                                    <div class="care-slice-left">
+                                                        <span class="care-slice-color-dot" style={s.badgeStyle}></span>
+                                                        <span class="care-slice-name">{s.label}</span>
+                                                    </div>
+                                                    <div class="care-slice-right">
+                                                        <span class="care-slice-amt">{s.formattedAmount}</span>
+                                                        <span class="care-slice-pct">({s.percentage}%)</span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- GRAPH 5: Payment Methods Breakdown -->
+                                    <div class="care-chart-card slds-m-top_medium">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 5: Settlement Methods</h3>
+                                                <p class="care-chart-subtitle">Recorded payment channels (UPI, Card, Cash Desk).</p>
+                                            </div>
+                                        </div>
+                                        <div class="care-slices-breakdown">
+                                            <template for:each={paymentMethodSlices} for:item="m">
+                                                <div key={m.label} class="care-slice-item">
+                                                    <div class="care-slice-left">
+                                                        <span class="care-slice-color-dot" style={m.badgeStyle}></span>
+                                                        <span class="care-slice-name">{m.label}</span>
+                                                    </div>
+                                                    <div class="care-slice-right">
+                                                        <span class="care-slice-amt">{m.formattedAmount}</span>
+                                                        <span class="care-slice-pct">({m.percentage}%)</span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- GRAPH 6: Receivables Aging Breakdown -->
+                                    <div class="care-chart-card slds-m-top_medium">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 6: Receivables Aging (By Consultation Date)</h3>
+                                                <p class="care-chart-subtitle">18 active appts (19 total, 1 cancelled ₹600 excluded): ₹7,937.50 current balances, ₹1,050.00 post-service open balances.</p>
+                                            </div>
+                                        </div>
+                                        <div class="care-aging-list">
+                                            <template for:each={receivablesAgingList} for:item="ag">
+                                                <div key={ag.bracket} class="care-aging-row">
+                                                    <div class="care-aging-meta">
+                                                        <span class="care-aging-bracket">{ag.bracket}</span>
+                                                        <span class={ag.tagClass}>{ag.count} appts</span>
+                                                        <span class="care-aging-amt">{ag.formattedAmount}</span>
+                                                    </div>
+                                                    <div class="care-aging-track">
+                                                        <div class={ag.barClass} style={ag.widthStyle}></div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- GRAPH 7: Doctor & Specialty Revenue Leaderboard -->
+                                    <div class="care-chart-card slds-m-top_medium">
+                                        <div class="care-chart-header">
+                                            <div>
+                                                <h3 class="care-chart-title">Graph 7: Physician Revenue Leaderboard</h3>
+                                                <p class="care-chart-subtitle">Recorded collections attributed across 12 physicians.</p>
+                                            </div>
+                                        </div>
+                                        <div class="care-doctor-rev-list">
+                                            <template for:each={doctorRevenueRanked} for:item="dr">
+                                                <div key={dr.doctorId} class="care-doc-rev-row">
+                                                    <div class="care-doc-rev-info">
+                                                        <span class="care-doc-rev-rank">#{dr.rank}</span>
+                                                        <span class="care-doc-rev-name">{dr.doctorName}</span>
+                                                        <span class="care-doc-rev-dept">({dr.department})</span>
+                                                    </div>
+                                                    <div class="care-doc-rev-amt-col">
+                                                        <span class="care-doc-rev-amt">{dr.formattedAmount}</span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. HOSPITAL OPERATIONS ANALYTICS PANELS (STEP 4) -->
+                            <div class="care-admin-operations-section slds-m-top_large">
+                                <div class="care-panel-header">
+                                    <div>
+                                        <h3 class="care-panel-title">Hospital Operational Capacity &amp; Clinical Telemetry</h3>
+                                        <p class="care-panel-sub">Real-time throughput for Outpatient Clinics, Inpatient Census, Beds, and Clinical Rounds.</p>
+                                    </div>
+                                </div>
+
+                                <div class="care-ops-matrix-grid">
+                                    <!-- Panel A: Outpatient Appointment Volume -->
+                                    <div class="care-ops-box">
+                                        <div class="care-ops-box-header">
+                                            <span class="care-ops-box-title">OPD Appointments</span>
+                                            <lightning-icon icon-name="standard:event" size="small"></lightning-icon>
+                                        </div>
+                                        <div class="care-ops-metric-large">{adminOperations.totalAppointments}</div>
+                                        <div class="care-ops-breakdown">
+                                            <div class="care-ops-stat"><span>Confirmed:</span> <strong>{adminOperations.confirmedAppointments}</strong></div>
+                                            <div class="care-ops-stat"><span>Completed:</span> <strong>{adminOperations.completedAppointments}</strong></div>
+                                            <div class="care-ops-stat"><span>Cancelled:</span> <strong>{adminOperations.cancelledAppointments}</strong></div>
+                                            <div class="care-ops-stat"><span>Pending:</span> <strong>{adminOperations.pendingAppointments}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Panel B: Inpatient Bed Utilization -->
+                                    <div class="care-ops-box">
+                                        <div class="care-ops-box-header">
+                                            <span class="care-ops-box-title">Inpatient Bed Utilization</span>
+                                            <lightning-icon icon-name="standard:hospital" size="small"></lightning-icon>
+                                        </div>
+                                        <div class="care-ops-metric-large">{adminOperations.wardOccupancyRate}%</div>
+                                        <div class="care-ops-breakdown">
+                                            <div class="care-ops-stat"><span>Occupied Beds:</span> <strong>{adminOperations.occupiedBeds}</strong></div>
+                                            <div class="care-ops-stat"><span>Available Beds:</span> <strong>{adminOperations.availableBeds}</strong></div>
+                                            <div class="care-ops-stat"><span>Active Census:</span> <strong>{adminOperations.activeAdmissions}</strong></div>
+                                            <div class="care-ops-stat"><span>Discharged:</span> <strong>{adminOperations.dischargedCount}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Panel C: Clinical Alert Management -->
+                                    <div class="care-ops-box">
+                                        <div class="care-ops-box-header">
+                                            <span class="care-ops-box-title">Clinical Alerts Lifecycle</span>
+                                            <lightning-icon icon-name="utility:warning" size="small" class="care-icon-red"></lightning-icon>
+                                        </div>
+                                        <div class="care-ops-metric-large">{adminOperations.totalAlerts}</div>
+                                        <div class="care-ops-breakdown">
+                                            <div class="care-ops-stat"><span>Historical Abnormal:</span> <strong>{adminOperations.totalAlerts} readings</strong></div>
+                                            <div class="care-ops-stat"><span>Unresolved Alerts:</span> <strong>{adminOperations.pendingReviews} active</strong></div>
+                                            <div class="care-ops-stat"><span>Recorded Resolutions:</span> <strong>{adminOperations.resolvedAlerts} recorded</strong></div>
+                                            <div class="care-ops-stat"><span>Awaiting Resolution:</span> <strong>{adminOperations.newAlerts} open</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Panel D: Accrued Inpatient Bed Charges -->
+                                    <div class="care-ops-box">
+                                        <div class="care-ops-box-header">
+                                            <span class="care-ops-box-title">Accrued Inpatient Bed Charges</span>
+                                            <lightning-icon icon-name="standard:currency" size="small"></lightning-icon>
+                                        </div>
+                                        <div class="care-ops-metric-large">₹{adminKpi.inpatientChargesPotential}</div>
+                                        <div class="care-ops-breakdown">
+                                            <div class="care-ops-stat"><span>Admitted (Accrued):</span> <strong>₹245,700</strong></div>
+                                            <div class="care-ops-stat"><span>Discharged (Accrued):</span> <strong>₹180,300</strong></div>
+                                            <div class="care-ops-stat"><span>Billing Status:</span> <strong>Accrued Charges (Not Collected Revenue)</strong></div>
+                                            <div class="care-ops-stat"><span>Wards:</span> <strong>5 Facilities</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. RECENT FINANCIAL TRANSACTIONS LEDGER (STEP 6) -->
+                            <div class="care-card-panel slds-m-top_large">
+                                <div class="care-panel-header">
+                                    <div>
+                                        <h3 class="care-panel-title">Recent Financial Transactions</h3>
+                                        <p class="care-panel-sub">Live audit trail of verified patient payments and counter receipts.</p>
+                                    </div>
+                                    <div class="care-table-search-box">
+                                        <input
+                                            type="text"
+                                            placeholder="Search transactions..."
+                                            class="care-search-input"
+                                            oninput={handleTransactionSearch}
+                                            aria-label="Search transaction records" />
+                                    </div>
+                                </div>
+
+                                <div class="care-table-responsive-wrapper">
+                                    <table class="care-data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Txn Code</th>
+                                                <th>Appointment</th>
+                                                <th>Patient</th>
+                                                <th>Doctor</th>
+                                                <th>Department</th>
+                                                <th>Method</th>
+                                                <th class="care-text-right">Amount</th>
+                                                <th>Recorded Status</th>
+                                                <th>Payment Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={filteredTransactions} for:item="t">
+                                                <tr key={t.id}>
+                                                    <td class="care-font-bold">{t.transactionCode}</td>
+                                                    <td>{t.appointmentCode}</td>
+                                                    <td>{t.patientName}</td>
+                                                    <td>{t.doctorName}</td>
+                                                    <td>{t.department}</td>
+                                                    <td>
+                                                        <span class="care-pill-badge-teal">{t.method}</span>
+                                                    </td>
+                                                    <td class="care-text-right care-font-bold care-text-teal">₹{t.amount}</td>
+                                                    <td>
+                                                        <span class="care-tag-green">{t.status}</span>
+                                                    </td>
+                                                    <td class="care-text-muted">{t.formattedPaidOn}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 5. SALESFORCE REPORTS QUICK HUB (STEP 7) -->
+                            <div class="care-card-panel slds-m-top_large">
+                                <div class="care-panel-header">
+                                    <div>
+                                        <h3 class="care-panel-title">Official Salesforce Financial &amp; Operational Reports</h3>
+                                        <p class="care-panel-sub">Direct access to standard and custom Salesforce Reports for deep tabular inspection and official exports.</p>
+                                    </div>
+                                </div>
+
+                                <div class="care-reports-grid">
+                                    <template for:each={reportLinksList} for:item="r">
+                                        <a key={r.id} href={r.url} target="_blank" rel="noopener noreferrer" class="care-report-link-card">
+                                            <div class="care-report-card-icon">
+                                                <lightning-icon icon-name="standard:report" size="small"></lightning-icon>
+                                            </div>
+                                            <div class="care-report-card-content">
+                                                <div class="care-report-name">{r.name}</div>
+                                                <div class="care-report-cat">{r.category} Analytics</div>
+                                            </div>
+                                            <lightning-icon icon-name="utility:new_window" size="xx-small" class="care-report-ext-icon"></lightning-icon>
+                                        </a>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 2: PATIENT MANAGEMENT (Intake & Search)
+                     ========================================================= -->
+                <template if:true={isPatientsTab}>
+                    <div class="care-module-card">
+                        <div class="care-module-header">
+                            <div>
+                                <h2 class="care-module-title">Hospital Patient Registry &amp; Intake</h2>
+                                <p class="care-module-desc">Centralized patient directory (113 CareNest enrolled patients, 164 total records) with duplicate prevention and zero-trust privacy controls.</p>
+                            </div>
+                            <button class="care-btn-register" onclick={handleQuickRegisterPatient}>
+                                <lightning-icon icon-name="utility:user" size="x-small" class="care-btn-icon"></lightning-icon>
+                                <span>New Registration</span>
+                            </button>
+                        </div>
+                        <c-patient-admission-workspace onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 3: DOCTORS & SPECIALTIES
+                     ========================================================= -->
+                <template if:true={isDoctorsTab}>
+                    <div class="care-module-card slds-p-around_medium">
+                        <div class="care-module-header slds-m-bottom_medium">
+                            <div>
+                                <h2 class="care-module-title">Hospital Medical Staff &amp; Specialists</h2>
+                                <p class="care-module-desc">Directory of 12 credentialed hospital physicians, departments, consultation schedules, and specialties.</p>
+                            </div>
+                        </div>
+                        <c-doctor-search></c-doctor-search>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 4: OUTPATIENT APPOINTMENTS & BOOKING
+                     ========================================================= -->
+                <template if:true={isAppointmentsTab}>
+                    <div class="care-module-card slds-p-around_medium">
+                        <div class="care-module-header slds-m-bottom_medium">
+                            <div>
+                                <h2 class="care-module-title">Outpatient Appointments &amp; OPD Booking</h2>
+                                <p class="care-module-desc">Real-time scheduling wizard, slot availability verification, and patient appointment tracking.</p>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-appointment-wizard></c-appointment-wizard>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12 slds-m-bottom_medium">
+                                <c-my-appointments></c-my-appointments>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 5: INPATIENT ADMISSIONS & DISCHARGE
+                     ========================================================= -->
+                <template if:true={isAdmissionsTab}>
+                    <div class="care-module-card">
+                        <div class="care-module-header">
+                            <div>
+                                <h2 class="care-module-title">Inpatient Admissions &amp; Bed Assignment</h2>
+                                <p class="care-module-desc">Current inpatient admission workflows, attending physician assignments, and clinical discharge management.</p>
+                            </div>
+                        </div>
+                        <c-patient-admission-workspace onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 6: WARDS & BED CAPACITY
+                     ========================================================= -->
+                <template if:true={isWardsTab}>
+                    <div class="care-module-card">
+                        <div class="care-module-header">
+                            <div>
+                                <h2 class="care-module-title">Ward &amp; Bed Capacity Management</h2>
+                                <p class="care-module-desc">Interactive bed grid across 5 wards (General, ICU, Paediatric, Private, Semi-Private) with status tracking (Available, Occupied, Cleaning).</p>
+                            </div>
+                        </div>
+                        <c-ward-bed-manager></c-ward-bed-manager>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 7: INPATIENT CLINICAL OPERATIONS
+                     ========================================================= -->
+                <template if:true={isClinicalTab}>
+                    <div class="care-module-card">
+                        <div class="care-module-header">
+                            <div>
+                                <h2 class="care-module-title">Inpatient Clinical Operations &amp; Vitals Telemetry</h2>
+                                <p class="care-module-desc">Bedside patient vital signs, clinical encounter charting, and urgent clinical alert triage.</p>
+                            </div>
+                        </div>
+                        <c-inpatient-clinical-workspace></c-inpatient-clinical-workspace>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 8: BILLING & REVENUE
+                     ========================================================= -->
+                <template if:true={isBillingTab}>
+                    <div class="care-module-card slds-p-around_medium">
+                        <div class="care-module-header slds-m-bottom_medium">
+                            <div>
+                                <h2 class="care-module-title">Patient Billing, Payments &amp; Revenue Ledger</h2>
+                                <p class="care-module-desc">Hospital payment collections, patient invoices, transaction receipts, and payment method audit.</p>
+                            </div>
+                        </div>
+                        <c-patient-billing></c-patient-billing>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 9: REPORTS & DASHBOARDS
+                     ========================================================= -->
+                <template if:true={isReportsTab}>
+                    <div class="care-module-card slds-p-around_large">
+                        <!-- Reports Hub Header -->
+                        <div class="care-reports-hub-header">
+                            <div>
+                                <div class="care-reports-badge-row">
+                                    <span class="care-pill-badge-teal">
+                                        <lightning-icon icon-name="standard:report" size="xx-small"></lightning-icon>
+                                        CareNest Enterprise Reporting Suite
+                                    </span>
+                                    <span class="care-pill-badge-green">
+                                        <lightning-icon icon-name="utility:success" size="xx-small"></lightning-icon>
+                                        {totalReportsCount} Verified Reports Live
+                                    </span>
+                                </div>
+                                <h2 class="care-module-title slds-m-top_xx-small">Hospital Reports &amp; Analytics Hub</h2>
+                                <p class="care-module-desc">Centralized access to certified CareNest Salesforce Lightning reports across financial analytics, hospital bed capacity, patient volume, and clinical audit records.</p>
+                            </div>
+                            <div class="care-reports-hub-actions">
+                                <button class="care-btn-glass" onclick={handleRefreshReports} title="Reload Reports Registry">
+                                    <lightning-icon icon-name="utility:refresh" size="x-small"></lightning-icon>
+                                    <span>Sync Reports</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Reports Hub Filter Toolbar -->
+                        <div class="care-reports-toolbar slds-m-top_medium">
+                            <div class="care-reports-filter-pills">
+                                <button class={reportCatAllClass} data-category="all" onclick={handleSelectReportCategory}>
+                                    All Reports ({totalReportsCount})
+                                </button>
+                                <button class={reportCatFinClass} data-category="financial" onclick={handleSelectReportCategory}>
+                                    Financial Analytics ({financialReportsCount})
+                                </button>
+                                <button class={reportCatOpsClass} data-category="operations" onclick={handleSelectReportCategory}>
+                                    Hospital Operations ({operationsReportsCount})
+                                </button>
+                                <button class={reportCatClinClass} data-category="clinical" onclick={handleSelectReportCategory}>
+                                    Clinical &amp; Physician ({clinicalReportsCount})
+                                </button>
+                                <button class={reportCatAddClass} data-category="additional" onclick={handleSelectReportCategory}>
+                                    Additional Operations ({additionalReportsCount})
+                                </button>
+                            </div>
+                            <div class="care-reports-search-box">
+                                <lightning-input
+                                    type="search"
+                                    variant="label-hidden"
+                                    placeholder="Search reports by name, ID or category..."
+                                    value={reportsSearchTerm}
+                                    onchange={handleReportSearch}
+                                    class="care-report-search-input">
+                                </lightning-input>
+                            </div>
+                        </div>
+
+                        <!-- Loading State -->
+                        <template if:true={isReportsLoading}>
+                            <div class="care-loading-container slds-p-around_large slds-text-align_center">
+                                <lightning-spinner alternative-text="Loading verified CareNest reports..." size="medium"></lightning-spinner>
+                                <p class="care-text-muted slds-m-top_medium">Loading verified CareNest Salesforce reports...</p>
+                            </div>
+                        </template>
+
+                        <!-- Error State -->
+                        <template if:true={reportsError}>
+                            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-top_medium" role="alert">
+                                <span>{reportsError}</span>
+                            </div>
+                        </template>
+
+                        <!-- Reports Grid -->
+                        <template if:false={isReportsLoading}>
+                            <template if:true={hasReports}>
+                                <div class="care-reports-hub-grid slds-m-top_medium">
+                                    <template for:each={filteredReportsList} for:item="rep">
+                                        <div key={rep.id} class="care-report-hub-card">
+                                            <div class="care-report-hub-card-header">
+                                                <div class="care-report-hub-icon-wrapper">
+                                                    <lightning-icon icon-name={rep.iconName} size="small"></lightning-icon>
+                                                </div>
+                                                <div class="care-report-hub-badges">
+                                                    <span class={rep.badgeClass}>{rep.category}</span>
+                                                </div>
+                                            </div>
+                                            <div class="care-report-hub-card-body">
+                                                <h3 class="care-report-hub-title">{rep.name}</h3>
+                                                <p class="care-report-hub-desc">{rep.description}</p>
+                                            </div>
+                                            <div class="care-report-hub-card-footer">
+                                                <span class="care-report-id-chip">{rep.id}</span>
+                                                <a href={rep.url} target="_blank" rel="noopener noreferrer" class="care-btn-open-report">
+                                                    <span>Open Report</span>
+                                                    <lightning-icon icon-name="utility:new_window" size="xx-small"></lightning-icon>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Empty Search Results State -->
+                            <template if:true={hasNoSearchResults}>
+                                <div class="care-reports-empty-state slds-m-top_large slds-text-align_center slds-p-around_large">
+                                    <div class="care-empty-icon-wrapper">
+                                        <lightning-icon icon-name="utility:search" size="large"></lightning-icon>
+                                    </div>
+                                    <h3 class="care-empty-title slds-m-top_small">No Reports Found</h3>
+                                    <p class="care-empty-desc">No CareNest reports match "{reportsSearchTerm}" in the selected category.</p>
+                                    <button class="care-btn-secondary slds-m-top_medium" onclick={handleClearReportSearch}>
+                                        Clear Search &amp; Show All
+                                    </button>
+                                </div>
+                            </template>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 10: AGENTFORCE AI ASSISTANT
+                     ========================================================= -->
+                <template if:true={isAssistantTab}>
+                    <div class="care-module-card slds-p-around_medium">
+                        <div class="care-module-header slds-m-bottom_medium">
+                            <div>
+                                <h2 class="care-module-title">Agentforce AI Clinical Copilot</h2>
+                                <p class="care-module-desc">Autonomous generative AI agent supporting clinical inquiries, bed availability checks, and appointment status triage.</p>
+                            </div>
+                        </div>
+                        <c-agentforce-assistant-widget></c-agentforce-assistant-widget>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 11: AUTOMATION & ASYNC JOBS MONITORING
+                     ========================================================= -->
+                <template if:true={isAutomationTab}>
+                    <div class="care-module-card slds-p-around_large">
+                        <div class="care-module-header slds-m-bottom_large">
+                            <div>
+                                <h2 class="care-module-title">Hospital Business Automation &amp; Async Job Monitor</h2>
+                                <p class="care-module-desc">Live status of batch processing jobs, scheduled jobs, platform events, and declarative flows.</p>
+                            </div>
+                            <span class="care-status-badge-active">
+                                <span class="care-pulse-dot"></span>
+                                Background Daemons Active
+                            </span>
+                        </div>
+
+                        <!-- Automation Matrix -->
+                        <div class="care-automation-table-wrap">
+                            <table class="care-automation-table">
+                                <thead>
+                                    <tr>
+                                        <th>Job / Process Name</th>
+                                        <th>Execution Type</th>
+                                        <th>Schedule / Trigger</th>
+                                        <th>Target Scope</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>NoShowBatch</strong></td>
+                                        <td><span class="care-type-tag">Database.Batchable</span></td>
+                                        <td>Nightly (23:00)</td>
+                                        <td>Unattended OPD Appointments</td>
+                                        <td><span class="care-pill-badge-teal">Operational</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>PendingExpiryBatch</strong></td>
+                                        <td><span class="care-type-tag">Database.Batchable</span></td>
+                                        <td>Hourly</td>
+                                        <td>Unconfirmed Slot Bookings</td>
+                                        <td><span class="care-pill-badge-teal">Operational</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CareNestReminderScheduler</strong></td>
+                                        <td><span class="care-type-tag">Schedulable</span></td>
+                                        <td>Daily 08:00 AM</td>
+                                        <td>24-Hour Patient Reminders</td>
+                                        <td><span class="care-pill-badge-teal">Operational</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CrossCoverReconciliationBatch</strong></td>
+                                        <td><span class="care-type-tag">Database.Batchable</span></td>
+                                        <td>Daily 06:00 AM</td>
+                                        <td>Inpatient Cross-Cover Access</td>
+                                        <td><span class="care-pill-badge-teal">Operational</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Error_Log_Event__e</strong></td>
+                                        <td><span class="care-type-tag">Platform Event</span></td>
+                                        <td>Immediate Publish</td>
+                                        <td>Enterprise System Exceptions</td>
+                                        <td><span class="care-pill-badge-teal">Active Listener</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CareNest_Appointment_Confirmed</strong></td>
+                                        <td><span class="care-type-tag">Record-Triggered Flow</span></td>
+                                        <td>On Appointment Status='Confirmed'</td>
+                                        <td>Patient Confirmation Notification</td>
+                                        <td><span class="care-pill-badge-teal">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CareNest_Cancel_Appointment</strong></td>
+                                        <td><span class="care-type-tag">Autolaunched Flow</span></td>
+                                        <td>On Invocable Request</td>
+                                        <td>Tiered Cancellation Policy MDT</td>
+                                        <td><span class="care-pill-badge-teal">Active</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- =========================================================
+                     MODULE 12: SYSTEM HEALTH & SECURITY GOVERNANCE
+                     ========================================================= -->
+                <template if:true={isSystemTab}>
+                    <div class="care-module-card slds-p-around_large">
+                        <div class="care-module-header slds-m-bottom_large">
+                            <div>
+                                <h2 class="care-module-title">Enterprise System Health &amp; Security Governance</h2>
+                                <p class="care-module-desc">Zero-Trust Stage 2 RBAC audit, sharing model posture, regulatory compliance, and test suite health.</p>
+                            </div>
+                            <span class="care-status-badge-verified">
+                                <lightning-icon icon-name="utility:shield" size="x-small" class="care-icon-white"></lightning-icon>
+                                Zero-Trust Stage 2 Verified
+                            </span>
+                        </div>
+
+                        <div class="care-health-grid">
+                            <!-- Security Matrix -->
+                            <div class="care-health-card">
+                                <h3 class="care-health-card-title">Role-Based Access Control (RBAC)</h3>
+                                <ul class="care-health-list">
+                                    <li>
+                                        <lightning-icon icon-name="utility:success" size="x-small" class="care-icon-green"></lightning-icon>
+                                        <span><strong>CareNest_Admin:</strong> Full hospital clinical, financial &amp; system governance</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:success" size="x-small" class="care-icon-green"></lightning-icon>
+                                        <span><strong>CareNest_Doctor:</strong> Scoped to assigned inpatients &amp; OPD appointments</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:success" size="x-small" class="care-icon-green"></lightning-icon>
+                                        <span><strong>CareNest_Nurse:</strong> Bedside telemetry, vitals recording &amp; clinical charts</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:success" size="x-small" class="care-icon-green"></lightning-icon>
+                                        <span><strong>CareNest_Ward_Management:</strong> Ward allocation, bed transfers &amp; capacity oversight</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:success" size="x-small" class="care-icon-green"></lightning-icon>
+                                        <span><strong>CareNest_Integration:</strong> Headless platform event &amp; API service isolation</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:success" size="x-small" class="care-icon-green"></lightning-icon>
+                                        <span><strong>CareNest_Agent_Actions:</strong> AI Copilot permission boundaries</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Compliance & Infrastructure -->
+                            <div class="care-health-card">
+                                <h3 class="care-health-card-title">Compliance &amp; Infrastructure</h3>
+                                <ul class="care-health-list">
+                                    <li>
+                                        <lightning-icon icon-name="utility:lock" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span><strong>Sharing Architecture:</strong> Private OWD with programmatic sharing</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:shield" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span><strong>Apex Security Mode:</strong> <code>WITH USER_MODE</code> and <code>with sharing</code> on all controllers</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:check" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span><strong>Data Protection:</strong> HIPAA &amp; DISHA technical safeguards active</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:database" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span><strong>Capacity Enforcement:</strong> DB-Trigger level bed over-allocation locking</span>
+                                    </li>
+                                    <li>
+                                        <lightning-icon icon-name="utility:standard_objects" size="x-small" class="care-icon-teal"></lightning-icon>
+                                        <span><strong>Test Health:</strong> 11 Apex test classes passing with &gt;90% weighted code coverage</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </main>
+
+        <!-- 4. FOOTER STATUS BAR -->
+        <footer class="care-footer-bar">
+            <div class="care-footer-container">
+                <div class="care-footer-left">
+                    <span>CareNest Hospital Management System &copy; 2026. Unified Healthcare Platform • Org ID: 00Dg700000Cpr9pEAB.</span>
+                </div>
+                <div class="care-footer-right">
+                    <span class="care-footer-pill">HIPAA &amp; DISHA Compliant</span>
+                    <span class="care-footer-pill">Zero-Trust Isolation</span>
+                    <span class="care-footer-pill">Security Mode: Strict RBAC</span>
+                    <span class="care-footer-pill">12 Modules Integrated</span>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Reusable Unified Patient Registration Modal -->
+        <c-patient-registration-modal
+            is-open={isPatientRegModalOpen}
+            onpatientcreated={handlePatientCreated}
+            onclose={handleClosePatientRegModal}>
+        </c-patient-registration-modal>
+    </div>
+</template>

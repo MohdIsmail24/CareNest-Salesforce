@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Doctor_Required</fullName>
+    <active>true</active>
+    <description>Ensures attending doctor is specified for physician encounters</description>
+    <errorConditionFormula>TEXT(Encounter_Type__c) != 'Nursing Assessment' &amp;&amp; ISBLANK(Attending_Doctor__c) &amp;&amp; ISBLANK(Doctor__c)</errorConditionFormula>
+    <errorMessage>An attending doctor must be specified for the encounter.</errorMessage>
+</ValidationRule>

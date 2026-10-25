@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Temperature_Range</fullName>
+    <active>true</active>
+    <description>Validates temperature is within plausible range (85.0°F to 110.0°F)</description>
+    <errorConditionFormula>!ISBLANK(Temperature__c) &amp;&amp; (ISPICKVAL(Temperature_Unit__c, &apos;°F&apos;) || ISBLANK(TEXT(Temperature_Unit__c))) &amp;&amp; (Temperature__c &lt; 85.0 || Temperature__c &gt; 110.0)</errorConditionFormula>
+    <errorDisplayField>Temperature__c</errorDisplayField>
+    <errorMessage>Temperature (°F) must be within the clinically plausible range of 85.0°F to 110.0°F.</errorMessage>
+</ValidationRule>

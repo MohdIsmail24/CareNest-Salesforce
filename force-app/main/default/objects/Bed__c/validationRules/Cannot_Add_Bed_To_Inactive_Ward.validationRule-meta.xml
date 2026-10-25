@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cannot_Add_Bed_To_Inactive_Ward</fullName>
+    <active>true</active>
+    <description>Prevents beds from being assigned to an inactive ward</description>
+    <errorConditionFormula>Ward__r.Is_Active__c = false</errorConditionFormula>
+    <errorDisplayField>Ward__c</errorDisplayField>
+    <errorMessage>Beds cannot be assigned to an inactive ward.</errorMessage>
+</ValidationRule>

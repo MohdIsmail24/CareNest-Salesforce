@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Inpatient_Encounter__c.Admission__c</field>
+    </columns>
+    <columns>
+        <field>Inpatient_Encounter__c.Encounter_Type__c</field>
+    </columns>
+    <columns>
+        <field>Inpatient_Encounter__c.Status__c</field>
+    </columns>
+    <description>Daily inpatient clinical rounds and encounters grouped by attending physician.</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Inpatient_Encounter__c.Attending_Doctor__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Inpatient_Encounter__c.Encounter_Date__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>CareNest Inpatient Encounters by Doctor</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Inpatient_Encounter__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Inpatient_Encounter__c.Encounter_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

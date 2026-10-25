@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CareNestAdmissionController</members>
+        <members>CareNestAdmissionControllerTest</members>
+        <members>CareNestPatientAccessService</members>
+        <members>CareNestPatientSharingTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>CareNest_Staff_Ward_Assignment__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>CareNest_Staff_Ward_Assignment__c.Staff_User__c</members>
+        <members>CareNest_Staff_Ward_Assignment__c.Ward__c</members>
+        <members>CareNest_Staff_Ward_Assignment__c.Is_Active__c</members>
+        <name>CustomField</name>
+    </types>
+    <version>68.0</version>
+</Package>

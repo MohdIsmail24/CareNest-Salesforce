@@ -18,34 +18,95 @@
                 </div>
             </template>
 
-            <!-- STEP 1: DOCTOR & SLOT SELECTION -->
+            <!-- STEP 1: DOCTOR & SLOT SELECTION (Receptionist Workflow) -->
             <template lwc:if={isStep1}>
                 <div class="step-container">
-                    <template lwc:if={doctorName}>
-                        <div class="slds-box slds-theme_shade slds-m-bottom_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-                            <div>
-                                <span class="slds-text-body_small slds-text-color_weak">Selected Doctor:</span>
-                                <h3 class="slds-text-heading_medium font-bold">{doctorName}</h3>
-                            </div>
-                            <lightning-badge label="Active"></lightning-badge>
+                    <!-- Scheduling Mode Selector -->
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                            <lightning-combobox
+                                label="Specialty / Medical Department"
+                                value={selectedDepartment}
+                                options={departmentOptions}
+                                onchange={handleDepartmentChange}>
+                            </lightning-combobox>
                         </div>
-                    </template>
-                    <template lwc:else>
-                        <div class="slds-notify slds-notify_alert slds-theme_info slds-m-bottom_medium" role="alert">
-                            <h2>Select a doctor from the Doctor Search directory, or use this wizard directly on a Doctor record page.</h2>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                            <lightning-combobox
+                                label="Select Doctor"
+                                value={selectedDoctorId}
+                                options={doctorOptions}
+                                onchange={handleDoctorDropdownChange}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+
+                    <!-- Slot Picker Mode vs Manual Time Entry Toggle -->
+                    <div class="slds-button-group slds-m-bottom_medium" role="group">
+                        <button class={slotModeButtonClass} onclick={handleSetSlotPickerMode}>
+                            <lightning-icon icon-name="utility:event" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                            Select Available Slot
+                        </button>
+                        <button class={manualModeButtonClass} onclick={handleSetManualTimeMode}>
+                            <lightning-icon icon-name="utility:clock" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                            Manual Date &amp; Time Entry
+                        </button>
+                    </div>
+
+                    <!-- Booking Conflict Warning & Smart Alternatives -->
+                    <template lwc:if={bookingConflict}>
+                        <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_medium" role="alert">
+                            <lightning-icon icon-name="utility:warning" size="small" class="slds-m-right_small"></lightning-icon>
+                            <div>
+                                <h3 class="font-bold">{conflictMessage}</h3>
+                                <template lwc:if={alternativeSlots.length}>
+                                    <p class="slds-text-body_small slds-m-top_xx-small">Recommended alternative slots:</p>
+                                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                                        <template for:each={alternativeSlots} for:item="alt">
+                                            <button key={alt.slotId} class="slds-button slds-button_outline-brand slds-m-around_xx-small" data-id={alt.slotId} data-label={alt.slotStartFormatted} data-fee={alt.fee} data-mode={alt.mode} data-start={alt.slotStart} onclick={handleSelectAlternativeSlot}>
+                                                {alt.doctorName} • {alt.slotStartFormatted} ({alt.mode})
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </template>
 
-                    <!-- Slot Picker Child Component -->
-                    <c-slot-picker
-                        doctor-id={effectiveDoctorId}
-                        selected-slot-id={selectedSlotId}
-                        onslotselected={handleSlotSelected}>
-                    </c-slot-picker>
+                    <!-- Slot Picker View -->
+                    <template lwc:if={isSlotPickerMode}>
+                        <c-slot-picker
+                            doctor-id={selectedDoctorId}
+                            department={selectedDepartment}
+                            selected-slot-id={selectedSlotId}
+                            onslotselected={handleSlotSelected}>
+                        </c-slot-picker>
+                    </template>
+
+                    <!-- Manual Date & Time View -->
+                    <template lwc:if={isManualTimeMode}>
+                        <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                            <h4 class="font-bold slds-m-bottom_small">Manual Appointment Schedule (Receptionist Entry)</h4>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                    <lightning-input type="date" label="Appointment Date" value={manualDate} onchange={handleManualDateChange} required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                    <lightning-input type="time" label="Preferred Time (08:00 - 19:00)" value={manualTime} onchange={handleManualTimeChange} required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                    <lightning-combobox label="Consultation Mode" value={manualMode} options={modeOptions} onchange={handleManualModeChange}></lightning-combobox>
+                                </div>
+                            </div>
+                            <p class="slds-text-body_small text-slate-500 slds-m-top_xx-small">
+                                Server validates operating clinic hours and locks slot atomically with <code>FOR UPDATE</code> concurrency protection.
+                            </p>
+                        </div>
+                    </template>
                 </div>
             </template>
 
-            <!-- STEP 2: PATIENT SELECTION -->
+            <!-- STEP 2: PATIENT SELECTION & REGISTRATION -->
             <template lwc:if={isStep2}>
                 <div class="step-container">
                     <template lwc:if={isPortalPatient}>
@@ -58,10 +119,19 @@
                         </div>
                     </template>
                     <template lwc:else>
-                        <h3 class="slds-text-heading_small slds-m-bottom_small font-bold">Search Patient</h3>
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_small">
+                            <h3 class="slds-text-heading_small font-bold">Patient Identification</h3>
+                            <lightning-button
+                                label="Register New Patient"
+                                icon-name="utility:add"
+                                variant="brand"
+                                onclick={handleOpenPatientRegistrationModal}>
+                            </lightning-button>
+                        </div>
+
                         <lightning-input
                             type="search"
-                            label="Find Patient (by Code, Name, or Phone)"
+                            label="Find Existing Patient (Code, Name, or Phone)"
                             placeholder="e.g. CN-PAT-00001 or Sharma"
                             value={patientSearchKey}
                             onchange={handlePatientSearchChange}
@@ -95,6 +165,13 @@
                     </template>
                 </div>
             </template>
+
+            <!-- Reusable Patient Registration Modal Integration -->
+            <c-patient-registration-modal
+                is-open={isPatientRegModalOpen}
+                onpatientcreated={handlePatientCreated}
+                onclose={handleClosePatientRegistrationModal}>
+            </c-patient-registration-modal>
 
             <!-- STEP 3: REVIEW & PRICING -->
             <template lwc:if={isStep3}>

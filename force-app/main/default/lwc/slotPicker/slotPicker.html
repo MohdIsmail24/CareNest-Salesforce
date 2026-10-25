@@ -61,6 +61,11 @@
                                 <span class="slot-time font-bold">{slot.formattedTime}</span>
                                 <span class={slot.modeBadgeClass}>{slot.mode}</span>
                             </div>
+                            <template lwc:if={slot.doctorName}>
+                                <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small">
+                                    {slot.doctorName} • {slot.department}
+                                </div>
+                            </template>
                             <div class="slds-grid slds-grid_align-spread slds-text-body_small">
                                 <span class="seats-info">{slot.seatsLeft} seat(s) remaining</span>
                                 <span class="fee-info">

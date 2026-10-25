@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BotVersion xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>v1</fullName>
+    <articleAnswersGPTEnabled>false</articleAnswersGPTEnabled>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message>Welcome to the CareNest Hospital Assistant. I can assist authorized staff and patients with:
+1. Doctor Discovery (search doctors by specialty, department, or name)
+2. Appointment Assistance (retrieve authorized appointment schedule and status)
+3. Ward Availability (check bed capacity across hospital wards)
+4. General Hospital Information &amp; Procedures
+
+Important Notice: I do not provide clinical diagnosis, medical treatment advice, or emergency services. For acute medical emergencies, please contact emergency services or report to the emergency department immediately.</message>
+                <messageIdentifier>cn-welcome-msg-001</messageIdentifier>
+            </botMessages>
+            <stepIdentifier>cn-welcome-step-001</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier>cn-welcome-wait-001</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Welcome</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Welcome</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message>I can search for active CareNest physicians by medical department (General Medicine, Paediatrics, Orthopaedics, Dermatology, ENT) or specialty keyword using the CareNest Doctor Search service.</message>
+                <messageIdentifier>cn-doc-msg-001</messageIdentifier>
+            </botMessages>
+            <stepIdentifier>cn-doc-step-001</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier>cn-doc-step-003</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Doctor_Discovery</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Doctor Discovery</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message>I can look up authorized appointment status for authenticated patients and staff using the CareNest Appointment Status service. Please provide the appointment code (e.g. APT-0001) or record ID.</message>
+                <messageIdentifier>cn-appt-msg-001</messageIdentifier>
+            </botMessages>
+            <stepIdentifier>cn-appt-step-001</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier>cn-appt-step-003</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Appointment_Assistance</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Appointment Assistance</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message>I can check real-time ward capacity and bed availability across General, Semi-Private, Private, ICU, and Paediatric wards without disclosing patient clinical records using the CareNest Ward Availability service.</message>
+                <messageIdentifier>cn-ward-msg-001</messageIdentifier>
+            </botMessages>
+            <stepIdentifier>cn-ward-step-001</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier>cn-ward-step-003</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Ward_Availability</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Ward Availability</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message>CareNest Hospital Information:
+- Visiting Hours: 10:00 AM - 1:00 PM and 4:00 PM - 7:00 PM daily (ICU visits restricted to immediate family).
+- Outpatient Registration: Ground Floor Reception Desk or CareNest Portal.
+- Safe Escalation Policy: If you are experiencing chest pain, severe shortness of breath, acute trauma, or any life-threatening symptoms, immediately alert medical staff or call emergency services. AI agents cannot diagnose illness or prescribe treatments.</message>
+                <messageIdentifier>cn-info-msg-001</messageIdentifier>
+            </botMessages>
+            <stepIdentifier>cn-info-step-001</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier>cn-info-step-002</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Hospital_Information_Escalation</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Hospital Information and Safe Escalation</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message>The requested hospital inquiry could not be completed. Please verify your access permissions or contact the CareNest administration desk.</message>
+                <messageIdentifier>cn-error-msg-001</messageIdentifier>
+            </botMessages>
+            <stepIdentifier>cn-error-step-001</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier>cn-error-wait-001</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Rich_Content_Error_Handling</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Error Handler</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <developerName>Transfer_To_Agent</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Transfer To Agent</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <citationsEnabled>false</citationsEnabled>
+    <conversationSystemDialogs>
+        <dialog>Rich_Content_Error_Handling</dialog>
+        <type>ErrorHandling</type>
+    </conversationSystemDialogs>
+    <conversationVariables>
+        <dataType>Text</dataType>
+        <description>CareNest Agent Instructions</description>
+        <developerName>AgentScriptInternal_agent_instructions</developerName>
+        <includeInPrompt>false</includeInPrompt>
+        <label>Agent Instructions</label>
+        <visibility>Internal</visibility>
+    </conversationVariables>
+    <conversationVariables>
+        <dataType>Text</dataType>
+        <description>The next topic to be visited</description>
+        <developerName>AgentScriptInternal_next_topic</developerName>
+        <includeInPrompt>false</includeInPrompt>
+        <label>Next Topic</label>
+        <visibility>Internal</visibility>
+    </conversationVariables>
+    <copilotPrimaryLanguage>en_US</copilotPrimaryLanguage>
+    <entryDialog>Welcome</entryDialog>
+    <intentDisambiguationEnabled>false</intentDisambiguationEnabled>
+    <intentV3Enabled>false</intentV3Enabled>
+    <knowledgeActionEnabled>false</knowledgeActionEnabled>
+    <knowledgeFallbackEnabled>false</knowledgeFallbackEnabled>
+    <smallTalkEnabled>false</smallTalkEnabled>
+    <stopRecPrompts>false</stopRecPrompts>
+    <stopWelcomePrompts>false</stopWelcomePrompts>
+    <surfacesEnabled>false</surfacesEnabled>
+    <toneType>Casual</toneType>
+</BotVersion>

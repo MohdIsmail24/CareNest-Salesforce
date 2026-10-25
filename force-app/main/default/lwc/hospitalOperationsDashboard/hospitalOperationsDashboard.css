@@ -1,0 +1,121 @@
+.care-container {
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+.care-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.care-brand-icon {
+    background-color: #0284c7;
+    border-radius: 6px;
+    padding: 6px;
+    display: inline-flex;
+}
+
+.care-title {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.care-subtitle {
+    color: #94a3b8 !important;
+    font-size: 0.85rem;
+}
+
+.care-alert-banner {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.care-kpi-card {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #ffffff;
+}
+
+.care-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.care-kpi-label {
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.care-kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0.25rem 0;
+}
+
+.care-kpi-footer {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.care-kpi-teal .care-kpi-value { color: #0284c7; }
+.care-kpi-navy .care-kpi-value { color: #1e3a8a; }
+.care-kpi-slate .care-kpi-value { color: #334155; }
+.care-kpi-amber .care-kpi-value { color: #d97706; }
+.care-kpi-green .care-kpi-value { color: #16a34a; }
+.care-kpi-red .care-kpi-value { color: #dc2626; }
+
+.care-panel-card {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+
+.care-panel-header {
+    background-color: #f1f5f9;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.care-panel-title {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.ward-row {
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.care-activity-bullet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.care-bullet-navy { background-color: #dbeafe; color: #1e40af; }
+.care-bullet-teal { background-color: #e0f2fe; color: #0284c7; }
+.care-bullet-red { background-color: #fee2e2; color: #dc2626; }

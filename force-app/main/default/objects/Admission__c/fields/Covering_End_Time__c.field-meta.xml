@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Covering_End_Time__c</fullName>
+    <description>End timestamp (UTC) for active cross-cover authorization window. Shares are automatically revoked after expiry.</description>
+    <label>Covering End Time</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

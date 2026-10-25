@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Admission__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Inpatient_Encounter__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Temperature__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Temperature_Unit__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Pulse__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Systolic_BP__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Diastolic_BP__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Respiratory_Rate__c</field>
+    </columns>
+    <columns>
+        <field>Patient_Vital__c.Oxygen_Saturation__c</field>
+    </columns>
+    <description>Confidential clinical vitals recorded over time for authorized clinical staff only</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Patient_Vital__c.Recorded_Date__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Recorded Patient Vitals by Date</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Patient_Vital__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Patient_Vital__c.Recorded_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discharge_Disposition__c</fullName>
+    <description>Patient status and destination upon discharge from inpatient care.</description>
+    <label>Discharge Disposition</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Home</fullName>
+                <default>true</default>
+                <label>Home</label>
+            </value>
+            <value>
+                <fullName>Transferred to Another Facility</fullName>
+                <default>false</default>
+                <label>Transferred to Another Facility</label>
+            </value>
+            <value>
+                <fullName>Referred to Specialist</fullName>
+                <default>false</default>
+                <label>Referred to Specialist</label>
+            </value>
+            <value>
+                <fullName>Home Health Care</fullName>
+                <default>false</default>
+                <label>Home Health Care</label>
+            </value>
+            <value>
+                <fullName>Against Medical Advice</fullName>
+                <default>false</default>
+                <label>Against Medical Advice</label>
+            </value>
+            <value>
+                <fullName>Deceased</fullName>
+                <default>false</default>
+                <label>Deceased</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

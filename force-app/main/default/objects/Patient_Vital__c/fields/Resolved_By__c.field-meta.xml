@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Resolved_By__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Clinician user who resolved this vital alert.</description>
+    <label>Resolved By</label>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Resolved Vitals</relationshipLabel>
+    <relationshipName>Resolved_Vitals</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

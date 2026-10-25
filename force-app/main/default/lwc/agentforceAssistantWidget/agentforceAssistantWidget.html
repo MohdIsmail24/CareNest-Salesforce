@@ -1,0 +1,222 @@
+<template>
+    <div class="care-container slds-p-around_medium">
+        <!-- Header -->
+        <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-einstein care-brand-icon">
+                                <lightning-icon icon-name="standard:einstein" size="medium"></lightning-icon>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1 class="slds-page-header__title slds-truncate care-title" title="CareNest Agentforce Assistant">
+                                        CareNest Agentforce Assistant
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta care-subtitle">Enterprise Conversational AI for Doctor Search, Ward Capacity &amp; Appointment Inquiries</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning-button-icon icon-name="utility:delete" alternative-text="Clear History" title="Clear History" onclick={handleClearChat}></lightning-button-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-card care-panel-card chat-wrapper">
+            <!-- Quick Suggestion Chips -->
+            <div class="slds-p-around_small care-suggestion-bar">
+                <span class="slds-text-body_small text-muted slds-m-right_x-small">Suggested Inquiries:</span>
+                <lightning-button 
+                    label="Find Cardiologists" 
+                    variant="neutral" 
+                    size="small" 
+                    onclick={handleQuickPrompt} 
+                    data-prompt="Find Cardiology doctors" 
+                    class="slds-m-right_xx-small">
+                </lightning-button>
+                <lightning-button 
+                    label="Check ICU Beds" 
+                    variant="neutral" 
+                    size="small" 
+                    onclick={handleQuickPrompt} 
+                    data-prompt="Check ICU bed availability" 
+                    class="slds-m-right_xx-small">
+                </lightning-button>
+                <lightning-button 
+                    label="Ward Capacity" 
+                    variant="neutral" 
+                    size="small" 
+                    onclick={handleQuickPrompt} 
+                    data-prompt="What is the overall hospital bed availability?" 
+                    class="slds-m-right_xx-small">
+                </lightning-button>
+                <lightning-button 
+                    label="Appointment Status" 
+                    variant="neutral" 
+                    size="small" 
+                    onclick={handleQuickPrompt} 
+                    data-prompt="How do I check my appointment status?" 
+                    class="slds-m-right_xx-small">
+                </lightning-button>
+            </div>
+
+            <!-- Messages Stream -->
+            <div class="chat-messages-container slds-p-around_medium">
+                <!-- Fallback / Static welcome rendered by template -->
+                <div class="message-bubble-wrapper message-bot slds-m-bottom_medium">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <div class="bot-avatar">
+                                <lightning-icon icon-name="standard:einstein" size="x-small"></lightning-icon>
+                            </div>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="message-bubble message-bubble-bot">
+                                <p class="font-semibold text-dark">Hello! I am your CareNest Agentforce Assistant.</p>
+                                <p class="slds-m-top_xx-small">I can assist you with discovering staff doctors by specialty, querying live hospital bed capacity across our 5 wards, and retrieving secure appointment details.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <template for:each={messages} for:item="msg">
+                    <div key={msg.id} class={msg.wrapperClass}>
+                        <div class="slds-media">
+                            <template if:true={msg.isBot}>
+                                <div class="slds-media__figure">
+                                    <div class="bot-avatar">
+                                        <lightning-icon icon-name="standard:einstein" size="x-small"></lightning-icon>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div class="slds-media__body">
+                                <div class={msg.bubbleClass}>
+                                    <p class="message-text">{msg.text}</p>
+
+                                    <!-- Structured Doctor Cards -->
+                                    <template if:true={msg.hasDoctors}>
+                                        <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                            <template for:each={msg.doctors} for:item="doc">
+                                                <div key={doc.doctorId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                                                    <div class="doc-card slds-p-around_x-small">
+                                                        <div class="font-bold text-dark">{doc.name}</div>
+                                                        <div class="text-primary slds-text-body_small">{doc.specialty} • {doc.department}</div>
+                                                        <div class="text-muted slds-text-body_small">Fee: ₹{doc.consultationFee}</div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- Structured Ward Cards -->
+                                    <template if:true={msg.hasWards}>
+                                        <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                            <template for:each={msg.wards} for:item="w">
+                                                <div key={w.wardId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                                                    <div class="ward-chat-card slds-p-around_x-small">
+                                                        <div class="slds-grid slds-grid_align-spread">
+                                                            <strong>{w.name}</strong>
+                                                            <span class="text-success font-bold">{w.availableBeds} Avail</span>
+                                                        </div>
+                                                        <div class="text-muted slds-text-body_small">{w.wardType} • Floor {w.floor}</div>
+                                                        <lightning-progress-bar value={w.occupancyRate} size="x-small" class="slds-m-top_xx-small"></lightning-progress-bar>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- Structured Appointment Card -->
+                                    <template if:true={msg.hasAppointment}>
+                                        <div class="apt-chat-card slds-p-around_small slds-m-top_small">
+                                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                                <strong>Appointment: {msg.appointment.appointmentCode}</strong>
+                                                <span class="slds-badge slds-theme_success">{msg.appointment.status}</span>
+                                            </div>
+                                            <div class="text-dark"><strong>Patient:</strong> {msg.appointment.patientName}</div>
+                                            <div class="text-dark"><strong>Doctor:</strong> {msg.appointment.doctorName} ({msg.appointment.doctorSpecialty})</div>
+                                            <div class="text-muted slds-text-body_small slds-m-top_xx-small"><strong>Date:</strong> {msg.appointment.appointmentDate} • {msg.appointment.location}</div>
+                                        </div>
+                                    </template>
+
+                                    <!-- Emergency Guardrail Banner -->
+                                    <template if:true={msg.isEmergency}>
+                                        <div class="emergency-chat-banner slds-p-around_x-small slds-m-top_small">
+                                            <lightning-icon icon-name="utility:warning" size="x-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                                            <strong>EMERGENCY MEDICAL NOTICE:</strong> For acute medical emergencies, chest pain, or severe breathing difficulties, please call emergency services immediately or visit the CareNest Emergency Department.
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <template if:false={msg.isBot}>
+                                <div class="slds-media__figure slds-media__figure_reverse">
+                                    <div class="user-avatar">
+                                        <lightning-icon icon-name="standard:user" size="x-small"></lightning-icon>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Assistant Typing Indicator -->
+                <template if:true={isThinking}>
+                    <div class="message-bubble-wrapper message-bot slds-m-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <div class="bot-avatar">
+                                    <lightning-icon icon-name="standard:einstein" size="x-small"></lightning-icon>
+                                </div>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="message-bubble message-bubble-bot typing-bubble">
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="chat-input-bar slds-p-around_small">
+                <div class="slds-grid slds-gutters_x-small">
+                    <div class="slds-col slds-size_11-of-12">
+                        <lightning-input 
+                            type="text" 
+                            placeholder="Ask CareNest Assistant anything (e.g. 'Show available beds in ICU' or 'Find Dr. Gupta')..." 
+                            value={inputPrompt} 
+                            onchange={handleInputChange} 
+                            onkeydown={handleKeyDown} 
+                            variant="label-hidden">
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <lightning-button-icon 
+                            icon-name="utility:send" 
+                            variant="brand" 
+                            alternative-text="Send" 
+                            title="Send" 
+                            onclick={handleSend} 
+                            disabled={isSendDisabled}>
+                        </lightning-button-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

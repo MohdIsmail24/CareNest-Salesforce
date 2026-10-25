@@ -3,38 +3,16 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>c:doctorSearch</componentName>
-                <identifier>c_doctorSearch</identifier>
+                <componentName>c:careNestMasterWorkspace</componentName>
+                <identifier>c_careNestMasterWorkspace</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:appointmentWizard</componentName>
-                <identifier>c_appointmentWizard</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>column1</name>
-        <type>Region</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:myAppointments</componentName>
-                <identifier>c_myAppointments</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:patientBilling</componentName>
-                <identifier>c_patientBilling</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>column2</name>
+        <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
     <masterLabel>CareNest Home</masterLabel>
     <template>
-        <name>flexipage:appHomeTemplateTwoColumns</name>
+        <name>flexipage:defaultAppHomeTemplate</name>
     </template>
     <type>AppPage</type>
 </FlexiPage>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ward__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>The hospital ward to which the staff user is assigned</description>
+    <label>Ward</label>
+    <referenceTo>Ward__c</referenceTo>
+    <relationshipLabel>Staff Assignments</relationshipLabel>
+    <relationshipName>Staff_Ward_Assignments</relationshipName>
+    <required>true</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

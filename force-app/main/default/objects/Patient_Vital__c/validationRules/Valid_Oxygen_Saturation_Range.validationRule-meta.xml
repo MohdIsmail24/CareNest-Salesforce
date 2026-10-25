@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Oxygen_Saturation_Range</fullName>
+    <active>true</active>
+    <description>Validates oxygen saturation is within plausible range (50% to 100%)</description>
+    <errorConditionFormula>!ISBLANK(Oxygen_Saturation__c) &amp;&amp; (Oxygen_Saturation__c &lt; 50 || Oxygen_Saturation__c &gt; 100)</errorConditionFormula>
+    <errorDisplayField>Oxygen_Saturation__c</errorDisplayField>
+    <errorMessage>Oxygen saturation must be between 50% and 100%.</errorMessage>
+</ValidationRule>

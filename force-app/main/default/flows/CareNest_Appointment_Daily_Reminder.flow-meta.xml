@@ -4,7 +4,7 @@
     <description>Daily scheduled flow to mark appointments starting within 24 hours for reminder dispatch.</description>
     <label>CareNest Appointment Daily Reminder</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Active</status>
+    <status>Draft</status>
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>

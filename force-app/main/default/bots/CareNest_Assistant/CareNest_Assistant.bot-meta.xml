@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bot xmlns="http://soap.sforce.com/2006/04/metadata">
+    <agentTemplate>EmployeeCopilot__AgentforceEmployeeAgent</agentTemplate>
+    <agentType>AgentforceEmployeeAgent</agentType>
+    <botMlDomain>
+        <label>CareNest Assistant</label>
+        <name>CareNest_Assistant</name>
+    </botMlDomain>
+    <botSource>None</botSource>
+    <description>CareNest Hospital Management System enterprise assistant for doctor discovery, appointment inquiries, and ward capacity.</description>
+    <label>CareNest Assistant</label>
+    <logPrivateConversationData>false</logPrivateConversationData>
+    <richContentEnabled>true</richContentEnabled>
+    <sessionTimeout>0</sessionTimeout>
+    <type>InternalCopilot</type>
+</Bot>

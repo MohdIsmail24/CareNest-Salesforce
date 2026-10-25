@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <formula>OR(AND(NOT(ISBLANK(SpO2_Percent__c)), SpO2_Percent__c &lt; 92), AND(NOT(ISBLANK(Systolic_BP__c)), OR(Systolic_BP__c &gt; 180, Systolic_BP__c &lt; 90)), AND(NOT(ISBLANK(Pulse_BPM__c)), OR(Pulse_BPM__c &gt; 120, Pulse_BPM__c &lt; 50)), AND(NOT(ISBLANK(Temperature_C__c)), Temperature_C__c &gt; 39))</formula>
+    <formulaTreatBlanksAs>BlankAsBlank</formulaTreatBlanksAs>
+    <fullName>Alert_Flag__c</fullName>
+    <label>Alert Flag</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

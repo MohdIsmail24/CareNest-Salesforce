@@ -383,4 +383,47 @@ private class DoctorSearchControllerTest {
 
         System.assert(caught, 'Admin user without contact identity must fail closed with AuraHandledException');
     }
+
+    @isTest
+    static void testBookAppointmentPatientIdentitySpoofingDiscarded() {
+        // 1. Create two synthetic patients: Alpha (legitimate caller) and Beta (spoof target)
+        Contact patAlpha = createPatient('AlphaPatient', 'CN-PAT-ALPHA');
+        Contact patBeta = createPatient('BetaPatient', 'CN-PAT-BETA');
+        Doctor__c doc = createDoctor('Dr. Security Doc', 'General Medicine', 650);
+        Appointment_Slot__c slot = createSlot(doc.Id, System.now().addDays(5), 2, 'OPD');
+
+        // 2. Simulate authenticated portal context for Alpha
+        DoctorSearchController.mockContactId = patAlpha.Id;
+
+        Test.startTest();
+        // 3. Invoke booking explicitly passing Beta's Contact ID as client-supplied patientId
+        Appointment__c appt = DoctorSearchController.bookAppointment(slot.Id, patBeta.Id);
+        Test.stopTest();
+
+        // 4. Verify booking succeeded according to established business rules
+        System.assertNotEquals(null, appt, 'Appointment should be returned successfully');
+        System.assertEquals('Confirmed', appt.Status__c, 'Appointment status should be Confirmed');
+
+        // 5 & 6. Query resulting appointment and assert Patient__c == Alpha.Id and != Beta.Id
+        Appointment__c queriedAppt = [
+            SELECT Id, Patient__c, Patient__r.Name, Status__c, Slot__c, Total_Amount__c
+            FROM Appointment__c
+            WHERE Id = :appt.Id
+        ];
+        System.assertEquals(patAlpha.Id, queriedAppt.Patient__c,
+            'Server must enforce caller identity (Alpha) and discard client-supplied patientId (Beta)');
+        System.assertNotEquals(patBeta.Id, queriedAppt.Patient__c,
+            'Appointment must not be associated with spoof target patient (Beta)');
+
+        // 7. Verify via portal query isolation that Alpha sees the appointment and Beta does not
+        DoctorSearchController.mockContactId = patAlpha.Id;
+        List<Appointment__c> alphaAppts = DoctorSearchController.getMyAppointments();
+        System.assertEquals(1, alphaAppts.size(), 'Alpha must see their own appointment');
+        System.assertEquals(appt.Id, alphaAppts[0].Id, 'Alpha appointment ID must match');
+
+        DoctorSearchController.mockContactId = patBeta.Id;
+        List<Appointment__c> betaAppts = DoctorSearchController.getMyAppointments();
+        System.assertEquals(0, betaAppts.size(), 'Beta must not see the appointment booked by Alpha');
+    }
 }
+

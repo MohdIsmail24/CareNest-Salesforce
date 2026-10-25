@@ -1,0 +1,217 @@
+<template>
+    <div class="care-container slds-p-around_medium">
+        <!-- Header -->
+        <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-asset-relationship care-brand-icon">
+                                <lightning-icon icon-name="standard:asset_relationship" size="medium"></lightning-icon>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1 class="slds-page-header__title slds-truncate care-title" title="Ward &amp; Bed Capacity Management">
+                                        Ward &amp; Bed Capacity Management
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta care-subtitle">Real-time interactive bed availability, ward occupancy rollups and patient placement</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh Beds" title="Refresh Beds" onclick={handleRefresh} class="slds-m-right_x-small"></lightning-button-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ward Capacity Overview Cards -->
+        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+            <template for:each={wardMetrics} for:item="ward">
+                <div key={ward.wardId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                    <div class={ward.cardClass} onclick={handleSelectWardCard} data-ward-id={ward.wardId}>
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                            <div class="slds-truncate font-bold text-dark">{ward.name}</div>
+                            <span class="slds-badge slds-theme_inverse">{ward.occupancyRate}%</span>
+                        </div>
+                        <div class="slds-text-body_small text-muted slds-m-bottom_x-small">
+                            {ward.wardType} • Fl {ward.floor}
+                        </div>
+                        <lightning-progress-bar value={ward.occupancyRate} size="small" variant="circular"></lightning-progress-bar>
+                        <div class="slds-grid slds-grid_align-spread slds-m-top_x-small slds-text-body_small">
+                            <span class="text-success font-semibold">{ward.availableBeds} Avail</span>
+                            <span class="text-danger font-semibold">{ward.occupiedBeds} Occ</span>
+                            <span class="text-muted">{ward.totalBeds} Total</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="slds-card slds-p-around_small slds-m-bottom_medium care-filter-card">
+            <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_x-small">
+                    <lightning-combobox
+                        name="wardFilter"
+                        label="Filter by Ward"
+                        value={selectedWardId}
+                        options={wardOptions}
+                        onchange={handleWardChange}
+                        variant="label-hidden">
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-m-bottom_x-small">
+                    <div class="slds-grid slds-grid_align-end slds-gutters_x-small">
+                        <lightning-button 
+                            label="All Statuses" 
+                            variant={filterAllVariant} 
+                            onclick={handleFilterAll} 
+                            class="slds-m-horizontal_xx-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Available" 
+                            variant={filterAvailableVariant} 
+                            onclick={handleFilterAvailable} 
+                            icon-name="utility:check" 
+                            class="slds-m-horizontal_xx-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Occupied" 
+                            variant={filterOccupiedVariant} 
+                            onclick={handleFilterOccupied} 
+                            icon-name="utility:user" 
+                            class="slds-m-horizontal_xx-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Maintenance" 
+                            variant={filterMaintenanceVariant} 
+                            onclick={handleFilterMaintenance} 
+                            icon-name="utility:maintenance" 
+                            class="slds-m-horizontal_xx-small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading bed grid..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Interactive 42-Bed Visual Grid -->
+        <template if:false={isLoading}>
+            <div class="slds-card care-panel-card slds-p-around_medium">
+                <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
+                    <div class="slds-text-heading_small font-bold text-dark">
+                        Beds ({filteredBeds.length} Displayed)
+                    </div>
+                    <div class="slds-text-body_small text-muted">
+                        Click on any bed for full clinical admission &amp; room details
+                    </div>
+                </div>
+
+                <template if:true={hasBeds}>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <template for:each={filteredBeds} for:item="bed">
+                            <div key={bed.bedId} class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-large-size_1-of-6 slds-m-bottom_medium">
+                                <div class={bed.cardCssClass} onclick={handleBedClick} data-bed-id={bed.bedId}>
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                        <div class="bed-code">{bed.bedCode}</div>
+                                        <span class={bed.badgeCssClass}>{bed.status}</span>
+                                    </div>
+                                    <div class="bed-ward-text">{bed.wardName}</div>
+                                    <div class="bed-room-text">Room: {bed.room} • {bed.bedType}</div>
+
+                                    <div class="bed-footer-section slds-m-top_small">
+                                        <template if:true={bed.isOccupied}>
+                                            <div class="patient-name slds-truncate" title={bed.patientName}>
+                                                <lightning-icon icon-name="utility:user" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                                {bed.patientName}
+                                            </div>
+                                            <div class="doctor-name slds-truncate slds-m-top_xx-small text-muted" title={bed.doctorName}>
+                                                Dr: {bed.doctorName}
+                                            </div>
+                                        </template>
+                                        <template if:true={bed.isAvailable}>
+                                            <div class="bed-available-tag text-success">
+                                                <lightning-icon icon-name="utility:check" size="xx-small" variant="success" class="slds-m-right_xx-small"></lightning-icon>
+                                                Ready for Patient
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:false={hasBeds}>
+                    <div class="slds-align_absolute-center slds-p-around_large text-muted">
+                        No beds match the selected ward and status filters.
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Bed Detail Modal -->
+        <template if:true={selectedBedModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header care-modal-header">
+                        <lightning-button-icon icon-name="utility:close" alternative-text="Close" title="Close" variant="bare-inverse" class="slds-modal__close" onclick={handleCloseModal}></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium font-bold text-white">Bed Details: {selectedBedModal.bedCode}</h2>
+                        <p class="slds-m-top_x-small text-slate-300">{selectedBedModal.wardName} • Room {selectedBedModal.room}</p>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                <strong>Status:</strong> <span class={selectedBedModal.badgeCssClass}>{selectedBedModal.status}</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                <strong>Bed Type:</strong> {selectedBedModal.bedType}
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                <strong>Ward:</strong> {selectedBedModal.wardName}
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                <strong>Room Number:</strong> {selectedBedModal.room}
+                            </div>
+                        </div>
+
+                        <template if:true={selectedBedModal.isOccupied}>
+                            <div class="slds-box slds-theme_shade slds-m-top_small">
+                                <h3 class="slds-text-heading_small font-bold slds-m-bottom_small">Current Occupant Information</h3>
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_x-small">
+                                        <strong>Patient:</strong> {selectedBedModal.patientName}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_x-small">
+                                        <strong>Attending Doctor:</strong> {selectedBedModal.doctorName}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_x-small">
+                                        <strong>Admission Date:</strong> {selectedBedModal.admissionDate}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Close" onclick={handleCloseModal}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+    </div>
+</template>

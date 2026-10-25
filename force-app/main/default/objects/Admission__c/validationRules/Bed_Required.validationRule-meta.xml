@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bed_Required</fullName>
+    <active>true</active>
+    <description>A bed must be specified for admission.</description>
+    <errorConditionFormula>ISBLANK(Bed__c)</errorConditionFormula>
+    <errorMessage>A bed is required for admission.</errorMessage>
+</ValidationRule>

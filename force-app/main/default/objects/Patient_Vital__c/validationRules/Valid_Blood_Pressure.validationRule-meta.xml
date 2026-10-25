@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Blood_Pressure</fullName>
+    <active>true</active>
+    <description>Validates blood pressure numbers: Systolic must exceed Diastolic, and both in plausible physiological limits</description>
+    <errorConditionFormula>(!ISBLANK(Systolic_BP__c) &amp;&amp; !ISBLANK(Diastolic_BP__c) &amp;&amp; Systolic_BP__c &lt;= Diastolic_BP__c) || (!ISBLANK(Systolic_BP__c) &amp;&amp; (Systolic_BP__c &lt; 50 || Systolic_BP__c &gt; 260)) || (!ISBLANK(Diastolic_BP__c) &amp;&amp; (Diastolic_BP__c &lt; 30 || Diastolic_BP__c &gt; 150))</errorConditionFormula>
+    <errorMessage>Blood pressure readings must be clinically valid: Systolic (50-260 mmHg) must exceed Diastolic (30-150 mmHg).</errorMessage>
+</ValidationRule>

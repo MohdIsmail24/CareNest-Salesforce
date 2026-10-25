@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ward_Code_Required</fullName>
+    <active>true</active>
+    <description>Ensures ward code is populated</description>
+    <errorConditionFormula>ISBLANK(Ward_Code__c)</errorConditionFormula>
+    <errorDisplayField>Ward_Code__c</errorDisplayField>
+    <errorMessage>Ward code is required.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Recorded_Date_Required</fullName>
+    <active>true</active>
+    <description>Ensures recorded date and time is populated via Recorded_Date__c or Recorded_At__c</description>
+    <errorConditionFormula>ISBLANK(Recorded_Date__c) &amp;&amp; ISBLANK(Recorded_At__c)</errorConditionFormula>
+    <errorMessage>Recorded date and time is required.</errorMessage>
+</ValidationRule>

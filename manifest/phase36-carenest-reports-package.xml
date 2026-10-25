@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CareNest_HMS_Reports</members>
+        <members>CareNest_HMS_Reports/CareNest_Daily_Collections_Settlements</members>
+        <members>CareNest_HMS_Reports/CareNest_Department_Specialty_Revenue</members>
+        <members>CareNest_HMS_Reports/CareNest_Inpatient_Bed_Occupancy_Capacity</members>
+        <members>CareNest_HMS_Reports/CareNest_Active_Admissions_Census</members>
+        <members>CareNest_HMS_Reports/CareNest_Doctor_Consultation_Workload</members>
+        <members>CareNest_HMS_Reports/CareNest_Clinical_Alerts_Vitals_Review</members>
+        <members>CareNest_HMS_Reports/CareNest_Inpatient_Encounters_by_Doctor</members>
+        <members>CareNest_HMS_Reports/CareNest_Outstanding_Receivables_Aging</members>
+        <members>CareNest_HMS_Reports/CareNest_Appointments_Volume_by_Status</members>
+        <members>CareNest_HMS_Reports/CareNest_Doctor_Revenue_Contribution</members>
+        <name>Report</name>
+    </types>
+    <version>61.0</version>
+</Package>

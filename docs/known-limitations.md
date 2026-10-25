@@ -1,0 +1,37 @@
+# CareNest — System Boundaries, Design Trade-Offs & Known Limitations
+
+## 1. Portfolio Demonstration Scope
+
+CareNest is engineered as a portfolio-grade reference architecture demonstrating advanced Salesforce Developer, Administrator, and Agentforce capabilities. 
+
+To maintain strict ethical and legal boundaries, CareNest is presented as a demonstration and educational reference implementation, not as a certified commercial Medical Device or live Electronic Health Record (EHR) software.
+
+---
+
+## 2. Key System Boundaries & Limitations
+
+### 2.1 Simulated In-Clinic Cashier POS Desk
+- **Current Behavior:** The `patientBilling` component and `Payment__c` object record verified counter settlements (Cash, UPI, Card, Net Banking) directly in Salesforce with cashier receipt references.
+- **Scope Boundary:** Live external payment processor callouts (e.g. Stripe, Razorpay, or Authorize.net webhook integrations) are explicitly out of scope.
+- **Rationale:** Prevents exposure of live merchant API keys and avoids financial PCI-DSS compliance liabilities in demonstration orgs.
+
+### 2.2 Synthetic Demonstration Data
+- **Current Population:** CareNest contains synthetic demonstration records (114 demo patient contacts, 12 demo doctors, 42 physical beds across 5 wards [General Ward: 16, Semi-Private: 8, Private Room: 8, ICU: 6, Paediatric Ward: 4; census: 19 Occupied, 20 Available, 2 Cleaning, 1 Maintenance], and historical appointment records).
+- **Compliance:** All patient names, phone numbers, and email addresses (`*.example.com`, `*.example.test`) are strictly synthetic in compliance with RFC 2606. Zero real patient Personally Identifiable Information (PII) exists in this repository.
+
+### 2.3 Regulatory Compliance Patterns vs. Formal Certification
+- **Architectural Patterns Implemented:**
+  - Zero-Trust Stage 2 RBAC.
+  - Organization-Wide Defaults set to Private.
+  - Programmatic row-level sharing for attending clinicians.
+  - Platform event-driven audit logging for errors and record updates.
+  - Agentforce emergency triage and clinical refusal guardrails.
+- **Limitation:** While CareNest incorporates architectural patterns required by HIPAA (United States) and DISHA (Digital Information Security in Healthcare Act - India), it has not undergone formal third-party SOC 2 or regulatory certification audits.
+
+### 2.4 Multi-Tenant Governor Limits & Volume Boundaries
+- **SOQL / DML Design:** All trigger handlers and domain services are bulkified to handle standard Salesforce execution limits (up to 200 records per trigger execution, 50,000 query rows, and 10,000 DML rows).
+- **Very Large Data Volume (LDV) Scaling:** If hospital patient populations scale beyond 5,000,000 records, future architectural evolutions would require Salesforce Big Objects or Data Cloud archival strategies for historical vital sign telemetry.
+
+### 2.5 Agentforce LLM Model Dependencies
+- **Current Configuration:** Invocable actions operate deterministically with explicit validation filters and rule-based safety triage.
+- **Limitation:** In organizations where generative Agentforce LLMs are connected, prompt responses are subject to standard large language model nondeterminism. CareNest mitigates this by requiring all transactional changes (cancellations, doctor bookings) to execute through typed Invocable Actions rather than unconstrained generative SQL.
