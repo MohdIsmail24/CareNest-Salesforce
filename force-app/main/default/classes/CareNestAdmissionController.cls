@@ -70,6 +70,22 @@ public with sharing class CareNestAdmissionController {
         @AuraEnabled public String patientCode { get; set; }
     }
 
+    public class PatientDirectoryDto {
+        @AuraEnabled public Id id { get; set; }
+        @AuraEnabled public String name { get; set; }
+        @AuraEnabled public String email { get; set; }
+        @AuraEnabled public String phone { get; set; }
+        @AuraEnabled public Date birthdate { get; set; }
+        @AuraEnabled public String patientCode { get; set; }
+        @AuraEnabled public Datetime createdDate { get; set; }
+        @AuraEnabled public Boolean isAdmitted { get; set; }
+        @AuraEnabled public Id currentAdmissionId { get; set; }
+        @AuraEnabled public String currentAdmissionNumber { get; set; }
+        @AuraEnabled public String currentBedCode { get; set; }
+        @AuraEnabled public String currentWardName { get; set; }
+        @AuraEnabled public String admissionStatusBadge { get; set; }
+    }
+
     public class PatientRegistrationResultDto {
         @AuraEnabled public Boolean isSuccess { get; set; }
         @AuraEnabled public String message { get; set; }
@@ -360,6 +376,16 @@ public with sharing class CareNestAdmissionController {
     @AuraEnabled(cacheable=true)
     public static List<PatientLookupDto> searchPatients(String searchTerm) {
         return CareNestPatientAccessService.searchPatients(searchTerm);
+    }
+
+    /**
+     * @description Retrieves the hospital patient directory with real-time admission status.
+     * When searchTerm is provided, filters across name, code, phone, and email.
+     * When searchTerm is blank, returns the most recently registered hospital patients.
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<PatientDirectoryDto> getPatientDirectory(String searchTerm) {
+        return CareNestPatientAccessService.getPatientDirectory(searchTerm);
     }
 
     // =========================================================================

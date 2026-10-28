@@ -125,6 +125,99 @@ public without sharing class CareNestPatientAccessService {
     }
 
     /**
+     * @description Retrieves the patient directory with live inpatient admission cross-referencing.
+     */
+    public static List<CareNestAdmissionController.PatientDirectoryDto> getPatientDirectory(String searchTerm) {
+        List<CareNestAdmissionController.PatientDirectoryDto> results = new List<CareNestAdmissionController.PatientDirectoryDto>();
+
+        // 1. Reject unauthenticated guest sessions
+        if (mockIsGuest || Auth.CommunitiesUtil.isGuestUser()) {
+            return results;
+        }
+
+        // 2. Reject external Community/Experience Cloud portal sessions
+        if (mockIsExternal || (Network.getNetworkId() != null && !Test.isRunningTest())) {
+            return results;
+        }
+
+        Id currentUserId = UserInfo.getUserId();
+        Boolean isAdmin = new ElevatedQueryRunner().checkIsAdmin(UserInfo.getProfileId());
+        Boolean hasStaffRole = isAuthorizedStaff(currentUserId);
+        if (!isAdmin && !hasStaffRole) {
+            return results;
+        }
+
+        if (!Contact.SObjectType.getDescribe().isAccessible() ||
+            !Contact.Fields.Name.getDescribe().isAccessible()) {
+            return results;
+        }
+
+        Set<String> roles = getStaffRoles(currentUserId);
+        Boolean isFrontDeskOrOps = isAdmin || roles.contains('CareNest_Front_Desk') || roles.contains('CareNest_Ops_Manager') || roles.contains('CareNest_Admin');
+        Boolean isDoctor = roles.contains('CareNest_Doctor');
+        Boolean isNurseOrWard = roles.contains('CareNest_Nurse') || roles.contains('CareNest_Ward_Management');
+
+        String cleanKey = '';
+        String exactKey = '';
+        if (String.isNotBlank(searchTerm) && searchTerm.trim().length() >= 2) {
+            String cleanTerm = searchTerm.trim();
+            cleanKey = '%' + String.escapeSingleQuotes(cleanTerm) + '%';
+            exactKey = String.escapeSingleQuotes(cleanTerm).toUpperCase();
+        }
+
+        List<Contact> matchedContacts = new ElevatedQueryRunner().queryPatientDirectory(cleanKey, exactKey, isFrontDeskOrOps, isDoctor, isNurseOrWard, currentUserId);
+
+        if (matchedContacts.isEmpty()) {
+            return results;
+        }
+
+        Set<Id> contactIds = new Set<Id>();
+        for (Contact c : matchedContacts) {
+            contactIds.add(c.Id);
+        }
+
+        Map<Id, Admission__c> activeAdmByContact = new Map<Id, Admission__c>();
+        for (Admission__c adm : [
+            SELECT Id, Name, Contact__c, Patient__c, Bed__r.Bed_Code__c, Bed__r.Ward__r.Name
+            FROM Admission__c
+            WHERE Status__c = 'Admitted'
+              AND (Contact__c IN :contactIds OR Patient__c IN :contactIds)
+        ]) {
+            Id patId = adm.Contact__c != null ? adm.Contact__c : adm.Patient__c;
+            if (patId != null && !activeAdmByContact.containsKey(patId)) {
+                activeAdmByContact.put(patId, adm);
+            }
+        }
+
+        for (Contact c : matchedContacts) {
+            CareNestAdmissionController.PatientDirectoryDto dto = new CareNestAdmissionController.PatientDirectoryDto();
+            dto.id = c.Id;
+            dto.name = c.Name;
+            dto.email = c.Email;
+            dto.phone = c.Phone;
+            dto.birthdate = c.Birthdate;
+            dto.patientCode = String.isNotBlank(c.Patient_Code__c) ? c.Patient_Code__c : 'N/A';
+            dto.createdDate = c.CreatedDate;
+
+            if (activeAdmByContact.containsKey(c.Id)) {
+                Admission__c adm = activeAdmByContact.get(c.Id);
+                dto.isAdmitted = true;
+                dto.currentAdmissionId = adm.Id;
+                dto.currentAdmissionNumber = adm.Name;
+                dto.currentBedCode = adm.Bed__r != null ? adm.Bed__r.Bed_Code__c : '';
+                dto.currentWardName = (adm.Bed__r != null && adm.Bed__r.Ward__r != null) ? adm.Bed__r.Ward__r.Name : '';
+                dto.admissionStatusBadge = 'Admitted (' + dto.currentBedCode + ')';
+            } else {
+                dto.isAdmitted = false;
+                dto.admissionStatusBadge = 'Outpatient / Registered';
+            }
+            results.add(dto);
+        }
+
+        return results;
+    }
+
+    /**
      * @description Privileged internal query runner.
      * Inaccessible directly from LWC or Aura clients. Executes in without sharing context
      * solely to access private orphan Contacts after all authorization checks succeed.
@@ -267,6 +360,31 @@ public without sharing class CareNestPatientAccessService {
                 ];
             }
             return new List<Contact>();
+        }
+
+        public List<Contact> queryPatientDirectory(String cleanKey, String exactKey, Boolean isGlobal, Boolean isDoc, Boolean isNurOrWard, Id userId) {
+            if (String.isNotBlank(cleanKey)) {
+                return [
+                    SELECT Id, Name, Email, Phone, Birthdate, Patient_Code__c, CreatedDate
+                    FROM Contact
+                    WHERE (Name LIKE :cleanKey
+                        OR Phone LIKE :cleanKey
+                        OR Email LIKE :cleanKey
+                        OR Patient_Code__c = :exactKey
+                        OR Patient_Code__c LIKE :cleanKey)
+                      AND Patient_Code__c != null
+                    ORDER BY CreatedDate DESC
+                    LIMIT 50
+                ];
+            } else {
+                return [
+                    SELECT Id, Name, Email, Phone, Birthdate, Patient_Code__c, CreatedDate
+                    FROM Contact
+                    WHERE Patient_Code__c != null
+                    ORDER BY CreatedDate DESC
+                    LIMIT 50
+                ];
+            }
         }
     }
 

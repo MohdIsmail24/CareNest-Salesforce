@@ -1091,17 +1091,7 @@
                      ========================================================= -->
                 <template if:true={isPatientsTab}>
                     <div class="care-module-card">
-                        <div class="care-module-header">
-                            <div>
-                                <h2 class="care-module-title">Hospital Patient Registry &amp; Intake</h2>
-                                <p class="care-module-desc">Centralized patient directory (113 CareNest enrolled patients, 164 total records) with duplicate prevention and zero-trust privacy controls.</p>
-                            </div>
-                            <button class="care-btn-register" onclick={handleQuickRegisterPatient}>
-                                <lightning-icon icon-name="utility:user" size="x-small" class="care-btn-icon"></lightning-icon>
-                                <span>New Registration</span>
-                            </button>
-                        </div>
-                        <c-patient-admission-workspace onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
+                        <c-patient-admission-workspace mode="registry" onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
                     </div>
                 </template>
 
@@ -1147,13 +1137,7 @@
                      ========================================================= -->
                 <template if:true={isAdmissionsTab}>
                     <div class="care-module-card">
-                        <div class="care-module-header">
-                            <div>
-                                <h2 class="care-module-title">Inpatient Admissions &amp; Bed Assignment</h2>
-                                <p class="care-module-desc">Current inpatient admission workflows, attending physician assignments, and clinical discharge management.</p>
-                            </div>
-                        </div>
-                        <c-patient-admission-workspace onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
+                        <c-patient-admission-workspace mode="admissions" onnavigateworkspace={handleNavigateWorkspace}></c-patient-admission-workspace>
                     </div>
                 </template>
 

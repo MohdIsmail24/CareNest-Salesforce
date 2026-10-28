@@ -3,6 +3,7 @@ import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getActiveAdmissions from '@salesforce/apex/CareNestAdmissionController.getActiveAdmissions';
 import searchPatients from '@salesforce/apex/CareNestAdmissionController.searchPatients';
+import getPatientDirectory from '@salesforce/apex/CareNestAdmissionController.getPatientDirectory';
 import registerPatient from '@salesforce/apex/CareNestAdmissionController.registerPatient';
 import getWardsWithAvailability from '@salesforce/apex/CareNestAdmissionController.getWardsWithAvailability';
 import getAvailableBedDetails from '@salesforce/apex/CareNestAdmissionController.getAvailableBedDetails';
@@ -11,9 +12,17 @@ import admitPatient from '@salesforce/apex/CareNestAdmissionController.admitPati
 import dischargePatient from '@salesforce/apex/CareNestAdmissionController.dischargePatient';
 
 export default class PatientAdmissionWorkspace extends LightningElement {
+    @api mode = 'all'; // 'all' | 'registry' | 'admissions'
+    @track activeWorkspaceSubTab = 'registry'; // for dual mode
     @track isLoading = true;
     @track admissions = [];
     @track searchTerm = '';
+
+    // Patient Directory State
+    @track patientDirectory = [];
+    @track directorySearchKey = '';
+    @track isDirectoryLoading = false;
+    wiredDirectoryResult;
 
     // Modals state
     @track isRegisterPatientModalOpen = false;
@@ -109,6 +118,54 @@ export default class PatientAdmissionWorkspace extends LightningElement {
         }
     }
 
+    @wire(getPatientDirectory, { searchTerm: '$directorySearchKey' })
+    wiredDirectory(result) {
+        this.wiredDirectoryResult = result;
+        if (result.data) {
+            this.patientDirectory = result.data.map(p => ({
+                ...p,
+                formattedBirthdate: p.birthdate ? p.birthdate : 'Not recorded',
+                statusClass: p.isAdmitted ? 'slds-badge slds-theme_success' : 'slds-badge slds-badge_lightest'
+            }));
+            this.isDirectoryLoading = false;
+        } else if (result.error) {
+            this.showError('Error loading patient directory', result.error);
+            this.isDirectoryLoading = false;
+        }
+    }
+
+    get isRegistryMode() {
+        return this.mode === 'registry' || (this.mode === 'all' && this.activeWorkspaceSubTab === 'registry');
+    }
+
+    get isAdmissionsMode() {
+        return this.mode === 'admissions' || (this.mode === 'all' && this.activeWorkspaceSubTab === 'admissions');
+    }
+
+    get isDualMode() {
+        return this.mode === 'all';
+    }
+
+    get registryTabClass() {
+        return this.activeWorkspaceSubTab === 'registry'
+            ? 'slds-button slds-button_brand slds-m-right_x-small'
+            : 'slds-button slds-button_neutral slds-m-right_x-small';
+    }
+
+    get admissionsTabClass() {
+        return this.activeWorkspaceSubTab === 'admissions'
+            ? 'slds-button slds-button_brand slds-m-right_x-small'
+            : 'slds-button slds-button_neutral slds-m-right_x-small';
+    }
+
+    get hasPatientsInDirectory() {
+        return this.patientDirectory && this.patientDirectory.length > 0;
+    }
+
+    get totalPatientsCount() {
+        return this.patientDirectory ? this.patientDirectory.length : 0;
+    }
+
     get hasAdmissions() {
         return this.admissions && this.admissions.length > 0;
     }
@@ -148,13 +205,59 @@ export default class PatientAdmissionWorkspace extends LightningElement {
         this.searchTerm = event.target.value;
     }
 
+    handleDirectorySearchChange(event) {
+        this.directorySearchKey = event.target.value;
+    }
+
+    handleClearDirectorySearch() {
+        this.directorySearchKey = '';
+    }
+
+    handleSwitchSubTab(event) {
+        this.activeWorkspaceSubTab = event.currentTarget.dataset.tab;
+    }
+
+    handleAdmitPatientFromDirectory(event) {
+        const pId = event.currentTarget.dataset.patientId;
+        const pName = event.currentTarget.dataset.patientName;
+        const pCode = event.currentTarget.dataset.patientCode;
+        const pPhone = event.currentTarget.dataset.patientPhone;
+        const pEmail = event.currentTarget.dataset.patientEmail;
+
+        this.selectedPatient = {
+            id: pId,
+            name: pName,
+            patientCode: pCode,
+            phone: pPhone,
+            email: pEmail
+        };
+        this.openAdmissionWizardAtStep('2');
+    }
+
+    handleBookOpdFromDirectory(event) {
+        const pId = event.currentTarget.dataset.patientId;
+        const pName = event.currentTarget.dataset.patientName;
+        this.dispatchEvent(new CustomEvent('navigateworkspace', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                tab: 'appointments',
+                patientId: pId,
+                patientName: pName
+            }
+        }));
+    }
+
     async handleRefresh() {
         this.isLoading = true;
         try {
-            await refreshApex(this.wiredAdmissionsResult);
-            this.showToast('Refreshed', 'Admissions list updated', 'success');
+            await Promise.all([
+                refreshApex(this.wiredAdmissionsResult),
+                refreshApex(this.wiredDirectoryResult)
+            ]);
+            this.showToast('Refreshed', 'Workspace updated', 'success');
         } catch (error) {
-            this.showError('Error refreshing admissions', error);
+            this.showError('Error refreshing workspace', error);
         } finally {
             this.isLoading = false;
         }
@@ -254,8 +357,10 @@ export default class PatientAdmissionWorkspace extends LightningElement {
                 email: detail.email
             };
             this.handleCloseRegisterPatientModal();
-            this.handleOpenNewAdmissionModal();
             this.openAdmissionWizardAtStep('2');
+            if (this.wiredDirectoryResult) {
+                refreshApex(this.wiredDirectoryResult);
+            }
         }
     }
 
@@ -611,7 +716,12 @@ export default class PatientAdmissionWorkspace extends LightningElement {
             if (res.isSuccess) {
                 this.admissionSuccessResult = res;
                 this.showToast('Patient Admitted', `Admission #${res.admissionNumber} created successfully`, 'success');
-                await refreshApex(this.wiredAdmissionsResult);
+                if (this.wiredAdmissionsResult) {
+                    await refreshApex(this.wiredAdmissionsResult);
+                }
+                if (this.wiredDirectoryResult) {
+                    await refreshApex(this.wiredDirectoryResult);
+                }
             } else {
                 this.showToast('Admission Failed', res.message, 'error');
             }

@@ -1,143 +1,314 @@
 <template>
     <div class="care-container slds-p-around_medium">
-        <!-- Header -->
-        <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
-            <div class="slds-page-header__row">
-                <div class="slds-page-header__col-title">
-                    <div class="slds-media slds-media_center">
-                        <div class="slds-media__figure">
-                            <span class="slds-icon_container slds-icon-standard-contact care-brand-icon">
-                                <lightning-icon icon-name="standard:user" size="medium"></lightning-icon>
-                            </span>
-                        </div>
-                        <div class="slds-media__body">
-                            <div class="slds-page-header__name">
-                                <div class="slds-page-header__name-title">
-                                    <h1 class="slds-page-header__title slds-truncate care-title" title="Patient Admissions &amp; Discharge Workspace">
-                                        Patient Admissions &amp; Discharge Workspace
-                                    </h1>
-                                </div>
-                            </div>
-                            <p class="slds-page-header__name-meta care-subtitle">Inpatient intake, bed assignment validation, and discharge workflows</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="slds-page-header__col-actions">
-                    <div class="slds-page-header__controls">
-                        <div class="slds-page-header__control">
-                            <lightning-button 
-                                label="Register New Patient" 
-                                variant="neutral" 
-                                icon-name="utility:user" 
-                                onclick={handleOpenRegisterPatientModal} 
-                                class="slds-m-right_x-small">
-                            </lightning-button>
-                            <lightning-button 
-                                label="New Patient Admission" 
-                                variant="brand" 
-                                icon-name="utility:add" 
-                                onclick={handleOpenNewAdmissionWizard} 
-                                class="slds-m-right_x-small">
-                            </lightning-button>
-                            <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="slds-card slds-p-around_small slds-m-bottom_medium care-filter-card">
-            <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-gutters">
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                    <lightning-input
-                        type="search"
-                        placeholder="Search active admissions by patient name, patient code, bed code, or doctor..."
-                        value={searchTerm}
-                        onchange={handleSearchChange}
-                        variant="label-hidden">
-                    </lightning-input>
-                </div>
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_right text-muted slds-p-top_xx-small">
-                    Active Inpatient Records: <strong>{activeAdmissionCount}</strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Spinner -->
-        <template if:true={isLoading}>
-            <div class="slds-align_absolute-center slds-p-around_large">
-                <lightning-spinner alternative-text="Loading admissions..." size="medium"></lightning-spinner>
+        <!-- Dual Mode Sub-Navigation (if mode == 'all') -->
+        <template if:true={isDualMode}>
+            <div class="slds-m-bottom_medium slds-grid slds-grid_vertical-align-center">
+                <button class={registryTabClass} data-tab="registry" onclick={handleSwitchSubTab}>
+                    <lightning-icon icon-name="standard:contact" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                    Patient Registry &amp; Directory
+                </button>
+                <button class={admissionsTabClass} data-tab="admissions" onclick={handleSwitchSubTab}>
+                    <lightning-icon icon-name="standard:user" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                    Inpatient Admissions &amp; Beds
+                </button>
             </div>
         </template>
 
-        <!-- Admissions Table -->
-        <template if:false={isLoading}>
-            <div class="slds-card care-panel-card">
-                <template if:true={hasAdmissions}>
-                    <div class="slds-table_responsive">
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered care-table">
-                            <thead>
-                                <tr class="slds-line-height_reset">
-                                    <th scope="col"><div class="slds-truncate font-bold">Admission #</div></th>
-                                    <th scope="col"><div class="slds-truncate font-bold">Patient Name &amp; Code</div></th>
-                                    <th scope="col"><div class="slds-truncate font-bold">Bed / Ward / Room</div></th>
-                                    <th scope="col"><div class="slds-truncate font-bold">Attending Doctor</div></th>
-                                    <th scope="col"><div class="slds-truncate font-bold">Admission Date</div></th>
-                                    <th scope="col"><div class="slds-truncate font-bold">Status</div></th>
-                                    <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Actions</div></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template for:each={admissions} for:item="adm">
-                                    <tr key={adm.admissionId} class="slds-hint-parent">
-                                        <td>
-                                            <span class="font-bold text-dark">{adm.admissionNumber}</span>
-                                        </td>
-                                        <td>
-                                            <div class="font-bold text-primary">{adm.patientName}</div>
-                                            <div class="text-muted slds-text-body_small">
-                                                <span class="slds-badge slds-badge_lightest slds-m-right_xx-small">{adm.patientCode}</span>
-                                                {adm.patientPhone}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div><strong>{adm.bedCode}</strong> ({adm.wardName})</div>
-                                            <div class="text-muted slds-text-body_small">Room {adm.room}</div>
-                                        </td>
-                                        <td>
-                                            <div>{adm.doctorName}</div>
-                                            <div class="text-muted slds-text-body_small">{adm.doctorSpecialty}</div>
-                                        </td>
-                                        <td>
-                                            <div>{adm.admissionDate}</div>
-                                            <span class="slds-badge slds-theme_shade">{adm.admissionType}</span>
-                                        </td>
-                                        <td>
-                                            <span class="slds-badge slds-theme_success">{adm.status}</span>
-                                        </td>
-                                        <td class="slds-text-align_right">
-                                            <lightning-button 
-                                                label="Discharge" 
-                                                variant="destructive-text" 
-                                                icon-name="utility:logout" 
-                                                data-admission-id={adm.admissionId} 
-                                                onclick={handleOpenDischargeModal}>
-                                            </lightning-button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
+        <!-- ================================================================= -->
+        <!-- VIEW A: PATIENT REGISTRY & DIRECTORY                              -->
+        <!-- ================================================================= -->
+        <template if:true={isRegistryMode}>
+            <!-- Registry Header -->
+            <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media slds-media_center">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-contact care-brand-icon">
+                                    <lightning-icon icon-name="standard:contact" size="medium"></lightning-icon>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1 class="slds-page-header__title slds-truncate care-title" title="Hospital Patient Registry &amp; Directory">
+                                            Hospital Patient Registry &amp; Directory
+                                        </h1>
+                                    </div>
+                                </div>
+                                <p class="slds-page-header__name-meta care-subtitle">Centralized master patient index with direct bed admission and outpatient appointment scheduling</p>
+                            </div>
+                        </div>
                     </div>
-                </template>
-
-                <template if:false={hasAdmissions}>
-                    <div class="slds-align_absolute-center slds-p-around_large text-muted">
-                        No active admissions found matching your criteria.
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <lightning-button 
+                                    label="Register New Patient" 
+                                    variant="brand" 
+                                    icon-name="utility:user" 
+                                    onclick={handleOpenRegisterPatientModal} 
+                                    class="slds-m-right_x-small">
+                                </lightning-button>
+                                <lightning-button 
+                                    label="New Inpatient Admission" 
+                                    variant="neutral" 
+                                    icon-name="utility:add" 
+                                    onclick={handleOpenNewAdmissionWizard} 
+                                    class="slds-m-right_x-small">
+                                </lightning-button>
+                                <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                            </div>
+                        </div>
                     </div>
-                </template>
+                </div>
             </div>
+
+            <!-- Registry Search Bar -->
+            <div class="slds-card slds-p-around_small slds-m-bottom_medium care-filter-card">
+                <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+                        <lightning-input
+                            type="search"
+                            placeholder="Search patients by Name, Patient Code (e.g. CN-PAT-00105), Phone, or Email..."
+                            value={directorySearchKey}
+                            onchange={handleDirectorySearchChange}
+                            variant="label-hidden">
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-text-align_right text-muted slds-p-top_xx-small">
+                        Enrolled Patients: <strong>{totalPatientsCount}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registry Table -->
+            <template if:true={isDirectoryLoading}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading patient directory..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+            <template if:false={isDirectoryLoading}>
+                <div class="slds-card care-panel-card slds-m-bottom_large">
+                    <template if:true={hasPatientsInDirectory}>
+                        <div class="slds-table_responsive">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered care-table">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col"><div class="slds-truncate font-bold">Patient Code</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Patient Name</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Contact Phone</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Email</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Date of Birth</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Inpatient Status</div></th>
+                                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Actions</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={patientDirectory} for:item="pat">
+                                        <tr key={pat.id} class="slds-hint-parent">
+                                            <td>
+                                                <span class="slds-badge slds-badge_lightest font-bold">{pat.patientCode}</span>
+                                            </td>
+                                            <td>
+                                                <div class="font-bold text-primary">{pat.name}</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-dark">{pat.phone}</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-muted">{pat.email}</div>
+                                            </td>
+                                            <td>
+                                                <div>{pat.formattedBirthdate}</div>
+                                            </td>
+                                            <td>
+                                                <span class={pat.statusClass}>{pat.admissionStatusBadge}</span>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <template if:false={pat.isAdmitted}>
+                                                    <lightning-button 
+                                                        label="Admit to Bed" 
+                                                        variant="brand-outline" 
+                                                        size="small" 
+                                                        icon-name="utility:add"
+                                                        data-patient-id={pat.id}
+                                                        data-patient-name={pat.name}
+                                                        data-patient-code={pat.patientCode}
+                                                        data-patient-phone={pat.phone}
+                                                        data-patient-email={pat.email}
+                                                        onclick={handleAdmitPatientFromDirectory}
+                                                        class="slds-m-right_xx-small">
+                                                    </lightning-button>
+                                                </template>
+                                                <lightning-button 
+                                                    label="Book OPD" 
+                                                    variant="neutral" 
+                                                    size="small" 
+                                                    icon-name="utility:event"
+                                                    data-patient-id={pat.id}
+                                                    data-patient-name={pat.name}
+                                                    onclick={handleBookOpdFromDirectory}>
+                                                </lightning-button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template if:false={hasPatientsInDirectory}>
+                        <div class="slds-align_absolute-center slds-p-around_large text-muted">
+                            No patient records found matching your search.
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+
+        <!-- ================================================================= -->
+        <!-- VIEW B: INPATIENT ADMISSIONS & DISCHARGE WORKSPACE                -->
+        <!-- ================================================================= -->
+        <template if:true={isAdmissionsMode}>
+            <!-- Admissions Header -->
+            <div class="slds-page-header slds-page-header_record-home care-header slds-m-bottom_medium">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media slds-media_center">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-contact care-brand-icon">
+                                    <lightning-icon icon-name="standard:user" size="medium"></lightning-icon>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1 class="slds-page-header__title slds-truncate care-title" title="Patient Admissions &amp; Discharge Workspace">
+                                            Patient Admissions &amp; Discharge Workspace
+                                        </h1>
+                                    </div>
+                                </div>
+                                <p class="slds-page-header__name-meta care-subtitle">Inpatient intake, bed assignment validation, and discharge workflows</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <lightning-button 
+                                    label="Register New Patient" 
+                                    variant="neutral" 
+                                    icon-name="utility:user" 
+                                    onclick={handleOpenRegisterPatientModal} 
+                                    class="slds-m-right_x-small">
+                                </lightning-button>
+                                <lightning-button 
+                                    label="New Patient Admission" 
+                                    variant="brand" 
+                                    icon-name="utility:add" 
+                                    onclick={handleOpenNewAdmissionWizard} 
+                                    class="slds-m-right_x-small">
+                                </lightning-button>
+                                <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="slds-card slds-p-around_small slds-m-bottom_medium care-filter-card">
+                <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input
+                            type="search"
+                            placeholder="Search active admissions by patient name, patient code, bed code, or doctor..."
+                            value={searchTerm}
+                            onchange={handleSearchChange}
+                            variant="label-hidden">
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_right text-muted slds-p-top_xx-small">
+                        Active Inpatient Records: <strong>{activeAdmissionCount}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading admissions..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Admissions Table -->
+            <template if:false={isLoading}>
+                <div class="slds-card care-panel-card">
+                    <template if:true={hasAdmissions}>
+                        <div class="slds-table_responsive">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered care-table">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col"><div class="slds-truncate font-bold">Admission #</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Patient Name &amp; Code</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Bed / Ward / Room</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Attending Doctor</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Admission Date</div></th>
+                                        <th scope="col"><div class="slds-truncate font-bold">Status</div></th>
+                                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate font-bold">Actions</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={admissions} for:item="adm">
+                                        <tr key={adm.admissionId} class="slds-hint-parent">
+                                            <td>
+                                                <span class="font-bold text-dark">{adm.admissionNumber}</span>
+                                            </td>
+                                            <td>
+                                                <div class="font-bold text-primary">{adm.patientName}</div>
+                                                <div class="text-muted slds-text-body_small">
+                                                    <span class="slds-badge slds-badge_lightest slds-m-right_xx-small">{adm.patientCode}</span>
+                                                    {adm.patientPhone}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div><strong>{adm.bedCode}</strong> ({adm.wardName})</div>
+                                                <div class="text-muted slds-text-body_small">Room {adm.room}</div>
+                                            </td>
+                                            <td>
+                                                <div>{adm.doctorName}</div>
+                                                <div class="text-muted slds-text-body_small">{adm.doctorSpecialty}</div>
+                                            </td>
+                                            <td>
+                                                <div>{adm.admissionDate}</div>
+                                                <span class="slds-badge slds-theme_shade">{adm.admissionType}</span>
+                                            </td>
+                                            <td>
+                                                <span class="slds-badge slds-theme_success">{adm.status}</span>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <lightning-button 
+                                                    label="Discharge" 
+                                                    variant="destructive-text" 
+                                                    icon-name="utility:logout" 
+                                                    data-admission-id={adm.admissionId} 
+                                                    onclick={handleOpenDischargeModal}>
+                                                </lightning-button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template if:false={hasAdmissions}>
+                        <div class="slds-align_absolute-center slds-p-around_large text-muted">
+                            No active admissions found matching your criteria.
+                        </div>
+                    </template>
+                </div>
+            </template>
         </template>
 
         <!-- ================================================================= -->

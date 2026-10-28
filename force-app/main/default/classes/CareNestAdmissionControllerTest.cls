@@ -138,6 +138,46 @@ private class CareNestAdmissionControllerTest {
     }
 
     @IsTest
+    static void testPatientDirectory() {
+        Contact pat = [SELECT Id, LastName, Patient_Code__c FROM Contact WHERE LastName = 'AdmPatient' LIMIT 1];
+        Doctor__c doc = [SELECT Id FROM Doctor__c WHERE Name = 'Dr. Test Admission' LIMIT 1];
+        Bed__c bed = [SELECT Id FROM Bed__c WHERE Bed_Code__c = 'ADM-01' LIMIT 1];
+
+        Test.startTest();
+        // 1. Directory when not admitted
+        List<CareNestAdmissionController.PatientDirectoryDto> allDir = CareNestAdmissionController.getPatientDirectory('');
+        List<CareNestAdmissionController.PatientDirectoryDto> filteredDir = CareNestAdmissionController.getPatientDirectory('AdmPatient');
+        List<CareNestAdmissionController.PatientDirectoryDto> nonExistent = CareNestAdmissionController.getPatientDirectory('ZZZNonExistent');
+
+        // 2. Admit patient and test directory with active admission
+        CareNestAdmissionController.admitPatient(pat.Id, bed.Id, doc.Id, 'Planned', 'Pre-op observation');
+        List<CareNestAdmissionController.PatientDirectoryDto> admittedDir = CareNestAdmissionController.getPatientDirectory('AdmPatient');
+
+        // 3. Test security mock guard clauses
+        CareNestPatientAccessService.mockIsExternal = true;
+        List<CareNestAdmissionController.PatientDirectoryDto> extDenied = CareNestAdmissionController.getPatientDirectory('AdmPatient');
+        CareNestPatientAccessService.mockIsExternal = false;
+
+        CareNestPatientAccessService.mockIsGuest = true;
+        List<CareNestAdmissionController.PatientDirectoryDto> guestDenied = CareNestAdmissionController.getPatientDirectory('AdmPatient');
+        CareNestPatientAccessService.mockIsGuest = false;
+        Test.stopTest();
+
+        Assert.isFalse(allDir.isEmpty(), 'Patient directory should return registered patients');
+        Assert.isFalse(filteredDir.isEmpty(), 'Filtered directory should return matching patient');
+        Assert.isNotNull(filteredDir[0].patientCode);
+        Assert.isFalse(filteredDir[0].isAdmitted, 'Before admission, isAdmitted should be false');
+
+        Assert.isTrue(nonExistent.isEmpty(), 'Non-matching search should return empty');
+        Assert.isFalse(admittedDir.isEmpty(), 'Admitted patient should be found in directory');
+        Assert.isTrue(admittedDir[0].isAdmitted, 'After admission, isAdmitted should be true');
+        Assert.areEqual('ADM-01', admittedDir[0].currentBedCode, 'Bed code should match assigned bed');
+
+        Assert.isTrue(extDenied.isEmpty(), 'External session should be denied');
+        Assert.isTrue(guestDenied.isEmpty(), 'Guest session should be denied');
+    }
+
+    @IsTest
     static void testWardAndBedAvailability() {
         Ward__c ward = [SELECT Id FROM Ward__c WHERE Ward_Code__c = 'CN-WRD-ADM' LIMIT 1];
 
