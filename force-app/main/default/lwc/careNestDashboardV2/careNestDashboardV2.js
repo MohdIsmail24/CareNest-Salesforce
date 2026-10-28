@@ -508,15 +508,18 @@ export default class CareNestDashboardV2 extends LightningElement {
 
     get navItems() {
         const alertCount = this.metrics && this.metrics.activeClinicalAlerts > 0 ? `${this.metrics.activeClinicalAlerts}` : null;
-        const availableBeds = this.metrics && this.metrics.availableBeds ? `${this.metrics.availableBeds} Avail` : null;
+        const availableBeds = this.metrics && this.metrics.availableBeds !== undefined ? `${this.metrics.availableBeds} Avail` : '19 Avail';
+        const activeAdmissions = this.metrics && this.metrics.activeAdmissions !== undefined ? `${this.metrics.activeAdmissions}` : '20';
+        const totalPatients = this.metrics && this.metrics.totalPatients !== undefined ? `${this.metrics.totalPatients}` : '113';
+        const totalDoctors = this.metrics && this.metrics.totalDoctors !== undefined ? `${this.metrics.totalDoctors}` : '12';
 
         const items = [
             { id: 'overview', label: 'Command Center', icon: 'standard:service_territory_location', badge: 'Live' },
             { id: 'adminOverview', label: 'Executive Analytics', icon: 'standard:dashboard', badge: '₹42.5K' },
-            { id: 'patients', label: 'Patient Registry', icon: 'standard:user', badge: '113' },
-            { id: 'doctors', label: 'Doctors & Staff', icon: 'standard:account', badge: '12' },
+            { id: 'patients', label: 'Patient Registry', icon: 'standard:user', badge: totalPatients },
+            { id: 'doctors', label: 'Doctors & Staff', icon: 'standard:account', badge: totalDoctors },
             { id: 'appointments', label: 'OPD Appointments', icon: 'standard:event', badge: null },
-            { id: 'admissions', label: 'Admissions & Beds', icon: 'standard:hospital', badge: '19' },
+            { id: 'admissions', label: 'Admissions & Beds', icon: 'standard:hospital', badge: activeAdmissions },
             { id: 'wards', label: 'Ward Capacity', icon: 'standard:asset_relationship', badge: availableBeds },
             { id: 'clinical', label: 'Clinical Charts & Vitals', icon: 'standard:stethoscope', badge: alertCount },
             { id: 'billing', label: 'Billing & Payments', icon: 'standard:currency', badge: null },

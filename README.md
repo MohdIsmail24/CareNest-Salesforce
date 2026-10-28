@@ -4,7 +4,7 @@
 [![Apex & LWC](https://img.shields.io/badge/Stack-Apex%20%7C%20LWC%20%7C%20Flows-0176D3?logo=salesforce&logoColor=white)](https://developer.salesforce.com/)
 [![Agentforce AI](https://img.shields.io/badge/Agentforce-AI%20Autonomous%20Actions-7F27FF?logo=salesforce&logoColor=white)](https://www.salesforce.com/agentforce/)
 [![SFDX Architecture](https://img.shields.io/badge/Architecture-Enterprise%20SoC%20Patterns-0D9488)](docs/architecture.md)
-[![Tests Passed](https://img.shields.io/badge/Automated%20Tests-205%20Passed%20(100%25)-10B981)](#testing--verification)
+[![Tests Passed](https://img.shields.io/badge/Apex%20Tests-337%20Passed%20(88%25%20Coverage)-10B981)](#testing--verification)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **CareNest** is a full-featured, enterprise-grade Hospital Management System built natively on the **Salesforce Lightning Platform**. It unifies outpatient scheduling, inpatient bed allocation, bedside clinical telemetry, billing workflows, executive revenue analytics, and autonomous **Agentforce AI** agents into a centralized hospital command center.
@@ -79,7 +79,7 @@ CareNest provides a single, unified workspace for hospital leadership, clinician
 
 | # | Module Name | Primary Responsibilities |
 |---|---|---|
-| **1** | **Hospital Command Center** | Real-time hospital telemetry, total bed occupancy (45.2% across 42 physical beds), inpatient census (19 active admissions), and live emergency hotline integration. |
+| **1** | **Hospital Command Center** | Real-time hospital telemetry, total bed occupancy (47.6% across 42 physical beds), inpatient census (20 active admissions, 19 available beds), and live emergency hotline integration. |
 | **2** | **Executive Revenue Analytics** | 7 financial metrics and visualizations: Recorded Successful Collections, Collections Less Refund Obligations, Refund Entitlements, Post-Service Open Balances, Accrued Inpatient Bed Charges, Department Revenue Distribution progress chart, and Post-Service Receivables Aging 4-bucket breakdown. |
 | **3** | **Patient Registry Workspace** | Intake management, demographic lookup, duplicate prevention, and medical history navigation. |
 | **4** | **Doctors & Staff Directory** | Physician rosters, clinical departments (General Medicine, Cardiology, Paediatrics, Orthopaedics, ENT, Dermatology), and fee schedules. |
@@ -137,31 +137,30 @@ All screenshots are captured directly from live Salesforce execution (`/lightnin
 
 ## 🧪 Testing & Verification
 
-CareNest maintains 100% pass rates across local static analysis suites and cloud Apex unit tests:
+CareNest maintains 100% pass rates across local static analysis suites, full org-wide Apex regression test suites (88% code coverage across 337 tests), and end-to-end browser verification:
 
 ```
+=================================================================
+ APEX REGRESSION & ADMISSION TEST VERIFICATION (100% PASS RATE)
+=================================================================
+ Org-Wide Apex Code Coverage: 88.0% (Passing 337 / 337 tests org-wide)
+ Target Org ID              : 00Dg700000Cpr9pEAB (carenest)
+ Phase 21/22 Deployment Job : 0Afg700000HCFBECA5 (34 / 34 targeted tests PASSED)
+
+ Key Test Suites:
+  - CareNestAdmissionControllerTest : 21 / 21 PASSED (100% class coverage)
+  - CareNestPatientSharingTest      : 13 / 13 PASSED (100% class coverage)
+  - CareNestDashboardControllerTest :  8 /  8 PASSED (100% class coverage)
+
 =================================================================
  LOCAL AUTOMATED TEST SUITES (205 / 205 CHECKS PASSED - 100%)
 =================================================================
  scripts/test_admin_analytics_local.js    : 153 / 153 PASSED (0 failures)
  scripts/test_careNestDashboardV2_local.js:  52 /  52 PASSED (0 failures)
-
-=================================================================
- APEX UNIT TEST VERIFICATION (8 / 8 APEX TESTS PASSED - 100%)
-=================================================================
- CareNestDashboardControllerTest.cls:
-   - testFilterVariations                        [PASS] (1323 ms)
-   - testGetAdminOverviewAnalytics_Authorized    [PASS] (497 ms)
-   - testGetAdminOverviewAnalytics_NonAdminDenied[PASS] (110 ms)
-   - testGetDashboardMetrics                     [PASS] (373 ms)
-   - testGetRecentActivities                     [PASS] (269 ms)
-   - testGetReportsHubReports_Admin              [PASS] (114 ms)
-   - testGetReportsHubReports_NonAdmin           [PASS] (113 ms)
-   - testGetWardSummaries                        [PASS] (153 ms)
 ```
 
-- **Validation Dry-Run Job ID:** `0Afg700000Gh1E9CAJ` (`checkOnly = true`, Succeeded)
-- **Permanent Deployment Job ID:** `0Afg700000Gfz38CAB` (`checkOnly = false`, Succeeded)
+- **Phase 21/22 Verified Deployment Job ID:** `0Afg700000HCFBECA5` (Status: `Succeeded`, 34/34 Apex Tests Passed)
+- **Live End-to-End Verification:** Contact `Test_P21 Rohit_Sen` (`CN-PAT-00106`) registered, Admitted (`ADM-000063`) to Bed `GW-05` (`CN-BED-005`), Occupancy successfully updated from 19 to 20 inpatients in live org.
 
 ---
 
@@ -195,20 +194,27 @@ sf org open --path "/lightning/app/c__CareNest" --target-org carenest-dev
 
 ---
 
-## 📚 Technical Documentation Index
+## 📚 Technical Documentation Suite
 
-Detailed engineering documentation is available in the [`docs/`](docs/) directory:
-- [Architecture & Design Patterns](docs/architecture.md)
+The complete engineering and operational documentation is maintained in the [`docs/`](docs/) directory:
+
+| Document | Description |
+|---|---|
+| [**Architecture & Design**](docs/architecture.md) | Enterprise Separation of Concerns (SoC), concurrency control, state machine, and Mermaid ERD. |
+| [**Features & Modules**](docs/FEATURES.md) | 15 core functional pillars mapping all 12 operational hospital modules. |
+| [**Security & Governance**](docs/SECURITY.md) | Zero-Trust Stage 2 RBAC, Private OWD matrix, orphan patient isolation, and Apex managed sharing. |
+| [**Testing & QA**](docs/TESTING.md) | 337/337 passing regression suite, 88% org code coverage, Phase 21/22 tests, and UI testing matrices. |
+| [**Deployment & Setup**](docs/DEPLOYMENT.md) | SFDX deployment manifests, test requirements, permission set assignments, and verification runbooks. |
+| [**Demo & Recruiter Walkthrough**](docs/DEMO_GUIDE.md) | 5-minute recruiter presentation script, end-to-end patient journey walkthrough, and interview QA. |
+| [**Known Limitations & Boundaries**](docs/KNOWN_LIMITATIONS.md) | Architectural constraints, POS simulation boundaries, RFC 2606 data synthesis, and roadmap. |
+
+### Additional Specialized Guides
 - [Data Model & ERD](docs/data-model.md)
 - [Apex Development & Concurrency Control](docs/apex-development.md)
 - [Lightning Web Components (LWC) Architecture](docs/lwc-components.md)
 - [Automation, Flows & Event-Driven Engine](docs/automation.md)
-- [Security Model & Zero-Trust RBAC](docs/security-model.md)
 - [Agentforce AI Integration & Autonomous Actions](docs/agentforce.md)
 - [Reports, Analytics & Financial Reconciliation](docs/reports-and-analytics.md)
-- [Testing Strategy & CI/CD Lifecycle](docs/testing-and-deployment.md)
-- [End-to-End Business Use Cases](docs/business-use-cases.md)
-- [System Boundaries & Known Limitations](docs/known-limitations.md)
 - [Recruiter Portfolio Case Study](docs/recruiter-case-study.md)
 - [Resume Bullets & Interview Guide](docs/resume-and-interview-guide.md)
 

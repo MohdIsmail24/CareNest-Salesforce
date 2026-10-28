@@ -70,7 +70,7 @@ export default class PatientAdmissionWorkspace extends LightningElement {
 
     // Step 5: Clinical Details
     @track wizardData = {
-        admissionType: 'Emergency',
+        admissionType: '',
         admissionDateDisplay: '',
         reason: ''
     };
@@ -84,6 +84,7 @@ export default class PatientAdmissionWorkspace extends LightningElement {
     wiredAdmissionsResult;
 
     admissionTypeOptions = [
+        { label: '-- Select Admission Type --', value: '' },
         { label: 'Emergency', value: 'Emergency' },
         { label: 'Planned', value: 'Planned' },
         { label: 'Transfer', value: 'Transfer' }
@@ -463,7 +464,7 @@ export default class PatientAdmissionWorkspace extends LightningElement {
         this.doctorDeptFilter = 'All';
         this.doctorSearchKey = '';
         this.wizardData = {
-            admissionType: 'Emergency',
+            admissionType: '',
             admissionDateDisplay: new Date().toISOString(),
             reason: ''
         };
@@ -687,6 +688,10 @@ export default class PatientAdmissionWorkspace extends LightningElement {
             };
             this.wizardStep = '5';
         } else if (cur === 5) {
+            if (!this.wizardData.admissionType || !this.wizardData.admissionType.trim()) {
+                this.showToast('Validation Error', 'Please select an Admission Type before proceeding (Emergency, Planned, or Transfer)', 'warning');
+                return;
+            }
             if (!this.wizardData.reason || !this.wizardData.reason.trim()) {
                 this.showToast('Validation Error', 'Please enter the admission reason or clinical diagnosis', 'warning');
                 return;

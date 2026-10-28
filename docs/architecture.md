@@ -1,132 +1,184 @@
-# CareNest — System Architecture & Solution Design
+# CareNest HMS — Enterprise System Architecture & Data Model
 
-## 1. Architectural Philosophy
-
-CareNest is built as an enterprise-grade Hospital Management System (HMS) natively on the Salesforce Lightning Platform. It is engineered around principles of modular separation of concerns, concurrency control, defense-in-depth data governance, and event-driven automation.
-
-Rather than fragmenting clinical and administrative functions into disparate third-party systems or disconnected Salesforce apps, CareNest unifies 12 essential hospital operational modules into a single, high-performance command center while strictly enforcing Least Privilege Role-Based Access Control (RBAC).
+**Project:** CareNest Hospital Management System  
+**Platform:** Salesforce Lightning Platform (API v68.0)  
+**Architecture Paradigm:** Layered Separation of Concerns (SoC) Enterprise Architecture  
+**Target Organization ID:** `00Dg700000Cpr9pEAB`  
 
 ---
 
-## 2. High-Level Solution Architecture
+## 1. Architectural Philosophy
+
+CareNest is engineered natively on the Salesforce multi-tenant platform adhering to enterprise design patterns (Martin Fowler / FinancialForce Apex Enterprise Patterns):
+* **Presentation Layer (LWC):** Single-page, highly responsive reactive Lightning Web Components operating within standard Lightning Experience container (`/lightning/app/c__CareNest`).
+* **Controller Layer (Apex `@AuraEnabled`):** Thin facade controllers managing client serialization, payload validation, and delegating to domain services.
+* **Domain & Application Service Layer:** Reusable, transaction-isolated Apex services enforcing transactional boundaries, business logic, concurrency control, and logging.
+* **Data Access & Selector Layer:** Secure SOQL query execution adhering to `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, and programmatic row-level sharing.
+* **Security & Governance Layer:** Zero-Trust Stage 2 Role-Based Access Control (RBAC), Private Organization-Wide Defaults (OWD), and Apex Managed Sharing.
+* **Autonomous AI Layer:** Salesforce Agentforce integration via typed, deterministic `@InvocableMethod` actions with strict medical guardrails.
+
+---
+
+## 2. High-Level Architectural Diagram
 
 ```mermaid
 graph TD
-    subgraph UI_Layer["Presentation Layer (Lightning Experience & LWCs)"]
-        Nav["Unified Branded Navigation Header"]
-        M1["Module 1: Command Center Telemetry"]
-        M2["Module 2: Patient Registry Workspace"]
-        M3["Module 3: Doctors & Staff Directory"]
-        M4["Module 4: Outpatient Appointment Wizard"]
-        M5["Module 5: Inpatient Admissions & Discharges"]
-        M6["Module 6: Ward & Bed Capacity Manager"]
-        M7["Module 7: Clinical Chart & Vitals Workspace"]
-        M8["Module 8: Agentforce AI Hospital Assistant"]
-        M9["Module 9: Reports & Analytics Hub (16 Reports)"]
-        M10["Module 10: Cashier Desk & Patient Billing"]
-        M11["Module 11: Automation & Batch Engine"]
-        M12["Module 12: System Health & RBAC Audit"]
+    subgraph Presentation_Layer["Presentation Layer (Lightning Web Components)"]
+        Dash["careNestDashboardV2\n(Executive Command Center & Navigation)"]
+        PatWS["patientAdmissionWorkspace\n(Patient Intake Registry & 6-Step Admission Wizard)"]
+        ClinWS["inpatientClinicalWorkspace\n(Telemetry, Vitals, Alerts & Bedside Rounds)"]
+        WardMgr["wardBedManager\n(Interactive Bed Matrix & Capacity Rollups)"]
+        DocDir["doctorSearch & appointmentWizard\n(Physician Roster & OPD Scheduling)"]
+        Billing["patientBilling\n(POS Counter Collections & Invoices)"]
+        AIAssist["agentforceAssistantWidget\n(Clinical AI Copilot Interface)"]
+        AdminHub["adminOverview & Reports Hub\n(16 Certified Lightning Reports & Analytics)"]
     end
 
-    subgraph Controller_Layer["Apex Controller & Orchestration Layer"]
-        C_Dash["CareNestDashboardController"]
-        C_Adm["CareNestAdmissionController"]
-        C_Appt["CareNestAppointmentController"]
-        C_Ward["CareNestWardBedController"]
-        C_Clin["CareNestClinicalController"]
-        C_Agent["CareNestAssistantUIController"]
-        C_Doc["DoctorSearchController"]
+    subgraph Service_Layer["Domain & Application Service Layer"]
+        S_Adm["CareNestAdmissionController\n& CareNestPatientAccessService"]
+        S_Appt["AppointmentService\n(Concurrency: SELECT ... FOR UPDATE)"]
+        S_Canc["CancellationService\n(Tiered Custom Metadata Refund Policy)"]
+        S_Clin["ClinicalDocumentationService\n(Vital Signs Normal Range Telemetry)"]
+        S_Share["CareNestPatientSharingService\n(Programmatic Row-Level Sharing)"]
+        S_Log["ErrorLogService\n(Decoupled Platform Event Audit Logger)"]
     end
 
-    subgraph Service_Layer["Apex Domain & Application Services"]
-        S_Appt["AppointmentService\n(Concurrency Lock: SELECT ... FOR UPDATE)"]
-        S_Canc["CancellationService\n(Tiered Policy Engine via Custom Metadata)"]
-        S_Adm["AdmissionService\n(Bed State Machine & Admission Lifecycle)"]
-        S_Clin["ClinicalDocumentationService\n(Encounter & Vital Sign Validation)"]
-        S_Share["CareNestPatientAccessService & ClinicalSharingService\n(Programmatic Apex Sharing)"]
-        S_Err["ErrorLogService\n(Platform Event-Driven Exception Logging)"]
+    subgraph Agentforce_AI["Agentforce Autonomous Invocable Actions"]
+        Bot["CareNest Clinical Assistant\n(Agentforce Employee Agent)"]
+        Act_Doc["DoctorSearchAction"]
+        Act_Bed["WardAvailabilityAction"]
+        Act_Appt["AppointmentStatusAction"]
+        Act_Canc["CancelAppointmentAction"]
     end
 
-    subgraph Async_Layer["Asynchronous Batch & Event Layer"]
-        B_NoShow["NoShowBatch\n(Auto-detect missed consultations)"]
-        B_Expiry["PendingExpiryBatch\n(Auto-release unpaid slots)"]
-        B_Recon["CrossCoverReconciliationBatch\n(Sync temporary staff ward sharing)"]
-        Q_Sms["ReminderSmsJob\n(Idempotent Queueable SMS notifications)"]
-        E_Log["Error_Log_Event__e\n(Platform Event for decoupled logging)"]
+    subgraph Data_Storage["Data Storage Layer (Private OWD)"]
+        Contact["Contact\n(Patient Master Index)"]
+        Doctor["Doctor__c\n(Staff Directory)"]
+        Slot["Appointment_Slot__c\n(OPD Capacity)"]
+        Appt["Appointment__c\n(Consultation Encounters)"]
+        Payment["Payment__c\n(Counter Collections)"]
+        Ward["Ward__c\n(Departmental Units)"]
+        Bed["Bed__c\n(Physical Bed Inventory)"]
+        Admission["Admission__c\n(Inpatient Episode of Care)"]
+        Vital["Patient_Vital__c\n(Telemetry & Observations)"]
+        ErrorLog["Error_Log__c\n(Audit Trail)"]
     end
 
-    subgraph Data_Layer["Data & Security Layer (Salesforce Database)"]
-        Contact["Contact (Patient)"]
-        Doctor["Doctor__c"]
-        Slot["Appointment_Slot__c"]
-        Appt["Appointment__c"]
-        Payment["Payment__c"]
-        Cancel["Cancellation__c"]
-        Ward["Ward__c"]
-        Bed["Bed__c"]
-        Adm["Admission__c"]
-        Enc["Inpatient_Encounter__c"]
-        Vital["Patient_Vital__c"]
-        StaffWard["CareNest_Staff_Ward_Assignment__c"]
-        Metadata["Cancellation_Policy__mdt"]
-    end
-
-    Nav --> M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & M11 & M12
-    M1 & M9 --> C_Dash
-    M2 & M5 --> C_Adm
-    M3 & M4 --> C_Appt & C_Doc
-    M6 --> C_Ward
-    M7 --> C_Clin
-    M8 --> C_Agent
-    M10 --> C_Appt
-
-    C_Dash --> S_Share
-    C_Adm --> S_Adm & S_Share
-    C_Appt & C_Doc --> S_Appt & S_Canc
-    C_Ward --> S_Adm
-    C_Clin --> S_Clin & S_Share
-    C_Agent --> S_Appt & S_Adm
-
-    S_Appt --> Appt & Slot & Doctor
-    S_Canc --> Cancel & Metadata & Appt
-    S_Adm --> Adm & Bed & Ward
-    S_Clin --> Vital & Enc
-    S_Share --> Contact & Adm
-    S_Err --> E_Log
-    E_Log --> S_Err
-
-    B_NoShow --> Appt
-    B_Expiry --> Appt & Slot
-    B_Recon --> S_Share
-    Q_Sms --> Appt
+    Dash --> PatWS & ClinWS & WardMgr & DocDir & Billing & AIAssist & AdminHub
+    PatWS --> S_Adm & S_Share
+    DocDir --> S_Appt & S_Canc
+    ClinWS --> S_Clin
+    AIAssist --> Bot
+    Bot --> Act_Doc & Act_Bed & Act_Appt & Act_Canc
+    Act_Doc & Act_Bed & Act_Appt & Act_Canc --> S_Appt & S_Adm
+    S_Adm --> Ward & Bed & Admission & Contact
+    S_Appt & S_Canc --> Slot & Appt & Payment
+    S_Clin --> Vital
+    S_Share --> Contact & Admission
+    S_Log --> ErrorLog
 ```
 
 ---
 
-## 3. Layered Design Breakdown
+## 3. Entity-Relationship Data Model
 
-### 3.1 Presentation Layer (Lightning Web Components)
-- **Container Architecture:** Hosted in `CareNest_Home_V2.flexipage`, embedding the primary controller component `careNestDashboardV2`.
-- **Component Decoupling:** Reusable sub-components (`appointmentWizard`, `wardBedManager`, `patientAdmissionWorkspace`, `inpatientClinicalWorkspace`, `doctorSearch`, `agentforceAssistantWidget`, `patientBilling`, `patientRegistrationModal`) communicate through Lightning Message Service (`CareNestMessageChannel`) and standard CustomEvent dispatching.
-- **Client-Side Responsiveness:** CSS grid and flexbox breakpoints dynamically adapt across desktop (>1024px), tablet (641px–1024px), and mobile (≤640px) viewport form factors.
+CareNest maintains a normalized data schema with strict referential integrity:
 
-### 3.2 Apex Domain & Service Layer
-- **Trigger Framework:** Implements the `TriggerHandler` pattern across 7 triggers (`AdmissionTrigger`, `AppointmentTrigger`, `BedTrigger`, `DoctorTrigger`, `ErrorLogEventTrigger`, `InpatientEncounterTrigger`, `PatientVitalTrigger`). Triggers contain no business logic; they route to dedicated handler classes.
-- **Concurrency Locking (`SELECT ... FOR UPDATE`):** When booking appointments or allocating inpatient beds, database rows are locked in memory until transaction commit. This eliminates race conditions and double-booking bugs during high-concurrency peak clinic hours.
-- **Custom Metadata-Driven Business Logic:** Cancellation fee tiers and refund percentages are decoupled from Apex code into `Cancellation_Policy__mdt`, allowing hospital administrators to adjust financial policies without modifying code or triggering deployments.
-- **Platform Event Exception Logging:** Unhandled exceptions and transactional errors publish `Error_Log_Event__e` platform events, which subscribe asynchronously in an autonomous execution context. This guarantees that error audit records are committed even if the primary database transaction rolls back.
+```mermaid
+erDiagram
+    CONTACT ||--o{ APPOINTMENT__C : "books OPD"
+    CONTACT ||--o{ ADMISSION__C : "admitted as patient"
+    DOCTOR__C ||--o{ APPOINTMENT_SLOT__C : "schedules slots"
+    DOCTOR__C ||--o{ APPOINTMENT__C : "attends OPD"
+    DOCTOR__C ||--o{ ADMISSION__C : "primary attending"
+    APPOINTMENT_SLOT__C ||--o| APPOINTMENT__C : "locks slot"
+    APPOINTMENT__C ||--o{ PAYMENT__C : "generates bill"
+    WARD__C ||--o{ BED__C : "contains beds"
+    BED__C ||--o{ ADMISSION__C : "allocated to"
+    ADMISSION__C ||--o{ PATIENT_VITAL__C : "records clinical rounds"
 
-### 3.3 Security & Data Isolation Layer
-- **Organization-Wide Defaults (OWD):** Sensitive healthcare objects (`Contact`, `Admission__c`, `Patient_Vital__c`, `Inpatient_Encounter__c`, `Payment__c`) are configured as **Private**.
-- **Role-Based Access Control (RBAC):** Access is governed by 9 dedicated Permission Sets:
-  1. `CareNest_Admin`: Full administrative, operational, and financial command center privileges.
-  2. `CareNest_Doctor`: Attending physician access to assigned patients, clinical documentation, and rounds.
-  3. `CareNest_Nurse`: Ward management, bedside vitals recording, and clinical alert acknowledgment.
-  4. `CareNest_Front_Desk`: Outpatient registration, doctor search, and appointment scheduling.
-  5. `CareNest_Ops_Manager`: Capacity balancing, ward management, and operational reporting.
-  6. `CareNest_Ward_Management`: Specialized bed state and ward bed count administration.
-  7. `CareNest_Patient`: Patient portal self-service booking, history view, and cancellation.
-  8. `CareNest_Agent_Actions`: Permission for Agentforce AI agents to execute invocable actions.
-  9. `CareNest_Integration`: API service integration and telemetry feed.
-- **Programmatic Apex Sharing:** Attending doctors and assigned ward nurses receive row-level sharing to admitted patient records dynamically via `CareNestPatientAccessService` and `ClinicalSharingService`. Temporary cross-cover ward assignments are synchronized via `CrossCoverReconciliationBatch`.
-- **Zero Cross-Project Contamination:** Multi-tenant boundaries strictly isolate CareNest hospital data from legacy or adjacent org projects (such as MiniCare), enforcing verified provenance across patient IDs, reports, and financial rollups.
+    CONTACT {
+        Id Id PK
+        String Patient_Code__c UK "Auto-generated: CN-PAT-XXXXX"
+        String FirstName
+        String LastName "Required"
+        String Phone
+        String Email
+        Date Birthdate
+        Id AccountId "Null - Unlinked Orphan Contact"
+    }
+
+    DOCTOR__C {
+        Id Id PK
+        String Name
+        String Specialty__c
+        String Department__c
+        Currency Consultation_Fee__c
+        Boolean Is_Active__c
+    }
+
+    WARD__C {
+        Id Id PK
+        String Name "General Ward, ICU, Semi-Private, Private Room, Paediatric"
+        Integer Floor__c
+        Integer Total_Beds__c "Planned capacity"
+        Integer Installed_Beds__c "Actual physical beds"
+    }
+
+    BED__C {
+        Id Id PK
+        String Name "GW-01, ICU-01, etc."
+        String Bed_Code__c UK "CN-BED-XXXX"
+        Id Ward__c FK
+        String Status__c "Available, Occupied, Cleaning, Maintenance"
+        Currency Daily_Charge__c
+        Integer Floor__c
+    }
+
+    ADMISSION__C {
+        Id Id PK
+        String Name UK "ADM-XXXXXX"
+        Id Contact__c FK "Patient lookup"
+        Id Doctor__c FK "Attending physician"
+        Id Bed__c FK "Assigned physical bed"
+        DateTime Admission_Date__c
+        DateTime Discharge_Date__c
+        String Admission_Type__c "Emergency, Planned, Transfer"
+        String Status__c "Admitted, Discharged, Transferred"
+        String Reason__c "Provisional clinical diagnosis"
+    }
+
+    PATIENT_VITAL__C {
+        Id Id PK
+        Id Admission__c FK
+        DateTime Recorded_Time__c
+        Decimal Temperature__c
+        Integer Systolic_Pressure__c
+        Integer Diastolic_Pressure__c
+        Integer Heart_Rate__c
+        Integer Respiration_Rate__c
+        Integer Oxygen_Saturation__c
+        String Alert_Level__c "Normal, Warning, Critical"
+    }
+```
+
+---
+
+## 4. Key Architectural Patterns & Guarantees
+
+### 4.1 Inpatient Admission State Machine & Concurrency Protection
+* **Pessimistic Bed Locking:** When an admission is initiated, bed availability is re-evaluated using `SELECT Id, Status__c FROM Bed__c WHERE Id = :bedId FOR UPDATE`.
+* **State Machine Guard:** A bed cannot transition from `Available` to `Occupied` if an active admission (`Status__c = 'Admitted'`) already references it.
+* **Occupancy Rollup Synchronization:** Custom Apex triggers and rollups instantly recalculate ward occupancy metrics and notify UI components via reactive refresh adapters (`refreshApex`).
+
+### 4.2 Outpatient Concurrency & Tiered Cancellation Policy
+* **Double-Booking Prevention:** Appointment slot selection utilizes pessimistic row locks (`SELECT Id, Status__c FROM Appointment_Slot__c WHERE Id = :slotId FOR UPDATE`). If two users attempt to book the same slot simultaneously, the second transaction is safely rolled back with a deterministic user-facing concurrency message.
+* **Custom Metadata Tiered Refund Engine:** Outpatient cancellations reference `CareNest_Cancellation_Rule__mdt` records:
+  * Cancelled $> 24$ hours before appointment: $100\%$ refund.
+  * Cancelled $12 - 24$ hours before appointment: $50\%$ refund.
+  * Cancelled $< 12$ hours before appointment: $0\%$ refund.
+
+### 4.3 Zero-Trust Security & Unlinked Orphan Patient Isolation
+* **Orphan Contact Architecture:** Patient contacts are intentionally created with `AccountId = null`. This isolates patient health records from commercial CRM standard account hierarchy sharing rules.
+* **Stage 2 Zero-Trust RBAC:** Enforces Organization-Wide Defaults (OWD) set to **Private** for all custom healthcare objects (`Doctor__c`, `Ward__c`, `Bed__c`, `Admission__c`, `Patient_Vital__c`, `Payment__c`).
+* **Apex Managed Sharing:** Clinicians and nurses receive explicit row-level sharing (`Admission__Share`, `Patient_Vital__Share`) strictly based on their ward assignments or attending physician relationship.

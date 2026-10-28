@@ -1,0 +1,66 @@
+# CareNest HMS — Enterprise Security, RBAC & Data Governance
+
+**Project:** CareNest Hospital Management System  
+**Security Architecture:** Zero-Trust Stage 2 Role-Based Access Control (RBAC)  
+**Target Organization ID:** `00Dg700000Cpr9pEAB`  
+
+---
+
+## 1. Organization-Wide Defaults (OWD)
+
+To ensure strict healthcare confidentiality and compliance with privacy standards (HIPAA / DISHA principles), all custom medical objects are configured with **Private** baseline access:
+
+| SObject API Name | Organization-Wide Default (OWD) | Sharing Mechanism |
+| :--- | :---: | :--- |
+| `Contact` (Patient Master) | **Private** | Apex Managed Sharing (`CareNestPatientSharingService`) |
+| `Doctor__c` | **Private** | Read access via Permission Set; View All for Administration |
+| `Appointment_Slot__c` | **Private** | Read for scheduling; Edit restricted to attending physician/admin |
+| `Appointment__c` | **Private** | Read/Edit granted to assigned doctor, front desk, and patient |
+| `Ward__c` | **Public Read-Only** | Read for all staff; Edit restricted to Hospital Administration |
+| `Bed__c` | **Private** | Read for clinical staff; Edit controlled via Apex Services |
+| `Admission__c` | **Private** | Apex Managed Sharing (`Admission__Share`) |
+| `Patient_Vital__c` | **Private** | Apex Managed Sharing (`Patient_Vital__Share`) |
+| `Payment__c` | **Private** | Restricted to Cashier Desk and Financial Leadership |
+| `Error_Log__c` | **Private** | System Administrator access only |
+
+---
+
+## 2. Zero-Trust Role-Based Access Control (RBAC) Matrix
+
+CareNest enforces five dedicated enterprise Permission Sets that govern exact object permissions, field-level security (FLS), and tab visibility:
+
+| Healthcare Persona | Permission Set Name | Key Permissions & Record Scope |
+| :--- | :--- | :--- |
+| **Hospital Administrator** | `CareNest_Administrator` | Full read, write, create, and delete across all modules; Access to Executive Analytics, System Health, and Reports Hub. |
+| **Attending Doctor** | `CareNest_Doctor` | View assigned ward patients; View and record bedside vital signs; Manage personal OPD appointment slots; Read-only access to hospital beds. |
+| **Ward Nurse** | `CareNest_Nurse` | View patients assigned to their operational ward; Record vitals and telemetry; Update bed cleaning status (`Cleaning` $\rightarrow$ `Available`). |
+| **Front Desk Intake** | `CareNest_Front_Desk` | Register new patients; Book OPD appointment slots; Initiate inpatient admission wizard; No access to financial ledger or clinical diagnoses. |
+| **Billing Cashier** | `CareNest_Billing_Cashier` | Access `patientBilling`; Record simulated payments; Print receipts; No access to clinical vitals or doctor schedules. |
+
+---
+
+## 3. Unlinked Orphan Patient Isolation Architecture
+
+* **Standard CRM Vulnerability:** In standard Salesforce implementations, creating Contacts under a shared Account causes records to inherit standard account team, role hierarchy, and territory sharing rules.
+* **CareNest Mitigation:** Patient Contacts are created with `AccountId = null` (unlinked orphan contacts).
+* **Guarantees:**
+  * Patients are completely inaccessible to standard CRM sales or marketing roles.
+  * Standard account sharing rules cannot inadvertently expose sensitive patient health data.
+  * Access is granted exclusively via programmatic Apex Managed Sharing (`CareNestPatientSharingService`).
+
+---
+
+## 4. Programmatic Apex Managed Sharing
+
+When a patient is admitted to a ward:
+1. `CareNestPatientSharingService` automatically creates row-level sharing entries:
+   * **Attending Doctor:** Granted `Edit` access to `Admission__c` and `Patient_Vital__c`.
+   * **Assigned Ward Staff:** Granted `Read` access to the patient's record while the admission remains active (`Status__c = 'Admitted'`).
+2. Upon patient discharge (`Status__c = 'Discharged'`), the service revokes temporary operational sharing entries, returning the patient record to restricted archive status.
+
+---
+
+## 5. Defensive Code Patterns
+
+* **Enforced Execution Context:** All user-facing controllers execute SOQL queries using `WITH USER_MODE` or `WITH SECURITY_ENFORCED`, ensuring field-level security and object permissions are respected.
+* **Decoupled Platform Event Logging:** System exceptions and access violations are logged via `Error_Log__e` platform events and processed asynchronously by `ErrorLogService`, preventing rollbacks from masking security audit trails.
