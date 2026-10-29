@@ -15,7 +15,7 @@
 3. **Designed and deployed a centralized Reports & Analytics Hub** mapping 16 certified Salesforce reports across dedicated folders, implementing server-side Role-Based Access Control to prevent non-administrative users from discovering or viewing sensitive financial telemetry.
 
 ### Agentforce AI Specialist Bullet
-- **Integrated autonomous Agentforce AI capabilities** (`AgentforceEmployeeAgent` / InternalCopilot), developing four secure `@InvocableMethod` Apex actions for real-time doctor discovery and ward bed allocation, while implementing deterministic safety guardrails that immediately refuse diagnostic advice and escalate medical emergencies.
+- **Integrated autonomous Agentforce AI capabilities** (`AgentforceEmployeeAgent` / InternalCopilot), developing four secure `@InvocableMethod` Apex actions for real-time doctor discovery and ward bed allocation, while implementing deterministic software guardrails that immediately refuse medical diagnostic liability and escalate emergencies to national and local hotlines (e.g., 112 in India, 911 / ext 4567 in standard demonstration fixtures).
 
 ---
 
@@ -54,7 +54,7 @@
 **Expert Answer:**
 > *"We configured a native Agentforce bot (`AgentforceEmployeeAgent`) connected to four typed `@InvocableMethod` Apex classes: `DoctorSearchAction`, `AppointmentStatusAction`, `CancelAppointmentAction`, and `WardAvailabilityAction`.
 > The most critical requirement in healthcare AI is ethical and legal liability protection: an AI agent must never diagnose conditions, prescribe medications, or delay emergency care.
-> To guarantee safety, we built deterministic guardrails in `CareNestAssistantUIController.cls`. Before any prompt reaches the AI reasoning engine, we evaluate it against clinical safety filters. If a user asks for medical advice or describes emergency symptoms (e.g. chest pain, breathing difficulty), the system immediately halts execution, returns a standard refusal, flags `isEmergency = true`, and renders direct hospital emergency hotline extensions (`911 / 4567`)."*
+> To guarantee safety, we built deterministic guardrails in `CareNestAssistantUIController.cls`. Before any prompt reaches the AI reasoning engine, we evaluate it against keyword safety filters. If a user asks for medical advice or describes emergency symptoms (e.g. chest pain, breathing difficulty), the system immediately halts execution, returns a standard refusal, flags `isEmergency = true`, and renders direct emergency hotline escalation (directing users to 112 in India, 911 / ext 4567 in standard demo fixtures). This serves as a defensive software liability guardrail rather than clinical triage."*
 
 ### Question 5: How does CareNest ensure clean data isolation between different projects sharing the same Salesforce org?
 **Expert Answer:**

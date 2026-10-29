@@ -46,21 +46,21 @@ CareNest enforces five dedicated enterprise Permission Sets that govern exact ob
 * **Guarantees:**
   * Patients are completely inaccessible to standard CRM sales or marketing roles.
   * Standard account sharing rules cannot inadvertently expose sensitive patient health data.
-  * Access is granted exclusively via programmatic Apex Managed Sharing (`CareNestPatientSharingService`).
+  * Access is granted exclusively via programmatic access controls (`CareNestPatientAccessService`) and Apex Managed Sharing on custom clinical objects (`ClinicalSharingService`).
 
 ---
 
 ## 4. Programmatic Apex Managed Sharing
 
 When a patient is admitted to a ward:
-1. `CareNestPatientSharingService` automatically creates row-level sharing entries:
-   * **Attending Doctor:** Granted `Edit` access to `Admission__c` and `Patient_Vital__c`.
-   * **Assigned Ward Staff:** Granted `Read` access to the patient's record while the admission remains active (`Status__c = 'Admitted'`).
-2. Upon patient discharge (`Status__c = 'Discharged'`), the service revokes temporary operational sharing entries, returning the patient record to restricted archive status.
+1. `ClinicalSharingService` automatically creates row-level sharing entries on custom objects (`Inpatient_Encounter__Share`, `Patient_Vital__Share`):
+   * **Attending Doctor:** Granted row-level access (`RowCause = 'Attending_Physician__c'`) to `Inpatient_Encounter__c` and `Patient_Vital__c`.
+   * **Assigned Ward Staff:** Granted row-level access (`RowCause = 'Care_Team__c'`) while the admission remains active (`Status__c = 'Admitted'`).
+2. Upon patient discharge (`Status__c = 'Discharged'`), the service revokes temporary operational sharing entries, returning clinical records to restricted status.
 
 ---
 
 ## 5. Defensive Code Patterns
 
 * **Enforced Execution Context:** All user-facing controllers execute SOQL queries using `WITH USER_MODE` or `WITH SECURITY_ENFORCED`, ensuring field-level security and object permissions are respected.
-* **Decoupled Platform Event Logging:** System exceptions and access violations are logged via `Error_Log__e` platform events and processed asynchronously by `ErrorLogService`, preventing rollbacks from masking security audit trails.
+* **Decoupled Platform Event Logging:** System exceptions and access violations are logged via `Error_Log_Event__e` platform events and processed asynchronously by `ErrorLogService`, preventing rollbacks from masking security audit trails.

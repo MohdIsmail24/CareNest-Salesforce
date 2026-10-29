@@ -22,7 +22,7 @@ To maintain strict ethical, legal, and security boundaries, CareNest is presente
 
 ### 2.2 Synthetic Demonstration Data
 * **Current Population:** CareNest contains synthetic demonstration records (114 enrolled synthetic patient contacts, 12 credentialed physicians, 42 physical beds across 5 wards with 20 active admissions, 19 available, 2 cleaning, and 1 maintenance).
-* **Compliance:** All patient names, phone numbers, and email addresses (`*.example.com`, `*.example.test`, `*.test`) are strictly fictional in compliance with RFC 2606. Zero real patient Personally Identifiable Information (PII) exists in this repository.
+* **Compliance & Privacy:** All patient email addresses utilize reserved domain names (`*.example.com`, `*.example.org`, `*.example.net`) in strict compliance with IETF RFC 2606. Patient names, phone numbers, addresses, and clinical telemetry are entirely synthetic, fictional records generated solely for software testing and demonstration purposes. Zero real patient Personally Identifiable Information (PII) or Protected Health Information (PHI) exists in this repository.
 
 ### 2.3 Regulatory Compliance Patterns vs. Formal Certification
 * **Architectural Patterns Implemented:**
@@ -30,7 +30,7 @@ To maintain strict ethical, legal, and security boundaries, CareNest is presente
   * Organization-Wide Defaults set to Private.
   * Programmatic row-level sharing for attending clinicians.
   * Platform event-driven audit logging for errors and record updates.
-  * Agentforce emergency triage and clinical refusal guardrails.
+  * Agentforce deterministic safety guardrails and emergency escalation guidance.
 * **Limitation:** While CareNest incorporates architectural patterns required by HIPAA (United States) and DISHA (Digital Information Security in Healthcare Act - India), it has not undergone formal third-party SOC 2 Type II or FDA medical software certification audits.
 
 ### 2.4 Multi-Tenant Governor Limits & Volume Boundaries
