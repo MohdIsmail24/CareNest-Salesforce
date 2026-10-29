@@ -137,4 +137,4 @@ CareNest eliminates this issue using Salesforce Platform Events:
     [ Insert Error_Log__c (Committed Safely) ]
 ```
 
-Because Platform Events published with `EventBus.publish()` are decoupled from the main database transaction, exception logs remain permanently committed even when the calling transaction issues a complete `Database.rollback()`.
+Because `Error_Log_Event__e` is configured with `PublishImmediately`, events published via `EventBus.publish()` are dispatched immediately to the event bus and are not rolled back if the publishing Apex transaction subsequently issues a `Database.rollback(sp)`. The asynchronous subscriber trigger (`ErrorLogEventTrigger`) running under the Automated Process context sanitizes the message and inserts `Error_Log__c` records out-of-transaction (subject to standard platform event delivery and trigger execution limits).

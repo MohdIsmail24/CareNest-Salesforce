@@ -37,6 +37,12 @@ To maintain strict ethical, legal, and security boundaries, CareNest is presente
 * **SOQL / DML Design:** All trigger handlers and domain services are bulkified to handle standard Salesforce execution limits (up to 200 records per trigger execution, 50,000 query rows, and 10,000 DML rows).
 * **Large Data Volume (LDV) Scaling:** If hospital patient populations scale beyond 5,000,000 records, future architectural evolutions would require Salesforce Big Objects or Data Cloud archival strategies for historical vital sign telemetry.
 
-### 2.5 Agentforce LLM Model Dependencies
+### 2.5 Agentforce LLM Model Dependencies & Demonstration Widget
 * **Current Configuration:** Invocable actions operate deterministically with explicit validation filters and rule-based safety triage.
-* **Limitation:** In organizations where generative Agentforce LLMs are connected, prompt responses are subject to standard large language model nondeterminism. CareNest mitigates this by requiring all transactional changes (cancellations, doctor bookings) to execute through typed Invocable Actions rather than unconstrained generative SQL.
+* **Demonstration Widget vs. Runtime:** The in-app assistant widget (`agentforceAssistantWidget`) executes through `CareNestAssistantUIController.cls` to demonstrate deterministic safety guardrails and direct invocable action execution reliably within standard Lightning Experience, rather than relying on unconstrained generative LLM calls.
+* **Limitation:** In production organizations where generative Agentforce LLMs are connected, prompt responses are subject to standard large language model nondeterminism. CareNest mitigates this by requiring all transactional changes (cancellations, doctor bookings) to execute through typed Invocable Actions rather than unconstrained generative SQL.
+
+### 2.6 Emergency Contact Display (Live UI Label)
+* **Current Display:** The live CareNest application header ribbon (`careNestDashboardV2.html`, line 16) currently displays `Emergency Hotline Ext: 911 / 4567`.
+* **Production Recommendation:** In a production healthcare deployment in India, this header should reference the national emergency response number (`112` / `108`) and real hospital PBX extensions.
+* **Deployment Scope Boundary:** Updating this text in the live Salesforce org was not performed during this review in order to strictly adhere to the zero-unauthorized-metadata-deployment safety policy. Updating this label in the live org requires a separately authorized UI metadata deployment.

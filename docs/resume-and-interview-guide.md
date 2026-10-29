@@ -3,16 +3,16 @@
 ## 1. Resume Bullet Points
 
 ### Salesforce Developer Bullets (Advanced Apex & LWC)
-1. **Architected and developed CareNest**, an enterprise-grade Hospital Management System on Salesforce Lightning, designing 16 custom objects, 51 Apex classes, and 14 modular Lightning Web Components communicating via Lightning Message Service (LMS).
+1. **Architected and developed CareNest**, an enterprise-grade Hospital Management System on Salesforce Lightning, designing 13 custom objects, 1 custom metadata type, 1 platform event, 51 Apex classes, and 14 modular Lightning Web Components communicating via Lightning Message Service (LMS).
 2. **Eliminated concurrent appointment and bed double-allocations** by implementing pessimistic row-level database locking (`SELECT ... FOR UPDATE`) across `AppointmentService.cls` and `CareNestAdmissionController.cls`, ensuring atomic capacity validation during peak clinic hours.
-3. **Engineered an event-driven exception logging architecture** utilizing Platform Event `Error_Log_Event__e`, guaranteeing permanent persistence of diagnostic telemetry across database rollback contexts (`Database.rollback()`).
+3. **Engineered an event-driven exception logging architecture** utilizing Platform Event `Error_Log_Event__e` (`PublishImmediately`), enabling diagnostic error publishing that survives caller savepoint rollbacks (`Database.rollback(sp)`) and processes via an asynchronous trigger handler.
 4. **Developed a 6-step reactive admission intake wizard** in LWC enforcing mandatory Admission Type classification validation (`Emergency`, `Planned`, `Transfer`), dynamic ward capacity rollups, and zero-leak orphan contact intake.
 5. **Achieved 100% test pass rate across 337 org regression tests** with 88% org-wide Apex code coverage and 226 automated local static AST checks, verified via Salesforce CLI (`sf`) and Playwright MCP.
 
 ### Salesforce Administrator Bullets (Governance, Security & Automation)
-1. **Enforced a Zero-Trust security model** by configuring Private Organization-Wide Defaults across sensitive clinical objects (`Contact`, `Admission__c`, `Patient_Vital__c`, `Payment__c`), augmented by 9 custom Permission Sets and programmatic Apex sharing services.
+1. **Enforced a Zero-Trust security model** by configuring Private Organization-Wide Defaults across sensitive clinical objects (`Contact`, `Admission__c`, `Patient_Vital__c`, `Payment__c`), augmented by 9 project-managed Permission Sets (and 1 Permission Set Group) and programmatic Apex sharing services.
 2. **Automated hospital operational governance** by deploying Record-Triggered Flows, hourly slot-reclamation scheduled batches (`PendingExpiryBatch`), and Custom Metadata Types (`Cancellation_Policy__mdt`) for dynamic, code-free refund policy administration.
-3. **Designed and deployed a centralized Reports & Analytics Hub** mapping 16 certified Salesforce reports across dedicated folders, implementing server-side Role-Based Access Control to prevent non-administrative users from discovering or viewing sensitive financial telemetry.
+3. **Designed and deployed a centralized Reports & Analytics Hub** mapping 16 certified CareNest Salesforce reports across dedicated folders, implementing server-side Role-Based Access Control to prevent non-administrative users from discovering or viewing sensitive financial telemetry.
 
 ### Agentforce AI Specialist Bullet
 - **Integrated autonomous Agentforce AI capabilities** (`AgentforceEmployeeAgent` / InternalCopilot), developing four secure `@InvocableMethod` Apex actions for real-time doctor discovery and ward bed allocation, while implementing deterministic software guardrails that immediately refuse medical diagnostic liability and escalate emergencies to national and local hotlines (e.g., 112 in India, 911 / ext 4567 in standard demonstration fixtures).
@@ -25,7 +25,7 @@
 >
 > *Technically, I focused heavily on concurrency safety, security, and enterprise architectural patterns. For example, to prevent race conditions during high-volume appointment bookings, I implemented pessimistic database row-locking using `SELECT ... FOR UPDATE` in our Apex domain services. I also established a Zero-Trust security framework with Private OWDs and programmatic Apex sharing, dynamically granting attending physicians and ward nurses row-level access during active admissions.*
 >
-> *Most recently, I integrated Salesforce Agentforce AI agents with governed Invocable Actions for autonomous doctor search and bed availability lookups, while engineering hardcoded ethical safety guardrails to refuse medical diagnosis and escalate emergencies. Across the entire application, I maintained 100% test pass rates across 205 local static checks and our cloud Apex unit test suites."*
+> *For AI, I developed four governed Invocable Actions for Agentforce integration while building deterministic software guardrails to refuse diagnostic liability and escalate emergencies. Across the entire application, I maintained 100% test pass rates across 226 local static checks and our 337 org regression tests with 88% code coverage."*
 
 ---
 
@@ -40,8 +40,8 @@
 ### Question 2: Why did you use Platform Events for exception logging instead of simply inserting an `Error_Log__c` record in an Apex `catch` block?
 **Expert Answer:**
 > *"In standard Apex transaction processing, if an error occurs within a complex operation involving multiple DML statements, best practice dictates rolling back the transaction using `Database.rollback(sp)` to prevent partial state corruption.
-> However, if you insert an error log record into the database within that same execution thread, rolling back the savepoint also erases the inserted log record, leaving developers with zero diagnostic evidence in production.
-> To resolve this, I implemented `ErrorLogService.cls` to publish a platform event: `Error_Log_Event__e`. Because Platform Events published with `EventBus.publish()` are decoupled from the main database transaction and handled by an autonomous event bus, the log event is permanently persisted by a trigger handler in a separate context, even when the calling transaction rolls back completely."*
+> However, if you insert an error log record synchronously into the database within that same execution thread, rolling back the savepoint also erases the inserted log record, leaving developers with zero diagnostic evidence in production.
+> To address this, I implemented `ErrorLogService.cls` using Platform Event `Error_Log_Event__e` configured with `PublishImmediately`. Because events published with `PublishImmediately` dispatch to the Salesforce event bus immediately upon calling `EventBus.publish()`, they are not revoked if the calling transaction subsequently executes `Database.rollback(sp)`. An asynchronous subscriber trigger (`ErrorLogEventTrigger`) running under the Automated Process context consumes the event, sanitizes sensitive tokens, and inserts an `Error_Log__c` record out-of-transaction."*
 
 ### Question 3: How does CareNest enforce security and least privilege across clinical vs. administrative personnel?
 **Expert Answer:**

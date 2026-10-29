@@ -33,10 +33,10 @@ Design, develop, and deploy an enterprise-grade, native Salesforce healthcare so
 - **Quality Assurance & DevOps:** Salesforce CLI (`sf`), Node.js static AST test suites (205 tests), Playwright cross-viewport verification, SFDX manifest packaging.
 
 ### Core Architecture Responsibilities:
-- Architected the end-to-end data model comprising 16 custom objects, master-detail relationships, and 30 declarative validation rules.
-- Engineered concurrency-safe slot allocation logic in `AppointmentService.cls` utilizing pessimistic row-level locks.
-- Developed an asynchronous platform event logging service (`ErrorLogService.cls`) guaranteeing error persistence across rolled-back transactions.
-- Implemented programmatic row-level sharing (`CareNestPatientAccessService.cls`) granting dynamic record access to attending physicians and assigned ward nurses.
+- Architected the end-to-end data model comprising 13 custom objects, 1 custom metadata type, 1 platform event, custom extensions on standard Contact, and 30 declarative validation rules.
+- Engineered concurrency-safe slot and bed allocation logic in `AppointmentService.cls` and `CareNestAdmissionController.cls` utilizing pessimistic row-level locks (`SELECT ... FOR UPDATE`).
+- Developed an asynchronous platform event logging service (`ErrorLogService.cls`) utilizing `PublishImmediately` events to capture errors outside standard DML transaction rollbacks.
+- Implemented programmatic access delegation (`CareNestPatientAccessService.cls`) and custom object sharing (`ClinicalSharingService.cls`) granting dynamic record access to attending physicians and assigned ward nurses.
 - Designed and verified the **Module 9: Reports Hub**, securely mapping all 16 certified CareNest Salesforce reports with server-side RBAC and client-side instant search.
 
 ---
@@ -48,16 +48,16 @@ Design, develop, and deploy an enterprise-grade, native Salesforce healthcare so
 - **Solution:** Enforced pessimistic database locking in `AppointmentService.cls` using `SELECT Id, Capacity__c, Booked_Count__c FROM Appointment_Slot__c WHERE Id = :slotId FOR UPDATE`. The first thread locks the database row; parallel threads are blocked until the lock is released, ensuring atomic capacity validation.
 
 ### Challenge 2: Decoupled Exception Logging Across Database Rollbacks
-- **Problem:** When an Apex transaction catches an exception and rolls back the database state (`Database.rollback()`), standard log records inserted within the same context are erased from the database.
-- **Solution:** Implemented event-driven exception logging via Platform Event `Error_Log_Event__e`. Because Platform Events published via `EventBus.publish()` execute in an autonomous queue outside the primary database transaction, diagnostic records remain permanently committed regardless of transaction rollbacks.
+- **Problem:** When an Apex transaction catches an exception and rolls back state (`Database.rollback(sp)`), synchronous database log records inserted within that same execution context are undone, losing diagnostic evidence.
+- **Solution:** Implemented event-driven exception logging via Platform Event `Error_Log_Event__e` configured with `PublishImmediately` publish behavior. When `EventBus.publish()` executes prior to transaction rollback, the event message is dispatched to the Salesforce event bus independently of caller savepoints. An asynchronous subscriber trigger (`ErrorLogEventTrigger`) running under the Automated Process context sanitizes credentials and inserts `Error_Log__c` records out-of-transaction (subject to standard platform event delivery and trigger execution boundaries).
 
-### Challenge 3: Enforcing Ethical AI Boundaries & Safety Guardrails
+### Challenge 3: Enforcing Defensive AI Guardrails & Distinguishing Runtime Architecture
 - **Problem:** Conversational AI models deployed in healthcare risk generating inaccurate medical diagnoses or offering treatment advice, introducing catastrophic liability.
-- **Solution:** Hardcoded deterministic clinical safety filters in `CareNestAssistantUIController.cls`. Any prompt containing medical emergency keywords (e.g. "chest pain", "trouble breathing", "prescribe", "diagnosis") triggers an immediate refusal, displays prominent emergency hotline extensions (`911 / 4567`), and halts AI execution.
+- **Solution:** Developed 4 governed `@InvocableMethod` Apex actions (`DoctorSearchAction`, `WardAvailabilityAction`, `AppointmentStatusAction`, `CancelAppointmentAction`) for integration with Salesforce Agentforce. To provide a predictable, reproducible in-app demonstration within Lightning Experience, the `agentforceAssistantWidget` executes via `CareNestAssistantUIController.cls`, which evaluates deterministic keyword safety filters before invoking the action classes directly. Prompts containing clinical emergency terms (e.g. "chest pain", "trouble breathing", "prescribe", "diagnosis") trigger an immediate refusal, flag emergency status, and render national/local hotline escalation guidance (e.g., 112 in India, 911 / ext 4567 in standard demo fixtures).
 
 ### Challenge 4: Protecting Financial Telemetry Without Disrupting Clinical Workflows
 - **Problem:** Nurses and outpatient doctors require access to patient clinical charts and ward beds but must be strictly blocked from viewing hospital collections, doctor revenue shares, or outstanding receivables.
-- **Solution:** Enforced server-side Role-Based Access Control in `CareNestDashboardController.cls`. The controller queries `isUserAuthorizedAdmin()`; non-admin users receive a payload completely stripped of financial KPIs and sensitive report links. Standard Salesforce report folder permissions reinforce this security at the platform level.
+- **Solution:** Enforced server-side Role-Based Access Control in `CareNestDashboardController.cls`. The controller queries `isUserAuthorizedAdmin()`; non-admin users receive a payload completely stripped of financial KPIs and sensitive report links. Standard Salesforce report folder permissions reinforce this security at the platform level. Governance is established across 9 project-managed Permission Sets (with a 10th system PermissionSet generated by the platform to back the `CareNest_Operations` Permission Set Group).
 
 ---
 

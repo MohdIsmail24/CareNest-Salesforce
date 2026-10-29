@@ -226,4 +226,4 @@ The complete engineering and operational documentation is maintained in the [`do
 ---
 
 ## ⚖️ Portfolio Disclaimer
-CareNest is developed as an educational reference architecture demonstrating advanced Salesforce platform engineering, data governance, and Agentforce capabilities. It utilizes synthetic demonstration records and mock payment desk flows. It is not certified for clinical diagnostic production deployment.
+CareNest is developed as an educational reference architecture demonstrating advanced Salesforce platform engineering, data governance, and Agentforce capabilities. It utilizes synthetic demonstration records and mock payment desk flows. It is not certified for clinical diagnostic production deployment. The live application header currently displays demonstration placeholder emergency numbers (`911 / 4567`); updating this label in the live Salesforce org (e.g. to `112` for India) requires a separately authorized UI metadata deployment.

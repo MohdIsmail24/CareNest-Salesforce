@@ -61,18 +61,24 @@ sf project deploy start \
 ## 4. Post-Deployment Configuration
 
 ### 4.1 Assign Permission Sets
-Assign the core CareNest permission sets to your user:
+Assign the core CareNest permission sets to your administrator or test users:
 
 ```bash
 # Assign Hospital Administrator Permission Set
-sf org assign permset --name CareNest_Administrator --target-org carenest
+sf org assign permset --name CareNest_Admin --target-org carenest
 
-# Assign Doctor and Nurse Permission Sets (for test users)
+# Assign Clinical & Operational Roles (for test users)
 sf org assign permset --name CareNest_Doctor --target-org carenest
 sf org assign permset --name CareNest_Nurse --target-org carenest
 sf org assign permset --name CareNest_Front_Desk --target-org carenest
-sf org assign permset --name CareNest_Billing_Cashier --target-org carenest
+sf org assign permset --name CareNest_Ops_Manager --target-org carenest
+sf org assign permset --name CareNest_Ward_Management --target-org carenest
+sf org assign permset --name CareNest_Agent_Actions --target-org carenest
 ```
+
+> **Note on Permission Set Counts:**
+> The repository source metadata contains **9 project-managed Permission Sets** (`CareNest_Admin`, `CareNest_Doctor`, `CareNest_Nurse`, `CareNest_Front_Desk`, `CareNest_Ops_Manager`, `CareNest_Ward_Management`, `CareNest_Agent_Actions`, `CareNest_Patient`, `CareNest_Integration`).
+> A SOQL query against `PermissionSet` in the Salesforce org returns 10 records because Salesforce automatically generates an internal `PermissionSet` record to back the `CareNest_Operations` Permission Set Group.
 
 ### 4.2 Launch the Application
 Open the CareNest Lightning Application directly in your browser:
