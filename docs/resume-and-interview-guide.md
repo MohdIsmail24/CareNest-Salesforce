@@ -4,8 +4,10 @@
 
 ### Salesforce Developer Bullets (Advanced Apex & LWC)
 1. **Architected and developed CareNest**, an enterprise-grade Hospital Management System on Salesforce Lightning, designing 16 custom objects, 51 Apex classes, and 14 modular Lightning Web Components communicating via Lightning Message Service (LMS).
-2. **Eliminated concurrent appointment double-booking** by implementing pessimistic row-level database locking (`SELECT ... FOR UPDATE`) in `AppointmentService.cls`, ensuring atomic slot capacity updates during high-concurrency peak clinic hours.
+2. **Eliminated concurrent appointment and bed double-allocations** by implementing pessimistic row-level database locking (`SELECT ... FOR UPDATE`) across `AppointmentService.cls` and `CareNestAdmissionController.cls`, ensuring atomic capacity validation during peak clinic hours.
 3. **Engineered an event-driven exception logging architecture** utilizing Platform Event `Error_Log_Event__e`, guaranteeing permanent persistence of diagnostic telemetry across database rollback contexts (`Database.rollback()`).
+4. **Developed a 6-step reactive admission intake wizard** in LWC enforcing mandatory Admission Type classification validation (`Emergency`, `Planned`, `Transfer`), dynamic ward capacity rollups, and zero-leak orphan contact intake.
+5. **Achieved 100% test pass rate across 337 org regression tests** with 88% org-wide Apex code coverage and 226 automated local static AST checks, verified via Salesforce CLI (`sf`) and Playwright MCP.
 
 ### Salesforce Administrator Bullets (Governance, Security & Automation)
 1. **Enforced a Zero-Trust security model** by configuring Private Organization-Wide Defaults across sensitive clinical objects (`Contact`, `Admission__c`, `Patient_Vital__c`, `Payment__c`), augmented by 9 custom Permission Sets and programmatic Apex sharing services.

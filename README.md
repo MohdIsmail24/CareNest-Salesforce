@@ -122,16 +122,18 @@ All screenshots are captured directly from live Salesforce execution (`/lightnin
 
 | View | Screenshot Preview | Detailed Description |
 |---|---|---|
-| **Unified Command Center** | [![Command Center](docs/screenshots/01_unified_home.png)](docs/screenshots/01_unified_home.png) | High-level hospital operational telemetry, live bed count, and navigation. |
-| **Executive Admin Overview** | [![Admin Overview](docs/screenshots/02_admin_overview.png)](docs/screenshots/02_admin_overview.png) | High-precision accounting KPIs and executive command center. |
-| **Revenue Analytics Graphs** | [![Revenue Charts](docs/screenshots/03_revenue_analytics.png)](docs/screenshots/03_revenue_analytics.png) | Collections by department and post-service receivables aging breakdown. |
-| **Reports & Analytics Hub** | [![Reports Hub](docs/screenshots/11_reports_hub.png)](docs/screenshots/11_reports_hub.png) | 16 certified Salesforce reports with search, category filtering, and direct links. |
-| **Inpatient Admissions** | [![Admissions](docs/screenshots/08_inpatient_admissions.png)](docs/screenshots/08_inpatient_admissions.png) | Inpatient admission intake workspace, bed allocation, and attending clinician. |
-| **Ward & Bed Manager** | [![Ward Bed Manager](docs/screenshots/07_ward_bed_management.png)](docs/screenshots/07_ward_bed_management.png) | Ward capacity distribution, bed state transitions, and vacancy tracking. |
-| **Clinical Charts & Alerts** | [![Clinical Charts](docs/screenshots/09_clinical_charts_alerts.png)](docs/screenshots/09_clinical_charts_alerts.png) | Bedside vitals telemetry, physiological range checks, and active alert triage. |
-| **Cashier & Billing Desk** | [![Billing](docs/screenshots/10_billing_and_payments.png)](docs/screenshots/10_billing_and_payments.png) | Outpatient payment settlement modal (Cash, Card, UPI) and receipt generation. |
-| **Agentforce AI Assistant** | [![Agentforce](docs/screenshots/13_agentforce_assistant.png)](docs/screenshots/13_agentforce_assistant.png) | Autonomous copilot interface with safety guardrails and doctor discovery. |
-| **Mobile Responsive Layout** | [![Mobile View](docs/screenshots/14_mobile_responsive_view.png)](docs/screenshots/14_mobile_responsive_view.png) | Fully responsive mobile navigation drawer and single-column cards (390x844). |
+| **Hospital Command Center** | [![Command Center](docs/screenshots/01_unified_home.png)](docs/screenshots/01_unified_home.png) | High-level hospital operational telemetry, dynamic navigation badges, live bed count, and active alerts. |
+| **Executive Admin & Analytics** | [![Admin Overview](docs/screenshots/02_admin_overview.png)](docs/screenshots/02_admin_overview.png) | High-precision accounting KPIs, collections trends, post-service aging, and 16 Salesforce reports catalog. |
+| **Patient Registration** | [![Patient Registration](docs/screenshots/04_patient_registration.png)](docs/screenshots/04_patient_registration.png) | Intake modal supporting demographic entry, contact details, and server-side duplicate prevention. |
+| **Patient Registry Directory** | [![Patient Registry](docs/screenshots/15_patient_registry_table.png)](docs/screenshots/15_patient_registry_table.png) | Master patient registry table with instant search, patient code lookup, and direct "Admit to Bed" actions. |
+| **Doctors & Staff Directory** | [![Doctor Directory](docs/screenshots/06_doctor_staff_directory.png)](docs/screenshots/06_doctor_staff_directory.png) | Physician rosters across 6 specialties, consultation fee schedules, and shift availability indicators. |
+| **Ward & Bed Manager** | [![Ward Bed Manager](docs/screenshots/07_ward_bed_management.png)](docs/screenshots/07_ward_bed_management.png) | Floor-plan ward capacity matrix managing 42 physical beds across Available, Occupied, Cleaning, and Maintenance states. |
+| **Admission Wizard & Validation** | [![Admission Validation](docs/screenshots/16_admission_wizard_validation.png)](docs/screenshots/16_admission_wizard_validation.png) | 6-step inpatient intake wizard enforcing mandatory Admission Type selection guard (Emergency, Planned, Transfer). |
+| **Inpatient Admissions Census** | [![Admissions](docs/screenshots/08_inpatient_admissions.png)](docs/screenshots/08_inpatient_admissions.png) | Inpatient census table, attending physician assignment, length-of-stay tracking, and discharge summary desk. |
+| **Clinical Charts & Vitals** | [![Clinical Charts](docs/screenshots/09_clinical_charts_alerts.png)](docs/screenshots/09_clinical_charts_alerts.png) | Bedside vitals telemetry, physiological range validation, and physician consultation documentation. |
+| **Cashier Desk & Billing** | [![Billing](docs/screenshots/10_billing_and_payments.png)](docs/screenshots/10_billing_and_payments.png) | Outpatient payment settlement modal (simulated Cash, Card, UPI) and itemized receipt generation. |
+| **Agentforce AI Assistant** | [![Agentforce](docs/screenshots/13_agentforce_assistant.png)](docs/screenshots/13_agentforce_assistant.png) | Autonomous copilot interface executing governed Invocable Actions with hardcoded clinical emergency safety guardrails. |
+| **Mobile Responsive Layout** | [![Mobile View](docs/screenshots/14_mobile_responsive_view.png)](docs/screenshots/14_mobile_responsive_view.png) | Fully responsive mobile navigation drawer and single-column cards (390x844 viewport). |
 
 ---
 
